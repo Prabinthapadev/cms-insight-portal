@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/contexts/AuthContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +17,7 @@ import {
 import { Upload, FileSpreadsheet, Edit, Save } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCMSList } from "@/services/cms";
+import { SEOManagement } from "@/components/admin/SEOManagement";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -171,112 +171,116 @@ Example CMS,A powerful content management system,https://example.com,5.2,"headle
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <Upload className="mr-2 h-5 w-5" />
-            Bulk Import CMS Profiles
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Upload a CSV file with CMS profile data. The file should include columns for name,
-            description, website, market share, and tags.
-          </p>
-          <Input
-            type="file"
-            accept=".csv"
-            onChange={handleFileUpload}
-            disabled={isUploading}
-            className="mb-4"
-          />
-          {uploadProgress && (
-            <div className="text-sm text-gray-600">
-              Processed: {uploadProgress.processed} | Failed: {uploadProgress.failed}
-            </div>
-          )}
-        </Card>
+      <div className="space-y-8">
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4 flex items-center">
+              <Upload className="mr-2 h-5 w-5" />
+              Bulk Import CMS Profiles
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Upload a CSV file with CMS profile data. The file should include columns for name,
+              description, website, market share, and tags.
+            </p>
+            <Input
+              type="file"
+              accept=".csv"
+              onChange={handleFileUpload}
+              disabled={isUploading}
+              className="mb-4"
+            />
+            {uploadProgress && (
+              <div className="text-sm text-gray-600">
+                Processed: {uploadProgress.processed} | Failed: {uploadProgress.failed}
+              </div>
+            )}
+          </Card>
+
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4 flex items-center">
+              <FileSpreadsheet className="mr-2 h-5 w-5" />
+              CSV Template
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Download the CSV template to ensure your data is formatted correctly.
+            </p>
+            <Button variant="outline" onClick={downloadTemplate}>
+              Download Template
+            </Button>
+          </Card>
+        </div>
+
+        <SEOManagement />
 
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <FileSpreadsheet className="mr-2 h-5 w-5" />
-            CSV Template
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Download the CSV template to ensure your data is formatted correctly.
-          </p>
-          <Button variant="outline" onClick={downloadTemplate}>
-            Download Template
-          </Button>
+          <h2 className="text-xl font-semibold mb-4">CMS Entries</h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Website</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {cmsList?.map((cms) => (
+                <TableRow key={cms.id}>
+                  <TableCell>
+                    {editingId === cms.id ? (
+                      <Input
+                        value={editForm.name}
+                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                      />
+                    ) : (
+                      cms.name
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {editingId === cms.id ? (
+                      <Input
+                        value={editForm.description}
+                        onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                      />
+                    ) : (
+                      cms.description
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {editingId === cms.id ? (
+                      <Input
+                        value={editForm.website}
+                        onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
+                      />
+                    ) : (
+                      cms.website
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {editingId === cms.id ? (
+                      <Button
+                        size="sm"
+                        onClick={() => handleSave(cms.id)}
+                        className="mr-2"
+                      >
+                        <Save className="h-4 w-4 mr-1" /> Save
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEdit(cms)}
+                      >
+                        <Edit className="h-4 w-4 mr-1" /> Edit
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </Card>
       </div>
-
-      <Card className="p-6">
-        <h2 className="text-xl font-semibold mb-4">CMS Entries</h2>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Website</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {cmsList?.map((cms) => (
-              <TableRow key={cms.id}>
-                <TableCell>
-                  {editingId === cms.id ? (
-                    <Input
-                      value={editForm.name}
-                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                    />
-                  ) : (
-                    cms.name
-                  )}
-                </TableCell>
-                <TableCell>
-                  {editingId === cms.id ? (
-                    <Input
-                      value={editForm.description}
-                      onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                    />
-                  ) : (
-                    cms.description
-                  )}
-                </TableCell>
-                <TableCell>
-                  {editingId === cms.id ? (
-                    <Input
-                      value={editForm.website}
-                      onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
-                    />
-                  ) : (
-                    cms.website
-                  )}
-                </TableCell>
-                <TableCell>
-                  {editingId === cms.id ? (
-                    <Button
-                      size="sm"
-                      onClick={() => handleSave(cms.id)}
-                      className="mr-2"
-                    >
-                      <Save className="h-4 w-4 mr-1" /> Save
-                    </Button>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEdit(cms)}
-                    >
-                      <Edit className="h-4 w-4 mr-1" /> Edit
-                    </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
     </div>
   );
 };
