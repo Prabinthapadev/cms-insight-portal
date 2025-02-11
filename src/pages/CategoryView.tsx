@@ -4,11 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getCMSByTag } from "@/services/cms";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, ArrowRightLeft } from "lucide-react";
+import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
 
 const CategoryView = () => {
   const { tag } = useParams();
@@ -41,20 +40,6 @@ const CategoryView = () => {
   }
 
   const formattedTag = tag?.replace(/-/g, ' ') || '';
-
-  // Generate comparison pairs from the CMS list
-  const generateComparisonPairs = () => {
-    if (!cmsList || cmsList.length < 2) return [];
-    const pairs = [];
-    for (let i = 0; i < Math.min(cmsList.length - 1, 3); i++) {
-      for (let j = i + 1; j < Math.min(cmsList.length, 4); j++) {
-        pairs.push([cmsList[i], cmsList[j]]);
-      }
-    }
-    return pairs.slice(0, 3); // Limit to 3 comparison pairs
-  };
-
-  const comparisonPairs = generateComparisonPairs();
 
   return (
     <>
@@ -98,33 +83,6 @@ const CategoryView = () => {
                 </Card>
               </Link>
             ))}
-
-            {comparisonPairs.length > 0 && (
-              <div className="mt-12">
-                <h2 className="text-2xl font-display font-semibold mb-6">
-                  Popular Comparisons in {formattedTag}
-                </h2>
-                <div className="grid gap-4">
-                  {comparisonPairs.map(([cms1, cms2]) => {
-                    const compareUrl = `/compare/${[cms1.slug, cms2.slug]
-                      .sort()
-                      .join('-vs-')}`;
-                    
-                    return (
-                      <Button
-                        key={`${cms1.id}-${cms2.id}`}
-                        variant="outline"
-                        className="w-full justify-between"
-                        onClick={() => window.location.href = compareUrl}
-                      >
-                        <span>{cms1.name} vs {cms2.name}</span>
-                        <ArrowRightLeft className="h-4 w-4 ml-2" />
-                      </Button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
