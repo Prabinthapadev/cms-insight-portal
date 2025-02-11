@@ -18,11 +18,33 @@ import Dashboard from "./pages/admin/Dashboard";
 import NotFound from "./pages/NotFound";
 import Sitemap from "./pages/Sitemap";
 
+// Security headers
+if (typeof document !== 'undefined') {
+  // Set CSP header
+  const meta = document.createElement('meta');
+  meta.httpEquiv = 'Content-Security-Policy';
+  meta.content = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co";
+  document.head.appendChild(meta);
+
+  // Set XSS Protection header
+  const xssProtection = document.createElement('meta');
+  xssProtection.httpEquiv = 'X-XSS-Protection';
+  xssProtection.content = '1; mode=block';
+  document.head.appendChild(xssProtection);
+
+  // Set X-Frame-Options header
+  const xFrameOptions = document.createElement('meta');
+  xFrameOptions.httpEquiv = 'X-Frame-Options';
+  xFrameOptions.content = 'DENY';
+  document.head.appendChild(xFrameOptions);
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
     },
   },
 });
@@ -33,7 +55,7 @@ const App = () => (
       <TooltipProvider>
         <BrowserRouter>
           <Navigation />
-          <div className="pt-16">
+          <main className="min-h-screen pt-16 w-full overflow-x-hidden">
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/cms" element={<CMSDirectory />} />
@@ -47,7 +69,7 @@ const App = () => (
               <Route path="/sitemap" element={<Sitemap />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </div>
+          </main>
           <Toaster />
           <Sonner />
         </BrowserRouter>

@@ -89,15 +89,81 @@
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground min-h-screen;
-  }
-
   html {
     @apply overflow-x-hidden scroll-smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground min-h-screen antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   #root {
-    @apply min-h-screen;
+    @apply min-h-screen flex flex-col;
   }
+
+  /* Mobile-first responsive text sizing */
+  h1 {
+    @apply text-2xl md:text-4xl font-bold;
+  }
+
+  h2 {
+    @apply text-xl md:text-3xl font-semibold;
+  }
+
+  h3 {
+    @apply text-lg md:text-2xl font-semibold;
+  }
+
+  /* Improved touch targets for mobile */
+  button, 
+  a, 
+  input, 
+  select, 
+  textarea {
+    @apply min-h-[44px] md:min-h-[36px];
+  }
+
+  /* Safe area insets for modern mobile browsers */
+  main {
+    @apply px-4 md:px-8;
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  /* Responsive images */
+  img {
+    @apply max-w-full h-auto;
+  }
+
+  /* Prevent text overflow */
+  p, h1, h2, h3, h4, h5, h6 {
+    @apply break-words;
+  }
+}
+
+/* Enhanced mobile grid system */
+.grid {
+  @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6;
+}
+
+/* Mobile-first container */
+.container {
+  @apply w-full mx-auto px-4 md:px-6 max-w-7xl;
+}
+
+/* Responsive table adjustments */
+@media (max-width: 640px) {
+  .table-responsive {
+    @apply block w-full overflow-x-auto;
+  }
+}
+
+/* Safe touch targets */
+.touch-target {
+  @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
 }
