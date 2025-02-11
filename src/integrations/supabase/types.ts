@@ -11,27 +11,12 @@ export type Database = {
     Tables: {
       cms: {
         Row: {
-          api_support: boolean | null
-          auto_updates: boolean | null
-          backup_restore: boolean | null
-          cdn_integration: boolean | null
-          cloud_hosting: boolean | null
-          community_size: number | null
           created_at: string | null
-          dedicated_hosting: boolean | null
           description: string | null
-          development_platform: string[] | null
-          documentation_quality: string | null
-          enterprise_ready: boolean | null
           featured: boolean | null
-          free_ssl: boolean | null
-          github_stars: number | null
-          hosting_options: string[] | null
           id: string
           image_url: string | null
           is_published: boolean | null
-          last_major_release: string | null
-          learning_curve: string | null
           market_share: number | null
           meta_canonical: string | null
           meta_description: string | null
@@ -45,47 +30,23 @@ export type Database = {
           meta_twitter_description: string | null
           meta_twitter_image: string | null
           meta_twitter_title: string | null
-          migration_tools: string[] | null
-          multilingual_support: boolean | null
           name: string
-          plugin_ecosystem: string | null
           published_at: string | null
-          release_frequency: string | null
-          self_hosting: boolean | null
           seo_description: string | null
           seo_keywords: string[] | null
           seo_title: string | null
-          setup_difficulty: string | null
           slug: string
-          support_channels: string[] | null
           tags: string[] | null
-          template_engine: string | null
-          training_resources: string[] | null
           updated_at: string | null
           website: string | null
         }
         Insert: {
-          api_support?: boolean | null
-          auto_updates?: boolean | null
-          backup_restore?: boolean | null
-          cdn_integration?: boolean | null
-          cloud_hosting?: boolean | null
-          community_size?: number | null
           created_at?: string | null
-          dedicated_hosting?: boolean | null
           description?: string | null
-          development_platform?: string[] | null
-          documentation_quality?: string | null
-          enterprise_ready?: boolean | null
           featured?: boolean | null
-          free_ssl?: boolean | null
-          github_stars?: number | null
-          hosting_options?: string[] | null
           id?: string
           image_url?: string | null
           is_published?: boolean | null
-          last_major_release?: string | null
-          learning_curve?: string | null
           market_share?: number | null
           meta_canonical?: string | null
           meta_description?: string | null
@@ -99,47 +60,23 @@ export type Database = {
           meta_twitter_description?: string | null
           meta_twitter_image?: string | null
           meta_twitter_title?: string | null
-          migration_tools?: string[] | null
-          multilingual_support?: boolean | null
           name: string
-          plugin_ecosystem?: string | null
           published_at?: string | null
-          release_frequency?: string | null
-          self_hosting?: boolean | null
           seo_description?: string | null
           seo_keywords?: string[] | null
           seo_title?: string | null
-          setup_difficulty?: string | null
           slug: string
-          support_channels?: string[] | null
           tags?: string[] | null
-          template_engine?: string | null
-          training_resources?: string[] | null
           updated_at?: string | null
           website?: string | null
         }
         Update: {
-          api_support?: boolean | null
-          auto_updates?: boolean | null
-          backup_restore?: boolean | null
-          cdn_integration?: boolean | null
-          cloud_hosting?: boolean | null
-          community_size?: number | null
           created_at?: string | null
-          dedicated_hosting?: boolean | null
           description?: string | null
-          development_platform?: string[] | null
-          documentation_quality?: string | null
-          enterprise_ready?: boolean | null
           featured?: boolean | null
-          free_ssl?: boolean | null
-          github_stars?: number | null
-          hosting_options?: string[] | null
           id?: string
           image_url?: string | null
           is_published?: boolean | null
-          last_major_release?: string | null
-          learning_curve?: string | null
           market_share?: number | null
           meta_canonical?: string | null
           meta_description?: string | null
@@ -153,22 +90,13 @@ export type Database = {
           meta_twitter_description?: string | null
           meta_twitter_image?: string | null
           meta_twitter_title?: string | null
-          migration_tools?: string[] | null
-          multilingual_support?: boolean | null
           name?: string
-          plugin_ecosystem?: string | null
           published_at?: string | null
-          release_frequency?: string | null
-          self_hosting?: boolean | null
           seo_description?: string | null
           seo_keywords?: string[] | null
           seo_title?: string | null
-          setup_difficulty?: string | null
           slug?: string
-          support_channels?: string[] | null
           tags?: string[] | null
-          template_engine?: string | null
-          training_resources?: string[] | null
           updated_at?: string | null
           website?: string | null
         }
@@ -318,44 +246,6 @@ export type Database = {
             columns: ["cms_id"]
             isOneToOne: false
             referencedRelation: "cms"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      faqs: {
-        Row: {
-          answer: string
-          created_at: string | null
-          id: string
-          order_index: number | null
-          question: string
-          tag_id: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          answer: string
-          created_at?: string | null
-          id?: string
-          order_index?: number | null
-          question: string
-          tag_id?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          answer?: string
-          created_at?: string | null
-          id?: string
-          order_index?: number | null
-          question?: string
-          tag_id?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "faqs_tag_id_fkey"
-            columns: ["tag_id"]
-            isOneToOne: false
-            referencedRelation: "tags"
             referencedColumns: ["id"]
           },
         ]
@@ -541,56 +431,9 @@ export type Database = {
           },
         ]
       }
-      tag_content: {
-        Row: {
-          content: string | null
-          content_type: string
-          created_at: string | null
-          id: string
-          meta_description: string | null
-          meta_title: string | null
-          tag_id: string | null
-          title: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          content?: string | null
-          content_type: string
-          created_at?: string | null
-          id?: string
-          meta_description?: string | null
-          meta_title?: string | null
-          tag_id?: string | null
-          title?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          content?: string | null
-          content_type?: string
-          created_at?: string | null
-          id?: string
-          meta_description?: string | null
-          meta_title?: string | null
-          tag_id?: string | null
-          title?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tag_content_tag_id_fkey"
-            columns: ["tag_id"]
-            isOneToOne: false
-            referencedRelation: "tags"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       tags: {
         Row: {
-          banner_subtitle: string | null
-          banner_title: string | null
           description: string | null
-          header_image: string | null
           id: string
           name: string
           seo_description: string | null
@@ -598,10 +441,7 @@ export type Database = {
           slug: string
         }
         Insert: {
-          banner_subtitle?: string | null
-          banner_title?: string | null
           description?: string | null
-          header_image?: string | null
           id?: string
           name: string
           seo_description?: string | null
@@ -609,10 +449,7 @@ export type Database = {
           slug: string
         }
         Update: {
-          banner_subtitle?: string | null
-          banner_title?: string | null
           description?: string | null
-          header_image?: string | null
           id?: string
           name?: string
           seo_description?: string | null

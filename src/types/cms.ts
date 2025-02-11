@@ -6,7 +6,7 @@ export interface CMS {
   website: string;
   imageUrl?: string;
   featured: boolean;
-  slug: string;
+  slug: string; // Added this field
   tags: string[];
   features: string[];
   pros: string[];
@@ -44,62 +44,5 @@ export interface CMS {
     communitySupport: string;
     officialSupport: string;
   };
-  setupDifficulty?: string;
-  learningCurve?: string;
-  communitySize?: number;
-  lastMajorRelease?: string;
-  githubStars?: number;
-  documentationQuality?: string;
-  enterpriseReady?: boolean;
-  multilingualSupport?: boolean;
-  apiSupport?: boolean;
-  hostingOptions?: string[];
-  templateEngine?: string;
-  pluginEcosystem?: string;
-  migrationTools?: string[];
-  dedicatedHosting?: boolean;
-  cloudHosting?: boolean;
-  selfHosting?: boolean;
-  freeSsl?: boolean;
-  cdnIntegration?: boolean;
-  backupRestore?: boolean;
-  autoUpdates?: boolean;
-  developmentPlatform?: string[];
-  releaseFrequency?: string;
-  supportChannels?: string[];
-  trainingResources?: string[];
 }
 
-export interface FAQ {
-  id: string;
-  question: string;
-  answer: string;
-  tagId: string;
-  orderIndex: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface TagContent {
-  id: string;
-  tagId: string;
-  contentType: string;
-  title?: string;
-  content?: string;
-  metaTitle?: string;
-  metaDescription?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Tag {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  headerImage?: string;
-  bannerTitle?: string;
-  bannerSubtitle?: string;
-}

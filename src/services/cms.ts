@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { CMS } from "@/types/cms";
 
@@ -71,30 +72,6 @@ export const getCMSList = async () => {
       communitySupport: cms.cms_additional_info?.[0]?.community_support || "",
       officialSupport: cms.cms_additional_info?.[0]?.official_support || "",
     },
-    setupDifficulty: cms.setup_difficulty,
-    learningCurve: cms.learning_curve,
-    communitySize: cms.community_size,
-    lastMajorRelease: cms.last_major_release,
-    githubStars: cms.github_stars,
-    documentationQuality: cms.documentation_quality,
-    enterpriseReady: cms.enterprise_ready,
-    multilingualSupport: cms.multilingual_support,
-    apiSupport: cms.api_support,
-    hostingOptions: cms.hosting_options,
-    templateEngine: cms.template_engine,
-    pluginEcosystem: cms.plugin_ecosystem,
-    migrationTools: cms.migration_tools,
-    dedicatedHosting: cms.dedicated_hosting,
-    cloudHosting: cms.cloud_hosting,
-    selfHosting: cms.self_hosting,
-    freeSsl: cms.free_ssl,
-    cdnIntegration: cms.cdn_integration,
-    backupRestore: cms.backup_restore,
-    autoUpdates: cms.auto_updates,
-    developmentPlatform: cms.development_platform,
-    releaseFrequency: cms.release_frequency,
-    supportChannels: cms.support_channels,
-    trainingResources: cms.training_resources,
   }));
 
   console.log("Transformed CMS data:", transformedData);
@@ -171,30 +148,6 @@ export const getCMSById = async (id: string) => {
       communitySupport: data.cms_additional_info?.[0]?.community_support || "",
       officialSupport: data.cms_additional_info?.[0]?.official_support || "",
     },
-    setupDifficulty: data.setup_difficulty,
-    learningCurve: data.learning_curve,
-    communitySize: data.community_size,
-    lastMajorRelease: data.last_major_release,
-    githubStars: data.github_stars,
-    documentationQuality: data.documentation_quality,
-    enterpriseReady: data.enterprise_ready,
-    multilingualSupport: data.multilingual_support,
-    apiSupport: data.api_support,
-    hostingOptions: data.hosting_options,
-    templateEngine: data.template_engine,
-    pluginEcosystem: data.plugin_ecosystem,
-    migrationTools: data.migration_tools,
-    dedicatedHosting: data.dedicated_hosting,
-    cloudHosting: data.cloud_hosting,
-    selfHosting: data.self_hosting,
-    freeSsl: data.free_ssl,
-    cdnIntegration: data.cdn_integration,
-    backupRestore: data.backup_restore,
-    autoUpdates: data.auto_updates,
-    developmentPlatform: data.development_platform,
-    releaseFrequency: data.release_frequency,
-    supportChannels: data.support_channels,
-    trainingResources: data.training_resources,
   };
 
   return cms;
@@ -270,30 +223,6 @@ export const getCMSBySlug = async (slug: string) => {
       communitySupport: data.cms_additional_info?.[0]?.community_support || "",
       officialSupport: data.cms_additional_info?.[0]?.official_support || "",
     },
-    setupDifficulty: data.setup_difficulty,
-    learningCurve: data.learning_curve,
-    communitySize: data.community_size,
-    lastMajorRelease: data.last_major_release,
-    githubStars: data.github_stars,
-    documentationQuality: data.documentation_quality,
-    enterpriseReady: data.enterprise_ready,
-    multilingualSupport: data.multilingual_support,
-    apiSupport: data.api_support,
-    hostingOptions: data.hosting_options,
-    templateEngine: data.template_engine,
-    pluginEcosystem: data.plugin_ecosystem,
-    migrationTools: data.migration_tools,
-    dedicatedHosting: data.dedicated_hosting,
-    cloudHosting: data.cloud_hosting,
-    selfHosting: data.self_hosting,
-    freeSsl: data.free_ssl,
-    cdnIntegration: data.cdn_integration,
-    backupRestore: data.backup_restore,
-    autoUpdates: data.auto_updates,
-    developmentPlatform: data.development_platform,
-    releaseFrequency: data.release_frequency,
-    supportChannels: data.support_channels,
-    trainingResources: data.training_resources,
   };
 
   return cms;
@@ -368,30 +297,6 @@ export const getCMSByTag = async (tag: string) => {
       communitySupport: cms.cms_additional_info?.[0]?.community_support || "",
       officialSupport: cms.cms_additional_info?.[0]?.official_support || "",
     },
-    setupDifficulty: cms.setup_difficulty,
-    learningCurve: cms.learning_curve,
-    communitySize: cms.community_size,
-    lastMajorRelease: cms.last_major_release,
-    githubStars: cms.github_stars,
-    documentationQuality: cms.documentation_quality,
-    enterpriseReady: cms.enterprise_ready,
-    multilingualSupport: cms.multilingual_support,
-    apiSupport: cms.api_support,
-    hostingOptions: cms.hosting_options,
-    templateEngine: cms.template_engine,
-    pluginEcosystem: cms.plugin_ecosystem,
-    migrationTools: cms.migration_tools,
-    dedicatedHosting: cms.dedicated_hosting,
-    cloudHosting: cms.cloud_hosting,
-    selfHosting: cms.self_hosting,
-    freeSsl: cms.free_ssl,
-    cdnIntegration: cms.cdn_integration,
-    backupRestore: cms.backup_restore,
-    autoUpdates: cms.auto_updates,
-    developmentPlatform: cms.development_platform,
-    releaseFrequency: cms.release_frequency,
-    supportChannels: cms.support_channels,
-    trainingResources: cms.training_resources,
   }));
 };
 
@@ -411,42 +316,4 @@ export const getAllTags = async () => {
   });
 
   return Array.from(tags);
-};
-
-export const getFAQsByTag = async (tagId: string) => {
-  const { data, error } = await supabase
-    .from('faqs')
-    .select('*')
-    .eq('tag_id', tagId)
-    .order('order_index');
-
-  if (error) throw error;
-  return data;
-};
-
-export const getTagContent = async (tagId: string, contentType: string) => {
-  const { data, error } = await supabase
-    .from('tag_content')
-    .select('*')
-    .eq('tag_id', tagId)
-    .eq('content_type', contentType)
-    .single();
-
-  if (error && error.code !== 'PGRST116') throw error;
-  return data;
-};
-
-export const updateTagContent = async (tagId: string, contentType: string, content: Partial<TagContent>) => {
-  const { data, error } = await supabase
-    .from('tag_content')
-    .upsert({
-      tag_id: tagId,
-      content_type: contentType,
-      ...content
-    })
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
 };
