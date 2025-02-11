@@ -1,11 +1,12 @@
 
 import { useState, useEffect } from "react";
-import { Search, SearchX, ArrowDown } from "lucide-react";
+import { Search, SearchX, ArrowDown, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSList } from "@/services/cms";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface SearchBarProps {
   searchQuery: string;
@@ -22,6 +23,7 @@ export const SearchBar = ({
   className,
   showSuggestions = true,
 }: SearchBarProps) => {
+  const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const { data: cmsList } = useQuery({
     queryKey: ["cms-list"],
@@ -43,9 +45,10 @@ export const SearchBar = ({
     setShowDropdown(!!searchQuery && suggestions?.length > 0);
   }, [searchQuery, suggestions]);
 
-  const handleSuggestionClick = (suggestion: string) => {
-    onSearchChange(suggestion);
+  const handleSuggestionClick = (id: string) => {
+    navigate(`/cms/${id}`);
     setShowDropdown(false);
+    onSearchChange("");
   };
 
   const clearSearch = () => {
@@ -89,11 +92,14 @@ export const SearchBar = ({
           {suggestions.map((cms) => (
             <button
               key={cms.id}
-              onClick={() => handleSuggestionClick(cms.name)}
+              onClick={() => handleSuggestionClick(cms.id)}
               className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-start gap-3"
             >
-              <div>
-                <p className="font-medium text-gray-900">{cms.name}</p>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <p className="font-medium text-gray-900">{cms.name}</p>
+                  <ArrowRight className="h-4 w-4 text-gray-400" />
+                </div>
                 <p className="text-sm text-gray-500 line-clamp-1">
                   {cms.description}
                 </p>

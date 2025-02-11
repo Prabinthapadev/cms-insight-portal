@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSBySlug } from "@/services/cms";
@@ -37,6 +36,11 @@ const CompareSpecific = () => {
     queryKey: ["cms", slug2],
     queryFn: () => getCMSBySlug(slug2),
     enabled: !!slug2,
+  });
+
+  const { data: allCMS } = useQuery({
+    queryKey: ["cms-list"],
+    queryFn: getCMSList,
   });
 
   if (isLoading1 || isLoading2) {
@@ -100,6 +104,10 @@ const CompareSpecific = () => {
       ],
     },
   ];
+
+  const otherCMS = allCMS?.filter(
+    (cms) => cms.id !== cms1?.id && cms.id !== cms2?.id
+  ) || [];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -223,6 +231,22 @@ const CompareSpecific = () => {
               </div>
             </Card>
           ))}
+        </div>
+
+        {/* Related Comparisons */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-semibold mb-6">Other Popular Comparisons</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            {[cms1, cms2].map((cms) => 
+              cms && (
+                <ComparisonCard 
+                  key={cms.id}
+                  cms={cms} 
+                  otherCMSList={otherCMS.slice(0, 3)} 
+                />
+              )
+            )}
+          </div>
         </div>
       </div>
     </div>

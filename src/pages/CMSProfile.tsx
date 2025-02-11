@@ -1,7 +1,6 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getCMSById } from "@/services/cms";
+import { getCMSById, getCMSList } from "@/services/cms";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,6 +33,7 @@ import {
   ThumbsUp,
   ThumbsDown,
   Server,
+  ArrowRight,
 } from "lucide-react";
 import {
   Collapsible,
@@ -48,12 +48,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ComparisonCard } from "@/components/compare/ComparisonCard";
+import { useNavigate } from "react-router-dom";
 
 const CMSProfile = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { data: cms, isLoading } = useQuery({
     queryKey: ["cms", id],
     queryFn: () => getCMSById(id as string),
+  });
+
+  const { data: allCMS } = useQuery({
+    queryKey: ["cms-list"],
+    queryFn: getCMSList,
   });
 
   if (isLoading) {
@@ -88,6 +96,8 @@ const CMSProfile = () => {
     { label: "Server Response", value: `${cms.performance.serverResponse}s`, icon: Server },
     { label: "Resource Usage", value: `${cms.performance.resourceUsage}%`, icon: Cpu },
   ];
+
+  const otherCMS = allCMS?.filter((c) => c.id !== cms?.id) || [];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -288,6 +298,32 @@ const CMSProfile = () => {
             </a>
           </Button>
         </Card>
+
+        {/* Related Comparisons */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-semibold mb-6">Popular Comparisons</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <ComparisonCard cms={cms} otherCMSList={otherCMS} />
+            {otherCMS.length > 0 && (
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Other Popular CMS</h3>
+                <div className="space-y-2">
+                  {otherCMS.slice(0, 3).map((otherCMS) => (
+                    <Button
+                      key={otherCMS.id}
+                      variant="outline"
+                      className="w-full justify-between"
+                      onClick={() => navigate(`/cms/${otherCMS.id}`)}
+                    >
+                      <span className="truncate">{otherCMS.name}</span>
+                      <ArrowRight className="h-4 w-4 ml-2 flex-shrink-0" />
+                    </Button>
+                  ))}
+                </div>
+              </Card>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
