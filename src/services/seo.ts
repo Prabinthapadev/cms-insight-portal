@@ -33,21 +33,20 @@ export const getPageSEO = async (urlPattern: string): Promise<PageSEO | null> =>
     return null;
   }
 
-  // Ensure canonical URL is set
-  const canonical = data.meta_canonical || `${window.location.origin}${data.url_pattern}`;
+  // Ensure canonical URL and fallbacks for social media metadata
+  const canonical = data.meta_canonical || `${window.location.origin}${urlPattern}`;
 
   return {
     ...data,
+    meta_canonical: canonical,
     meta_og_title: data.meta_og_title || data.meta_title,
     meta_og_description: data.meta_og_description || data.meta_description,
     meta_twitter_title: data.meta_twitter_title || data.meta_title,
     meta_twitter_description: data.meta_twitter_description || data.meta_description,
-    meta_canonical: canonical,
   };
 };
 
 export const updatePageSEO = async (seoData: PageSEO): Promise<void> => {
-  // Ensure canonical URL is set before saving
   const dataToSave = {
     ...seoData,
     meta_canonical: seoData.meta_canonical || `${window.location.origin}${seoData.url_pattern}`,
@@ -63,4 +62,3 @@ export const updatePageSEO = async (seoData: PageSEO): Promise<void> => {
     throw error;
   }
 };
-
