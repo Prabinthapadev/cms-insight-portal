@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSBySlug, getCMSList } from "@/services/cms";
@@ -53,7 +54,7 @@ import {
 import { ComparisonCard } from "@/components/compare/ComparisonCard";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { MetaTags } from "@/components/ui/meta-tags";
+import { MetaTags } from "@/components/shared/MetaTags";
 
 const CMSProfile = () => {
   const { slug } = useParams();
@@ -160,7 +161,7 @@ const CMSProfile = () => {
             url_pattern: `/cms/${cms.slug}`,
             meta_title: `${cms.name} - CMS Profile and Review`,
             meta_description: `${cms.description.slice(0, 155)}...`,
-            meta_og_image: cms.screenshot || undefined,
+            meta_og_image: cms.image_url || undefined,
           }}
         />
       )}

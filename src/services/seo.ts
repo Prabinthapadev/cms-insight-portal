@@ -2,7 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export interface PageSEO {
-  id?: string;
+  id: string;
   url_pattern: string;
   meta_title?: string;
   meta_description?: string;
