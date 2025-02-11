@@ -1,6 +1,7 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getCMSById, getCMSList } from "@/services/cms";
+import { getCMSBySlug, getCMSList } from "@/services/cms";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -50,13 +51,27 @@ import {
 } from "@/components/ui/table";
 import { ComparisonCard } from "@/components/compare/ComparisonCard";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 
 const CMSProfile = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
+
   const { data: cms, isLoading } = useQuery({
-    queryKey: ["cms", id],
-    queryFn: () => getCMSById(id as string),
+    queryKey: ["cms", slug],
+    queryFn: () => getCMSBySlug(slug as string),
+    meta: {
+      onError: (error: Error) => {
+        console.error("Error fetching CMS:", error);
+        toast({
+          title: "Error loading CMS",
+          description: "The requested CMS could not be found.",
+          variant: "destructive",
+        });
+        navigate("/cms");
+      },
+    },
   });
 
   const { data: allCMS } = useQuery({

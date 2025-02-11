@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { getCMSList } from "@/services/cms";
@@ -89,13 +88,13 @@ const CMSDirectory = () => {
           <SearchBar
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
-            onSearchSubmit={handleSearchSubmit}
+            onSearchSubmit={(e) => e.preventDefault()}
           />
         </div>
 
         <div className="space-y-6">
-          {filteredCMS.map((cms) => (
-            <Link key={cms.id} to={`/cms/${cms.id}`}>
+          {filteredCMS?.map((cms) => (
+            <Link key={cms.id} to={`/cms/${cms.slug}`}>
               <Card className="p-6 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start">
                   <div>

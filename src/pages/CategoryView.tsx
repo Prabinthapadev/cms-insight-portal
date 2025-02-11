@@ -7,12 +7,25 @@ import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { useToast } from "@/components/ui/use-toast";
 
 const CategoryView = () => {
   const { tag } = useParams();
+  const { toast } = useToast();
+  
   const { data: cmsList, isLoading } = useQuery({
     queryKey: ["cms-by-tag", tag],
     queryFn: () => getCMSByTag(tag as string),
+    meta: {
+      onError: (error: Error) => {
+        console.error("Error fetching CMS by tag:", error);
+        toast({
+          title: "Error loading CMS data",
+          description: "There was a problem loading the CMS list. Please try again later.",
+          variant: "destructive",
+        });
+      },
+    },
   });
 
   if (isLoading) {
@@ -44,7 +57,7 @@ const CategoryView = () => {
           </h1>
           <div className="space-y-6">
             {cmsList?.map((cms) => (
-              <Link key={cms.id} to={`/cms/${cms.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
+              <Link key={cms.id} to={`/cms/${cms.slug}`}>
                 <Card className="p-6 hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start">
                     <div>
