@@ -1,16 +1,13 @@
 
-'use client'
-
 import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Menu, X, LogIn } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname();
+  const location = useLocation();
   const { user } = useAuth();
 
   const navItems = [
@@ -25,7 +22,7 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <Link
-            href="/"
+            to="/"
             className="text-xl font-display font-bold text-gray-900 hover:text-primary transition-colors"
           >
             CMS Insight
@@ -36,10 +33,10 @@ const Navigation = () => {
             {navItems.map((item) => (
               <Link
                 key={item.path}
-                href={item.path}
+                to={item.path}
                 className={cn(
                   "text-sm font-medium transition-colors hover:text-primary",
-                  pathname === item.path
+                  location.pathname === item.path
                     ? "text-primary"
                     : "text-gray-600"
                 )}
@@ -49,14 +46,14 @@ const Navigation = () => {
             ))}
             {user?.role === 'admin' ? (
               <Link
-                href="/admin"
+                to="/admin"
                 className="text-sm font-medium text-gray-600 hover:text-primary transition-colors"
               >
                 Admin
               </Link>
             ) : (
               <Link
-                href="/auth"
+                to="/auth"
                 className="text-sm font-medium text-gray-600 hover:text-primary transition-colors flex items-center"
               >
                 <LogIn className="w-4 h-4 mr-1" />
@@ -85,10 +82,10 @@ const Navigation = () => {
             {navItems.map((item) => (
               <Link
                 key={item.path}
-                href={item.path}
+                to={item.path}
                 className={cn(
                   "block py-2 text-sm font-medium transition-colors hover:text-primary",
-                  pathname === item.path
+                  location.pathname === item.path
                     ? "text-primary"
                     : "text-gray-600"
                 )}
@@ -99,7 +96,7 @@ const Navigation = () => {
             ))}
             {user?.role === 'admin' ? (
               <Link
-                href="/admin"
+                to="/admin"
                 className="block py-2 text-sm font-medium text-gray-600 hover:text-primary transition-colors"
                 onClick={() => setIsOpen(false)}
               >
@@ -107,7 +104,7 @@ const Navigation = () => {
               </Link>
             ) : (
               <Link
-                href="/auth"
+                to="/auth"
                 className="block py-2 text-sm font-medium text-gray-600 hover:text-primary transition-colors flex items-center"
                 onClick={() => setIsOpen(false)}
               >

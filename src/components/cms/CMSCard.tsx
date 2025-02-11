@@ -1,7 +1,5 @@
 
-'use client'
-
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { ArrowRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -19,7 +17,7 @@ export const CMSCard = ({ cms }: CMSCardProps) => {
   const sanitizedName = DOMPurify.sanitize(cms.name);
 
   return (
-    <Link href={`/cms/${cms.slug}`} className="block">
+    <Link to={`/cms/${cms.slug}`} className="block">
       <Card className="p-4 md:p-6 hover:shadow-lg transition-all h-full">
         <div className="flex flex-col h-full">
           <div className="flex justify-between items-start mb-4">

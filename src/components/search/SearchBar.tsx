@@ -1,6 +1,4 @@
 
-'use client'
-
 import { useState, useEffect } from "react";
 import { Search, SearchX, ArrowDown, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSList } from "@/services/cms";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 
 interface SearchBarProps {
   searchQuery: string;
@@ -25,7 +23,7 @@ export const SearchBar = ({
   className,
   showSuggestions = true,
 }: SearchBarProps) => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const { data: cmsList } = useQuery({
     queryKey: ["cms-list"],
@@ -48,7 +46,7 @@ export const SearchBar = ({
   }, [searchQuery, suggestions]);
 
   const handleSuggestionClick = (slug: string) => {
-    router.push(`/cms/${slug}`);
+    navigate(`/cms/${slug}`);
     setShowDropdown(false);
     onSearchChange("");
   };

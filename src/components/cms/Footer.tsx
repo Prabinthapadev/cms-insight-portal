@@ -1,7 +1,5 @@
 
-'use client'
-
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
@@ -17,26 +15,26 @@ export const Footer = () => {
           <div>
             <h4 className="font-bold text-lg mb-4">Quick Links</h4>
             <ul className="space-y-2">
-              <li><Link href="/cms" className="text-gray-400 hover:text-white">CMS Directory</Link></li>
-              <li><Link href="/compare" className="text-gray-400 hover:text-white">Compare CMS</Link></li>
-              <li><Link href="/categories" className="text-gray-400 hover:text-white">Categories</Link></li>
-              <li><Link href="/sitemap" className="text-gray-400 hover:text-white">Sitemap</Link></li>
+              <li><Link to="/cms" className="text-gray-400 hover:text-white">CMS Directory</Link></li>
+              <li><Link to="/compare" className="text-gray-400 hover:text-white">Compare CMS</Link></li>
+              <li><Link to="/categories" className="text-gray-400 hover:text-white">Categories</Link></li>
+              <li><Link to="/sitemap" className="text-gray-400 hover:text-white">Sitemap</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="font-bold text-lg mb-4">Popular Categories</h4>
             <ul className="space-y-2">
-              <li><Link href="/best-for-ecommerce" className="text-gray-400 hover:text-white">Ecommerce</Link></li>
-              <li><Link href="/best-for-blog" className="text-gray-400 hover:text-white">Blogging</Link></li>
-              <li><Link href="/best-for-enterprise" className="text-gray-400 hover:text-white">Enterprise</Link></li>
+              <li><Link to="/best-for-ecommerce" className="text-gray-400 hover:text-white">Ecommerce</Link></li>
+              <li><Link to="/best-for-blog" className="text-gray-400 hover:text-white">Blogging</Link></li>
+              <li><Link to="/best-for-enterprise" className="text-gray-400 hover:text-white">Enterprise</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="font-bold text-lg mb-4">About</h4>
             <ul className="space-y-2">
-              <li><Link href="/about" className="text-gray-400 hover:text-white">About Us</Link></li>
-              <li><Link href="/contact" className="text-gray-400 hover:text-white">Contact</Link></li>
-              <li><Link href="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</Link></li>
+              <li><Link to="/about" className="text-gray-400 hover:text-white">About Us</Link></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-white">Contact</Link></li>
+              <li><Link to="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</Link></li>
             </ul>
           </div>
         </div>
