@@ -14,10 +14,10 @@ export const ComparisonCard = ({ cms, otherCMSList }: ComparisonCardProps) => {
   const navigate = useNavigate();
 
   return (
-    <Card className="p-6">
-      <h3 className="text-xl font-semibold mb-4">{cms.name} Comparisons</h3>
-      <div className="space-y-3">
-        {otherCMSList.map((otherCMS) => {
+    <Card className="p-4">
+      <h3 className="text-lg font-semibold mb-3">{cms.name}</h3>
+      <div className="space-y-2">
+        {otherCMSList.slice(0, 3).map((otherCMS) => {
           const [firstSlug, secondSlug] = [cms.name.toLowerCase(), otherCMS.name.toLowerCase()]
             .sort()
             .map(name => name.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
@@ -29,8 +29,8 @@ export const ComparisonCard = ({ cms, otherCMSList }: ComparisonCardProps) => {
               className="w-full justify-between"
               onClick={() => navigate(`/compare/${firstSlug}-vs-${secondSlug}`)}
             >
-              <span>{cms.name} vs {otherCMS.name}</span>
-              <ArrowRightLeft className="h-4 w-4 ml-2" />
+              <span className="truncate">{cms.name} vs {otherCMS.name}</span>
+              <ArrowRightLeft className="h-4 w-4 ml-2 flex-shrink-0" />
             </Button>
           );
         })}

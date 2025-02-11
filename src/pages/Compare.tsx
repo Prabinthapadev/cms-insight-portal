@@ -1,16 +1,36 @@
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSList } from "@/services/cms";
 import { Card } from "@/components/ui/card";
-import { ComparisonCard } from "@/components/compare/ComparisonCard";
-import { CMSComparisonTable } from "@/components/compare/CMSComparisonTable";
-import { QuickComparisonCard } from "@/components/compare/QuickComparisonCard";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, ArrowRightLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Compare = () => {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCMS1, setSelectedCMS1] = useState<string | null>(null);
+  const [selectedCMS2, setSelectedCMS2] = useState<string | null>(null);
+
   const { data: cmsList, isLoading } = useQuery({
     queryKey: ["cms-list"],
     queryFn: getCMSList,
   });
+
+  const filteredCMS = cmsList?.filter(cms =>
+    cms.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleCompare = () => {
+    if (selectedCMS1 && selectedCMS2) {
+      const [firstSlug, secondSlug] = [selectedCMS1, selectedCMS2]
+        .sort()
+        .map(name => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
+      navigate(`/compare/${firstSlug}-vs-${secondSlug}`);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -28,28 +48,101 @@ const Compare = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-display font-bold mb-8">CMS Comparisons</h1>
+        <h1 className="text-3xl font-display font-bold mb-8">Compare CMS Platforms</h1>
 
-        {/* Popular Comparisons Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {cmsList.map((cms) => (
-            <ComparisonCard
-              key={cms.id}
-              cms={cms}
-              otherCMSList={cmsList.filter((otherCMS) => otherCMS.id !== cms.id)}
-            />
-          ))}
-        </div>
+        {/* Search and Compare Section */}
+        <Card className="p-6 mb-8">
+          <div className="space-y-6">
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Search CMS platforms..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            </div>
 
-        {/* All CMS Table */}
-        <Card className="p-6 mb-8 overflow-x-auto">
-          <CMSComparisonTable cmsList={cmsList} />
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* First CMS Selection */}
+              <div>
+                <h3 className="text-lg font-semibold mb-3">First CMS</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {filteredCMS?.map((cms) => (
+                    <Button
+                      key={`cms1-${cms.id}`}
+                      variant={selectedCMS1 === cms.name ? "default" : "outline"}
+                      className="truncate"
+                      onClick={() => setSelectedCMS1(cms.name)}
+                    >
+                      {cms.name}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Second CMS Selection */}
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Second CMS</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {filteredCMS?.filter(cms => cms.name !== selectedCMS1)?.map((cms) => (
+                    <Button
+                      key={`cms2-${cms.id}`}
+                      variant={selectedCMS2 === cms.name ? "default" : "outline"}
+                      className="truncate"
+                      onClick={() => setSelectedCMS2(cms.name)}
+                    >
+                      {cms.name}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-center">
+              <Button
+                size="lg"
+                onClick={handleCompare}
+                disabled={!selectedCMS1 || !selectedCMS2}
+                className="gap-2"
+              >
+                <ArrowRightLeft className="h-4 w-4" />
+                Compare Selected CMS
+              </Button>
+            </div>
+          </div>
         </Card>
 
-        {/* Quick Comparison Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {cmsList.map((cms) => (
-            <QuickComparisonCard key={cms.id} cms={cms} />
+        {/* Popular Comparisons Grid */}
+        <h2 className="text-2xl font-semibold mb-4">Popular Comparisons</h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {cmsList.slice(0, 6).map((cms) => (
+            <Card key={cms.id} className="p-4">
+              <h3 className="text-lg font-semibold mb-3">{cms.name}</h3>
+              <div className="space-y-2">
+                {cmsList
+                  .filter((otherCMS) => otherCMS.id !== cms.id)
+                  .slice(0, 3)
+                  .map((otherCMS) => {
+                    const [firstSlug, secondSlug] = [cms.name.toLowerCase(), otherCMS.name.toLowerCase()]
+                      .sort()
+                      .map(name => name.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
+                    
+                    return (
+                      <Button
+                        key={`${cms.id}-${otherCMS.id}`}
+                        variant="outline"
+                        className="w-full justify-between"
+                        onClick={() => navigate(`/compare/${firstSlug}-vs-${secondSlug}`)}
+                      >
+                        <span>{cms.name} vs {otherCMS.name}</span>
+                        <ArrowRightLeft className="h-4 w-4 ml-2" />
+                      </Button>
+                    );
+                  })}
+              </div>
+            </Card>
           ))}
         </div>
       </div>
