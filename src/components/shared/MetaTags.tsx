@@ -19,13 +19,13 @@ export const MetaTags = ({ seo }: MetaTagsProps) => {
                          document.body.textContent || 
                          "";
       
-      // Clean up the text and get first 155 characters (optimal for SEO)
+      // Clean up the text and get first 130 characters
       const cleanText = mainContent
         .replace(/\s+/g, ' ')
         .trim()
-        .slice(0, 155);
+        .slice(0, 130);
       
-      return cleanText.length === 155 ? `${cleanText}...` : cleanText;
+      return cleanText.length === 130 ? `${cleanText}...` : cleanText;
     };
 
     setDescription(getDescription());
@@ -58,19 +58,13 @@ export const MetaTags = ({ seo }: MetaTagsProps) => {
       <meta name="twitter:description" content={seo.meta_twitter_description || description} />
       {seo.meta_twitter_image && <meta name="twitter:image" content={seo.meta_twitter_image} />}
       
-      {/* Performance & SEO Optimization */}
+      {/* Cache Control - Using both standard and legacy headers */}
       <meta httpEquiv="Cache-Control" content="no-store, must-revalidate" />
       <meta httpEquiv="Pragma" content="no-cache" />
       <meta httpEquiv="Expires" content="0" />
       
       {/* Robots Meta Tag */}
       {seo.meta_robots && <meta name="robots" content={seo.meta_robots} />}
-      
-      {/* Additional SEO Meta Tags */}
-      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-      <meta name="theme-color" content="#ffffff" />
-      <meta name="mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
     </Helmet>
   );
 };
