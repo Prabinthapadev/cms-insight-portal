@@ -13,6 +13,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
+      console.log("Fetching profile for user:", userId);
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
@@ -23,6 +24,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error("Error fetching profile:", error);
         return null;
       }
+
+      console.log("Fetched profile:", profile);
 
       if (profile && (profile.role === 'admin' || profile.role === 'user')) {
         return {
@@ -42,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const getProfile = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
+        console.log("Initial session:", session);
         
         if (session?.user) {
           const profile = await fetchProfile(session.user.id);
@@ -62,6 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     getProfile();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session);
       try {
         if (session?.user) {
           const profile = await fetchProfile(session.user.id);
