@@ -11,6 +11,13 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000
+    port: 8080
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        app: './src/app/page.tsx'
+      }
+    }
   }
 })
