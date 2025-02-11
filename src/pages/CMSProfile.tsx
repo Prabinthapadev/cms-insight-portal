@@ -21,7 +21,24 @@ import {
   Globe,
   Heart,
   Headphones,
+  User,
+  BarChart,
+  Search,
+  Menu,
+  Clock,
+  Code,
+  Lock,
+  Cpu,
+  MessageCircle,
+  DollarSign,
+  ThumbsUp,
+  ThumbsDown,
 } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const CMSProfile = () => {
   const { id } = useParams();
@@ -76,7 +93,7 @@ const CMSProfile = () => {
             </div>
             <Button asChild className="mb-4">
               <a href={cms.website} target="_blank" rel="noopener noreferrer">
-                Visit Website
+                <Globe className="mr-2 h-4 w-4" /> Visit Website
               </a>
             </Button>
           </div>
@@ -97,122 +114,145 @@ const CMSProfile = () => {
           </div>
         </div>
 
-        {/* Key Features Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          {cms.keyFeatures?.map((feature, index) => (
-            <Card key={index} className="p-6">
-              <div className="flex items-start space-x-4">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  {feature.icon === "users" && <Users className="h-6 w-6 text-blue-600" />}
-                  {feature.icon === "shield" && <Shield className="h-6 w-6 text-blue-600" />}
-                  {feature.icon === "settings" && <Settings className="h-6 w-6 text-blue-600" />}
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-gray-600 text-sm">{feature.description}</p>
-                </div>
-              </div>
-            </Card>
+        {/* Categories and Use Cases */}
+        <Card className="p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <Menu className="h-5 w-5 mr-2" /> Categories & Best For
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {cms.tags.map((tag) => (
+              <Badge key={tag} variant="outline">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        </Card>
+
+        {/* Technology Stack */}
+        <Card className="p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <Code className="h-5 w-5 mr-2" /> Technology Stack
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {cms.techStack.map((tech) => (
+              <Badge key={tech} variant="secondary">
+                {tech}
+              </Badge>
+            ))}
+          </div>
+        </Card>
+
+        {/* Key Features Expandable Sections */}
+        <div className="grid gap-4 mb-8">
+          {Object.entries(cms.additionalInfo).map(([key, value]) => (
+            <Collapsible key={key}>
+              <Card className="p-4">
+                <CollapsibleTrigger className="flex items-center justify-between w-full">
+                  <div className="flex items-center">
+                    {key === "easeOfUse" && <User className="h-5 w-5 mr-2" />}
+                    {key === "customization" && <Settings className="h-5 w-5 mr-2" />}
+                    {key === "seoAndPerformance" && <Zap className="h-5 w-5 mr-2" />}
+                    {key === "security" && <Shield className="h-5 w-5 mr-2" />}
+                    {key === "scalability" && <Cpu className="h-5 w-5 mr-2" />}
+                    {key === "communitySupport" && <MessageCircle className="h-5 w-5 mr-2" />}
+                    {key === "officialSupport" && <Headphones className="h-5 w-5 mr-2" />}
+                    <h3 className="text-lg font-medium">
+                      {key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}
+                    </h3>
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-4">
+                  <p className="text-gray-600">{value}</p>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
           ))}
         </div>
 
-        {/* Additional Information */}
+        {/* Performance Metrics */}
+        <Card className="p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <Clock className="h-5 w-5 mr-2" /> Performance Metrics
+          </h2>
+          <div className="grid md:grid-cols-3 gap-4">
+            <div>
+              <p className="text-sm text-gray-600">Load Time</p>
+              <p className="text-2xl font-semibold">{cms.performance.loadTime}s</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Server Response</p>
+              <p className="text-2xl font-semibold">{cms.performance.serverResponse}s</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Resource Usage</p>
+              <p className="text-2xl font-semibold">{cms.performance.resourceUsage}%</p>
+            </div>
+          </div>
+        </Card>
+
+        {/* Pricing */}
+        <Card className="p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <DollarSign className="h-5 w-5 mr-2" /> Pricing
+          </h2>
+          <div className="space-y-2">
+            <div className="flex items-center">
+              <Badge variant={cms.pricing.free ? "success" : "secondary"}>
+                {cms.pricing.free ? "Free Version Available" : "Paid Only"}
+              </Badge>
+            </div>
+            <p className="text-lg">
+              Starting from: {cms.pricing.startingPrice === 0 ? "Free" : `$${cms.pricing.startingPrice}`}
+            </p>
+            {cms.pricing.hasPremium && (
+              <p className="text-gray-600">Premium plans available</p>
+            )}
+          </div>
+        </Card>
+
+        {/* Pros and Cons */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
-              <Settings className="h-5 w-5 mr-2" /> Ease of Use & Customization
+              <ThumbsUp className="h-5 w-5 mr-2" /> Pros
             </h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-medium mb-2">Ease of Use</h3>
-                <p className="text-gray-600">{cms.additionalInfo?.easeOfUse}</p>
-              </div>
-              <div>
-                <h3 className="font-medium mb-2">Customization</h3>
-                <p className="text-gray-600">{cms.additionalInfo?.customization}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
-              <Zap className="h-5 w-5 mr-2" /> Performance & SEO
-            </h2>
-            <p className="text-gray-600">{cms.additionalInfo?.seoAndPerformance}</p>
-          </Card>
-
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
-              <Shield className="h-5 w-5 mr-2" /> Security & Scalability
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-medium mb-2">Security</h3>
-                <p className="text-gray-600">{cms.additionalInfo?.security}</p>
-              </div>
-              <div>
-                <h3 className="font-medium mb-2">Scalability</h3>
-                <p className="text-gray-600">{cms.additionalInfo?.scalability}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
-              <Users className="h-5 w-5 mr-2" /> Community & Support
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-medium mb-2">Community Support</h3>
-                <p className="text-gray-600">{cms.additionalInfo?.communitySupport}</p>
-              </div>
-              <div>
-                <h3 className="font-medium mb-2">Official Support</h3>
-                <p className="text-gray-600">{cms.additionalInfo?.officialSupport}</p>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Tech Stack & Features */}
-        <div className="grid gap-6 mb-8">
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Tech Stack</h2>
-            <div className="flex flex-wrap gap-2">
-              {cms.techStack.map((tech) => (
-                <Badge key={tech} variant="secondary">
-                  {tech}
-                </Badge>
+            <ul className="space-y-2">
+              {cms.pros.map((pro) => (
+                <li key={pro} className="flex items-start">
+                  <Heart className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
+                  <span>{pro}</span>
+                </li>
               ))}
-            </div>
+            </ul>
           </Card>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Pros</h2>
-              <ul className="space-y-2">
-                {cms.pros.map((pro) => (
-                  <li key={pro} className="flex items-start">
-                    <Heart className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
-                    <span>{pro}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Cons</h2>
-              <ul className="space-y-2">
-                {cms.cons.map((con) => (
-                  <li key={con} className="flex items-start">
-                    <Headphones className="h-5 w-5 text-red-500 mr-2 mt-0.5" />
-                    <span>{con}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          </div>
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4 flex items-center">
+              <ThumbsDown className="h-5 w-5 mr-2" /> Cons
+            </h2>
+            <ul className="space-y-2">
+              {cms.cons.map((con) => (
+                <li key={con} className="flex items-start">
+                  <Headphones className="h-5 w-5 text-red-500 mr-2 mt-0.5" />
+                  <span>{con}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
         </div>
+
+        {/* Call to Action */}
+        <Card className="p-6 text-center">
+          <h2 className="text-2xl font-semibold mb-4">Ready to Get Started?</h2>
+          <p className="text-gray-600 mb-6">
+            Try {cms.name} today and experience the difference.
+          </p>
+          <Button asChild size="lg">
+            <a href={cms.website} target="_blank" rel="noopener noreferrer">
+              Visit {cms.name} Website
+            </a>
+          </Button>
+        </Card>
       </div>
     </div>
   );
