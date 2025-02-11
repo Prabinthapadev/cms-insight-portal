@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { ArrowRight, Search, BarChart2, Tags, Star, Zap } from "lucide-react";
+import { ArrowRight, Search, BarChart2, Tags, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -8,11 +8,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getCMSList } from "@/services/cms";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate();
   const { data: cmsList } = useQuery({
     queryKey: ["cms-list"],
     queryFn: getCMSList,
@@ -20,10 +18,17 @@ const Index = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate(`/cms?search=${encodeURIComponent(searchQuery)}`);
   };
 
   const featuredCMS = cmsList?.filter(cms => cms.featured).slice(0, 3) || [];
+
+  const searchResults = searchQuery
+    ? cmsList?.filter(cms =>
+        cms.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        cms.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        cms.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+    : [];
 
   return (
     <div className="min-h-screen">
@@ -77,45 +82,94 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured CMS Section */}
-      <section className="bg-white py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-display font-bold text-center mb-12">
-            Featured CMS Platforms
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {featuredCMS.map((cms) => (
-              <Link key={cms.id} to={`/cms/${cms.id}`}>
-                <Card className="p-6 hover:shadow-lg transition-all">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-xl font-semibold">{cms.name}</h3>
-                    <div className="flex items-center">
-                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                      <span className="ml-1">{cms.ratings.overall.toFixed(1)}</span>
+      {/* Search Results Section */}
+      {searchQuery && (
+        <section className="bg-white py-12">
+          <div className="container mx-auto px-4">
+            <h2 className="text-2xl font-display font-bold mb-8">
+              Search Results for "{searchQuery}"
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {searchResults.map((cms) => (
+                <Link key={cms.id} to={`/cms/${cms.id}`}>
+                  <Card className="p-6 hover:shadow-lg transition-all">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-xl font-semibold">{cms.name}</h3>
+                      <div className="flex items-center">
+                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                        <span className="ml-1">{cms.ratings.overall.toFixed(1)}</span>
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-gray-600 mb-4 line-clamp-2">{cms.description}</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {cms.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="secondary">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-500">
-                      {cms.pricing.free ? "Free" : `From $${cms.pricing.startingPrice}`}
-                    </span>
-                    <Button variant="ghost" size="sm">
-                      Learn More <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </Card>
-              </Link>
-            ))}
+                    <p className="text-gray-600 mb-4 line-clamp-2">{cms.description}</p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {cms.tags.slice(0, 3).map((tag) => (
+                        <Badge key={tag} variant="secondary">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500">
+                        {cms.pricing.free ? "Free" : `From $${cms.pricing.startingPrice}`}
+                      </span>
+                      <Button variant="ghost" size="sm">
+                        Learn More <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+              {searchResults.length === 0 && (
+                <div className="col-span-3 text-center py-8">
+                  <p className="text-gray-600">No CMS found matching your search criteria.</p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Featured CMS Section */}
+      {!searchQuery && (
+        <section className="bg-white py-20">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-display font-bold text-center mb-12">
+              Featured CMS Platforms
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {featuredCMS.map((cms) => (
+                <Link key={cms.id} to={`/cms/${cms.id}`}>
+                  <Card className="p-6 hover:shadow-lg transition-all">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-xl font-semibold">{cms.name}</h3>
+                      <div className="flex items-center">
+                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                        <span className="ml-1">{cms.ratings.overall.toFixed(1)}</span>
+                      </div>
+                    </div>
+                    <p className="text-gray-600 mb-4 line-clamp-2">{cms.description}</p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {cms.tags.slice(0, 3).map((tag) => (
+                        <Badge key={tag} variant="secondary">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500">
+                        {cms.pricing.free ? "Free" : `From $${cms.pricing.startingPrice}`}
+                      </span>
+                      <Button variant="ghost" size="sm">
+                        Learn More <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       <section className="bg-gray-50 py-20">
@@ -225,4 +279,3 @@ const Index = () => {
 };
 
 export default Index;
-
