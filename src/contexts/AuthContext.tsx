@@ -11,64 +11,81 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+  const fetchProfile = async (userId: string) => {
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      console.error("Error fetching profile:", error);
+      return null;
+    }
+
+    if (profile && (profile.role === 'admin' || profile.role === 'user')) {
+      return {
+        id: profile.id,
+        role: profile.role as 'admin' | 'user',
+        created_at: profile.created_at
+      };
+    }
+    return null;
+  };
+
   useEffect(() => {
     const getProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
-        if (profile && (profile.role === 'admin' || profile.role === 'user')) {
-          setUser({
-            id: profile.id,
-            role: profile.role as 'admin' | 'user',
-            created_at: profile.created_at
-          });
-        } else {
-          // If no profile or invalid role, sign out
-          await supabase.auth.signOut();
-          setUser(null);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          const profile = await fetchProfile(session.user.id);
+          if (profile) {
+            setUser(profile);
+          } else {
+            await supabase.auth.signOut();
+            setUser(null);
+          }
         }
+      } catch (error) {
+        console.error("Error in getProfile:", error);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
 
     getProfile();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
-        if (profile && (profile.role === 'admin' || profile.role === 'user')) {
-          setUser({
-            id: profile.id,
-            role: profile.role as 'admin' | 'user',
-            created_at: profile.created_at
-          });
+      try {
+        if (session?.user) {
+          const profile = await fetchProfile(session.user.id);
+          if (profile) {
+            setUser(profile);
+            if (profile.role === 'admin') {
+              toast({
+                title: "Welcome Admin",
+                description: "You've successfully signed in.",
+              });
+            }
+          } else {
+            await supabase.auth.signOut();
+            setUser(null);
+          }
         } else {
-          // If no profile or invalid role, sign out
-          await supabase.auth.signOut();
           setUser(null);
         }
-      } else {
-        setUser(null);
+      } catch (error) {
+        console.error("Error in auth state change:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [toast]);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -112,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

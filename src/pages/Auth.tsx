@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,9 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { signIn, user } = useAuth();
+  const navigate = useNavigate();
 
+  // Redirect if already logged in as admin
   if (user?.role === 'admin') {
     return <Navigate to="/admin" replace />;
   }
@@ -25,6 +27,7 @@ const Auth = () => {
     
     try {
       await signIn(email, password);
+      // The auth state change handler in AuthContext will handle the redirect
     } catch (error: any) {
       console.error("Error signing in:", error);
       setError(error.message || "Failed to sign in");
