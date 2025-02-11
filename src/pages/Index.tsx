@@ -9,6 +9,7 @@ import { CodySection } from "@/components/cms/CodySection";
 import { FeaturesSection } from "@/components/cms/FeaturesSection";
 import { PopularCategories } from "@/components/cms/PopularCategories";
 import { Footer } from "@/components/cms/Footer";
+import { MetaTags } from "@/components/shared/MetaTags";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,6 +56,24 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
+      <MetaTags
+        seo={{
+          id: "home",
+          url_pattern: "/",
+          meta_title: "CMS Insight Portal - Compare and Choose the Best CMS Platform",
+          meta_description: "Compare leading Content Management Systems (CMS). Find detailed reviews, features, pricing, and make informed decisions for your website needs.",
+          meta_keywords: ["CMS comparison", "content management system", "website platform"],
+          meta_robots: "index, follow",
+          meta_canonical: window.location.origin,
+          meta_og_title: "CMS Insight Portal - Your Guide to Choosing the Perfect CMS",
+          meta_og_description: "Compare CMS platforms side by side. Make informed decisions with our comprehensive comparison tool.",
+          meta_og_image: "/og-image.png",
+          meta_twitter_card: "summary_large_image",
+          meta_twitter_title: "CMS Insight - Expert CMS Comparisons",
+          meta_twitter_description: "Find the perfect CMS for your needs with our comparison tool.",
+          meta_twitter_image: "/og-image.png"
+        }}
+      />
       <HeroSection
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
