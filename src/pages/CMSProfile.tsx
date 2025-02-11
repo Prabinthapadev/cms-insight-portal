@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSBySlug, getCMSList } from "@/services/cms";
@@ -98,6 +97,11 @@ const CMSProfile = () => {
     );
   }
 
+  const otherCMS = allCMS
+    ?.filter((c) => c.id !== cms?.id)
+    .sort((a, b) => b.ratings.overall - a.ratings.overall)
+    .slice(0, 4) || [];
+
   const radarData = [
     { subject: "Ease of Use", value: cms.ratings.easeOfUse },
     { subject: "Features", value: cms.ratings.features },
@@ -112,12 +116,9 @@ const CMSProfile = () => {
     { label: "Resource Usage", value: `${cms.performance.resourceUsage}%`, icon: Cpu },
   ];
 
-  const otherCMS = allCMS?.filter((c) => c.id !== cms?.id) || [];
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
         <div className="flex flex-col md:flex-row gap-8 mb-8">
           <div className="flex-1">
             <h1 className="text-4xl font-display font-bold mb-4">{cms.name}</h1>
@@ -157,7 +158,6 @@ const CMSProfile = () => {
           </div>
         </div>
 
-        {/* Performance Metrics */}
         <Card className="p-6 mb-8">
           <h2 className="text-xl font-semibold mb-6 flex items-center">
             <Zap className="h-5 w-5 mr-2" /> Performance Metrics
@@ -175,7 +175,6 @@ const CMSProfile = () => {
           </div>
         </Card>
 
-        {/* Detailed Ratings */}
         <Card className="p-6 mb-8">
           <h2 className="text-xl font-semibold mb-6 flex items-center">
             <Star className="h-5 w-5 mr-2" /> Detailed Ratings
@@ -225,7 +224,6 @@ const CMSProfile = () => {
           </Table>
         </Card>
 
-        {/* Technology Stack */}
         <Card className="p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
             <Code className="h-5 w-5 mr-2" /> Technology Stack
@@ -239,7 +237,6 @@ const CMSProfile = () => {
           </div>
         </Card>
 
-        {/* Categories and Use Cases */}
         <Card className="p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
             <Menu className="h-5 w-5 mr-2" /> Categories & Use Cases
@@ -253,7 +250,6 @@ const CMSProfile = () => {
           </div>
         </Card>
 
-        {/* Security & Scalability */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
@@ -270,7 +266,6 @@ const CMSProfile = () => {
           </Card>
         </div>
 
-        {/* Pros and Cons */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
@@ -301,7 +296,6 @@ const CMSProfile = () => {
           </Card>
         </div>
 
-        {/* Call to Action */}
         <Card className="p-6 text-center">
           <h2 className="text-2xl font-semibold mb-4">Ready to Get Started?</h2>
           <p className="text-gray-600 mb-6">
@@ -314,16 +308,15 @@ const CMSProfile = () => {
           </Button>
         </Card>
 
-        {/* Related Comparisons */}
         <div className="mt-8">
           <h2 className="text-2xl font-semibold mb-6">Popular Comparisons</h2>
           <div className="grid md:grid-cols-2 gap-6">
-            <ComparisonCard cms={cms} otherCMSList={otherCMS} />
+            <ComparisonCard cms={cms} otherCMSList={otherCMS.slice(0, 3)} />
             {otherCMS.length > 0 && (
               <Card className="p-6">
                 <h3 className="text-lg font-semibold mb-4">Other Popular CMS</h3>
                 <div className="space-y-2">
-                  {otherCMS.slice(0, 3).map((otherCMS) => (
+                  {otherCMS.map((otherCMS) => (
                     <Button
                       key={otherCMS.id}
                       variant="outline"
