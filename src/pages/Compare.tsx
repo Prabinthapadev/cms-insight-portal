@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { getCMSList } from "@/services/cms";
 import { Card } from "@/components/ui/card";
@@ -20,6 +19,7 @@ import {
   Zap,
   DollarSign,
   Users,
+  ArrowRightLeft,
 } from "lucide-react";
 
 const Compare = () => {
@@ -28,10 +28,6 @@ const Compare = () => {
     queryKey: ["cms-list"],
     queryFn: getCMSList,
   });
-
-  const handleCompareSpecific = (cms1: string, cms2: string) => {
-    navigate(`/compare/${cms1}/${cms2}`);
-  };
 
   if (isLoading) {
     return (
@@ -49,9 +45,33 @@ const Compare = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-display font-bold mb-8">CMS Comparison</h1>
+        <h1 className="text-3xl font-display font-bold mb-8">CMS Comparisons</h1>
 
-        {/* Main Comparison Table */}
+        {/* Popular Comparisons Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {cmsList.map((cms1) => (
+            <Card key={cms1.id} className="p-6">
+              <h3 className="text-xl font-semibold mb-4">{cms1.name} Comparisons</h3>
+              <div className="space-y-3">
+                {cmsList
+                  .filter((cms2) => cms2.id !== cms1.id)
+                  .map((cms2) => (
+                    <Button
+                      key={`${cms1.id}-${cms2.id}`}
+                      variant="outline"
+                      className="w-full justify-between"
+                      onClick={() => navigate(`/compare/${cms1.id}/${cms2.id}`)}
+                    >
+                      <span>{cms1.name} vs {cms2.name}</span>
+                      <ArrowRightLeft className="h-4 w-4 ml-2" />
+                    </Button>
+                  ))}
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* All CMS Table */}
         <Card className="p-6 mb-8 overflow-x-auto">
           <Table>
             <TableHeader>
