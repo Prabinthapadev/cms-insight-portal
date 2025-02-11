@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSById } from "@/services/cms";
@@ -197,7 +196,7 @@ const CMSProfile = () => {
           </h2>
           <div className="space-y-2">
             <div className="flex items-center">
-              <Badge variant={cms.pricing.free ? "success" : "secondary"}>
+              <Badge variant={cms.pricing.free ? "secondary" : "destructive"}>
                 {cms.pricing.free ? "Free Version Available" : "Paid Only"}
               </Badge>
             </div>
