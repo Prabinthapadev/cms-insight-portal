@@ -6,17 +6,23 @@ import express from 'express';
 import { createServer as createViteServer } from 'vite';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const isProduction = process.env.NODE_ENV === 'production';
 
 async function createServer() {
   const app = express();
 
-  // Create Vite server in middleware mode
-  const vite = await createViteServer({
-    server: { middlewareMode: true },
-    appType: 'custom'
-  });
-
-  app.use(vite.middlewares);
+  let vite;
+  if (!isProduction) {
+    // Create Vite server in middleware mode
+    vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: 'custom'
+    });
+    // Use vite's connect instance as middleware
+    app.use(vite.middlewares);
+  } else {
+    app.use(express.static(path.resolve(__dirname, 'dist/client')));
+  }
 
   app.use('*', async (req, res, next) => {
     const url = req.originalUrl;
@@ -24,26 +30,37 @@ async function createServer() {
     try {
       // Read index.html
       let template = fs.readFileSync(
-        path.resolve(__dirname, 'index.html'),
+        isProduction
+          ? path.resolve(__dirname, 'dist/client/index.html')
+          : path.resolve(__dirname, 'index.html'),
         'utf-8'
       );
 
-      // Apply Vite HTML transforms
-      template = await vite.transformIndexHtml(url, template);
+      if (!isProduction) {
+        // Apply Vite HTML transforms
+        template = await vite.transformIndexHtml(url, template);
+      }
 
       // Load server entry
-      const { render } = await vite.ssrLoadModule('/src/entry-server.tsx');
+      let render;
+      if (!isProduction) {
+        render = (await vite.ssrLoadModule('/src/entry-server.tsx')).render;
+      } else {
+        render = (await import('./dist/server/entry-server.js')).render;
+      }
 
       // Render the app
       const appHtml = await render(url);
 
       // Inject app-rendered HTML into template
-      const html = template.replace(`<div id="root"></div>`, `<div id="root">${appHtml}</div>`);
+      const html = template.replace(`<!--ssr-outlet-->`, appHtml);
 
       // Send rendered HTML
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
     } catch (e) {
-      vite.ssrFixStacktrace(e);
+      if (!isProduction && vite) {
+        vite.ssrFixStacktrace(e);
+      }
       next(e);
     }
   });
