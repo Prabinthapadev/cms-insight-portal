@@ -1,7 +1,7 @@
 
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getCMSById } from "@/services/cms";
+import { getCMSBySlug } from "@/services/cms";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,24 +24,38 @@ import {
 } from "lucide-react";
 
 const CompareSpecific = () => {
-  const { cms1Id, cms2Id } = useParams();
+  const { slugs } = useParams();
+  const [slug1, slug2] = (slugs?.split('-vs-') || []).map(slug => slug.toLowerCase());
 
-  const { data: cms1 } = useQuery({
-    queryKey: ["cms", cms1Id],
-    queryFn: () => getCMSById(cms1Id as string),
+  const { data: cms1, isLoading: isLoading1 } = useQuery({
+    queryKey: ["cms", slug1],
+    queryFn: () => getCMSBySlug(slug1),
+    enabled: !!slug1,
   });
 
-  const { data: cms2 } = useQuery({
-    queryKey: ["cms", cms2Id],
-    queryFn: () => getCMSById(cms2Id as string),
+  const { data: cms2, isLoading: isLoading2 } = useQuery({
+    queryKey: ["cms", slug2],
+    queryFn: () => getCMSBySlug(slug2),
+    enabled: !!slug2,
   });
 
-  if (!cms1 || !cms2) {
+  if (isLoading1 || isLoading2) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse space-y-4">
           <div className="h-8 bg-gray-100 w-1/4 rounded" />
           <div className="h-64 bg-gray-100 rounded" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!cms1 || !cms2) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">CMS Not Found</h1>
+          <p className="text-gray-600">The requested CMS comparison could not be found.</p>
         </div>
       </div>
     );
