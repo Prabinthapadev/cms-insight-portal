@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { TagContent, FAQ } from "@/types/tags";
 
 const CategoryView = () => {
   const { tag } = useParams();
@@ -29,7 +30,7 @@ const CategoryView = () => {
     },
   });
 
-  const { data: tagContent, isLoading: contentLoading } = useQuery({
+  const { data: tagContent, isLoading: contentLoading } = useQuery<TagContent, Error>({
     queryKey: ["tag-content", tag],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -48,7 +49,7 @@ const CategoryView = () => {
     },
   });
 
-  const { data: faqs, isLoading: faqsLoading } = useQuery({
+  const { data: faqs, isLoading: faqsLoading } = useQuery<FAQ[], Error>({
     queryKey: ["tag-faqs", tag],
     queryFn: async () => {
       const { data, error } = await supabase
