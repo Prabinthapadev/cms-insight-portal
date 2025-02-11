@@ -1,10 +1,11 @@
+
 import { useAuth } from "@/contexts/AuthContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Table,
@@ -14,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Upload, FileSpreadsheet, AlertCircle, Edit, Save } from "lucide-react";
+import { Upload, FileSpreadsheet, Edit, Save } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCMSList } from "@/services/cms";
 
@@ -161,6 +162,10 @@ Example CMS,A powerful content management system,https://example.com,5.2,"headle
       updates: editForm,
     });
   };
+
+  if (!user || user.role !== 'admin') {
+    return null;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
