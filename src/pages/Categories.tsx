@@ -31,7 +31,7 @@ const Categories = () => {
         <h1 className="text-3xl font-display font-bold mb-8">CMS Categories</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tags?.map((tag) => (
-            <Link key={tag} to={`/categories/${tag}`}>
+            <Link key={tag} to={`/cms/best-for-${tag}`}>
               <Card className="p-6 hover:shadow-md transition-shadow">
                 <h2 className="text-xl font-semibold capitalize">{tag}</h2>
                 <p className="text-gray-600 mt-2">
