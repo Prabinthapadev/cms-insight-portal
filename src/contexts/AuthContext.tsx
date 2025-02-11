@@ -42,11 +42,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    const getProfile = async () => {
+    const initializeAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log("Initial session:", session);
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          setUser(null);
+          return;
+        }
+
         if (session?.user) {
           const profile = await fetchProfile(session.user.id);
           if (profile) {
@@ -57,39 +62,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
       } catch (error) {
-        console.error("Error in getProfile:", error);
+        console.error("Error in initializeAuth:", error);
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
 
-    getProfile();
+    initializeAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session);
-      try {
-        if (session?.user) {
-          const profile = await fetchProfile(session.user.id);
-          if (profile) {
-            setUser(profile);
-            if (profile.role === 'admin') {
-              toast({
-                title: "Welcome Admin",
-                description: "You've successfully signed in.",
-              });
+      
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        try {
+          if (session?.user) {
+            const profile = await fetchProfile(session.user.id);
+            if (profile) {
+              setUser(profile);
+              if (profile.role === 'admin') {
+                toast({
+                  title: "Welcome Admin",
+                  description: "You've successfully signed in.",
+                });
+              }
+            } else {
+              await supabase.auth.signOut();
+              setUser(null);
             }
-          } else {
-            await supabase.auth.signOut();
-            setUser(null);
           }
-        } else {
+        } catch (error) {
+          console.error("Error in auth state change:", error);
           setUser(null);
         }
-      } catch (error) {
-        console.error("Error in auth state change:", error);
-      } finally {
-        setLoading(false);
       }
+      
+      setLoading(false);
     });
 
     return () => {
@@ -104,7 +118,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        toast({
+          title: "Error signing in",
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      }
     } catch (error: any) {
       toast({
         title: "Error signing in",
@@ -118,7 +139,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        toast({
+          title: "Error signing out",
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      }
       
       toast({
         title: "Signed out",
