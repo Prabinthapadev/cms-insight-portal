@@ -10,6 +10,8 @@ import {
   PolarGrid,
   PolarAngleAxis,
   ResponsiveContainer,
+  Text,
+  PolarRadiusAxis,
 } from "recharts";
 import {
   Star,
@@ -102,12 +104,45 @@ const CMSProfile = () => {
     .sort((a, b) => b.ratings.overall - a.ratings.overall)
     .slice(0, 4) || [];
 
+  const getRankDescription = (value: number): string => {
+    if (value >= 9) return "Exceptional (9-10)";
+    if (value >= 7) return "Great (7-8)";
+    if (value >= 5) return "Good (5-6)";
+    if (value >= 3) return "Fair (3-4)";
+    return "Poor (1-2)";
+  };
+
   const radarData = [
-    { subject: "Ease of Use", value: cms.ratings.easeOfUse },
-    { subject: "Features", value: cms.ratings.features },
-    { subject: "Support", value: cms.ratings.support },
-    { subject: "Value", value: cms.ratings.value },
-    { subject: "Overall", value: cms.ratings.overall },
+    { 
+      subject: "Ease of Use",
+      value: cms.ratings.easeOfUse,
+      description: getRankDescription(cms.ratings.easeOfUse),
+      fullMark: 10
+    },
+    { 
+      subject: "Features",
+      value: cms.ratings.features,
+      description: getRankDescription(cms.ratings.features),
+      fullMark: 10
+    },
+    { 
+      subject: "Support",
+      value: cms.ratings.support,
+      description: getRankDescription(cms.ratings.support),
+      fullMark: 10
+    },
+    { 
+      subject: "Value",
+      value: cms.ratings.value,
+      description: getRankDescription(cms.ratings.value),
+      fullMark: 10
+    },
+    { 
+      subject: "Overall",
+      value: cms.ratings.overall,
+      description: getRankDescription(cms.ratings.overall),
+      fullMark: 10
+    },
   ];
 
   const performanceMetrics = [
@@ -127,7 +162,7 @@ const CMSProfile = () => {
               <div className="flex items-center">
                 <Star className="h-5 w-5 text-yellow-400 fill-current" />
                 <span className="ml-1 font-medium">
-                  {cms.ratings.overall.toFixed(1)}
+                  {cms.ratings.overall.toFixed(1)} / 10
                 </span>
               </div>
               <Badge variant="secondary">Market Share: {cms.marketShare}%</Badge>
@@ -145,7 +180,25 @@ const CMSProfile = () => {
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={radarData}>
                 <PolarGrid />
-                <PolarAngleAxis dataKey="subject" />
+                <PolarAngleAxis 
+                  dataKey="subject"
+                  tick={({ payload, x, y, textAnchor, stroke, radius }) => (
+                    <Text
+                      x={x}
+                      y={y}
+                      textAnchor={textAnchor}
+                      fill="#666"
+                      fontSize={12}
+                    >
+                      {payload.value}
+                    </Text>
+                  )}
+                />
+                <PolarRadiusAxis 
+                  angle={90}
+                  domain={[0, 10]}
+                  tickCount={6}
+                />
                 <Radar
                   name="Ratings"
                   dataKey="value"
@@ -155,6 +208,9 @@ const CMSProfile = () => {
                 />
               </RadarChart>
             </ResponsiveContainer>
+            <div className="text-sm text-gray-500 text-center mt-2">
+              Rating Scale: 1-10 (Higher is better)
+            </div>
           </div>
         </div>
 
