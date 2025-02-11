@@ -15,6 +15,7 @@ const Navigation = () => {
     { path: "/cms", label: "CMS Directory" },
     { path: "/compare", label: "Compare" },
     { path: "/categories", label: "Categories" },
+    { path: "/detect", label: "CMS Detector" },
   ];
 
   return (
