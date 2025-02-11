@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { CMS } from "@/types/cms";
 
@@ -316,4 +315,35 @@ export const getAllTags = async () => {
   });
 
   return Array.from(tags);
+};
+
+export const getTagContent = async (tag: string) => {
+  console.log("Fetching tag content for:", tag);
+  const { data, error } = await supabase
+    .from('tag_content')
+    .select('*')
+    .eq('content_type', 'category')
+    .eq('tag_id', (
+      await supabase
+        .from('tags')
+        .select('id')
+        .eq('slug', tag)
+        .single()
+    ).data?.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching tag content:", error);
+    throw error;
+  }
+
+  console.log("Tag content data:", data);
+  return {
+    bannerTitle: data?.banner_title || null,
+    bannerSubtitle: data?.banner_subtitle || null,
+    metaTitle: data?.meta_title || null,
+    metaDescription: data?.meta_description || null,
+    introductionText: data?.introduction_text || null,
+    categoryBenefits: data?.category_benefits || [],
+  };
 };

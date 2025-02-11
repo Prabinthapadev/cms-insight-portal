@@ -545,10 +545,12 @@ export type Database = {
         Row: {
           banner_subtitle: string | null
           banner_title: string | null
+          category_benefits: string[] | null
           content: string | null
           content_type: string
           created_at: string | null
           id: string
+          introduction_text: string | null
           meta_description: string | null
           meta_title: string | null
           tag_id: string | null
@@ -558,10 +560,12 @@ export type Database = {
         Insert: {
           banner_subtitle?: string | null
           banner_title?: string | null
+          category_benefits?: string[] | null
           content?: string | null
           content_type: string
           created_at?: string | null
           id?: string
+          introduction_text?: string | null
           meta_description?: string | null
           meta_title?: string | null
           tag_id?: string | null
@@ -571,10 +575,12 @@ export type Database = {
         Update: {
           banner_subtitle?: string | null
           banner_title?: string | null
+          category_benefits?: string[] | null
           content?: string | null
           content_type?: string
           created_at?: string | null
           id?: string
+          introduction_text?: string | null
           meta_description?: string | null
           meta_title?: string | null
           tag_id?: string | null

@@ -1,7 +1,7 @@
 
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getCMSByTag } from "@/services/cms";
+import { getCMSByTag, getTagContent } from "@/services/cms";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, ArrowRight } from "lucide-react";
@@ -13,7 +13,7 @@ const CategoryView = () => {
   const { tag } = useParams();
   const { toast } = useToast();
   
-  const { data: cmsList, isLoading } = useQuery({
+  const { data: cmsList, isLoading: cmsLoading } = useQuery({
     queryKey: ["cms-by-tag", tag],
     queryFn: () => getCMSByTag(tag as string),
     meta: {
@@ -22,6 +22,21 @@ const CategoryView = () => {
         toast({
           title: "Error loading CMS data",
           description: "There was a problem loading the CMS list. Please try again later.",
+          variant: "destructive",
+        });
+      },
+    },
+  });
+
+  const { data: tagContent, isLoading: contentLoading } = useQuery({
+    queryKey: ["tag-content", tag],
+    queryFn: () => getTagContent(tag as string),
+    meta: {
+      onError: (error: Error) => {
+        console.error("Error fetching tag content:", error);
+        toast({
+          title: "Error loading category content",
+          description: "There was a problem loading the category content. Please try again later.",
           variant: "destructive",
         });
       },
@@ -53,7 +68,7 @@ const CategoryView = () => {
     return pairs.slice(0, 3);
   };
 
-  if (isLoading) {
+  if (cmsLoading || contentLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse space-y-4">
@@ -70,17 +85,48 @@ const CategoryView = () => {
   return (
     <>
       <Helmet>
-        <title>Best CMS for {formattedTag} | CMS Platform Comparison</title>
-        <meta name="description" content={`Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`} />
+        <title>{tagContent?.metaTitle || `Best CMS for ${formattedTag}`} | CMS Platform Comparison</title>
+        <meta name="description" content={tagContent?.metaDescription || `Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`} />
         <meta name="keywords" content={`CMS for ${formattedTag}, best CMS ${formattedTag}, content management system ${formattedTag}`} />
         <link rel="canonical" href={window.location.href} />
       </Helmet>
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-display font-bold mb-8 capitalize">
-            Best CMS for {formattedTag}
-          </h1>
+          {/* Hero Section */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-display font-bold mb-4 capitalize">
+              {tagContent?.bannerTitle || `Best CMS for ${formattedTag}`}
+            </h1>
+            {tagContent?.bannerSubtitle && (
+              <p className="text-xl text-gray-600 mb-6">{tagContent.bannerSubtitle}</p>
+            )}
+          </div>
+
+          {/* Introduction Text */}
+          {tagContent?.introductionText && (
+            <div className="prose max-w-none mb-12">
+              <p className="text-gray-700 leading-relaxed">
+                {tagContent.introductionText}
+              </p>
+            </div>
+          )}
+
+          {/* Category Benefits */}
+          {tagContent?.categoryBenefits && tagContent.categoryBenefits.length > 0 && (
+            <div className="mb-12">
+              <h2 className="text-2xl font-display font-bold mb-6">Key Benefits</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {tagContent.categoryBenefits.map((benefit, index) => (
+                  <Card key={index} className="p-4">
+                    <p className="text-gray-700">{benefit}</p>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* CMS List */}
           <div className="space-y-6">
             {sortedCMSList?.map((cms, index) => (
               <Link key={cms.id} to={`/cms/${cms.slug}`}>
@@ -123,6 +169,7 @@ const CategoryView = () => {
             ))}
           </div>
 
+          {/* Comparison Section */}
           {comparisonPairs.length > 0 && (
             <div className="mt-12">
               <h2 className="text-2xl font-display font-bold mb-6">Popular Comparisons</h2>
