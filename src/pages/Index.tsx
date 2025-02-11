@@ -11,7 +11,7 @@ import { Footer } from "@/components/cms/Footer";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const { data: cmsList } = useQuery({
+  const { data: cmsList, isLoading, error } = useQuery({
     queryKey: ["cms-list"],
     queryFn: getCMSList,
   });
@@ -19,6 +19,28 @@ const Index = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
   };
+
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  // Handle error state
+  if (error) {
+    console.error("Error loading CMS list:", error);
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-2">Error Loading Content</h2>
+          <p className="text-gray-600">Please try refreshing the page</p>
+        </div>
+      </div>
+    );
+  }
 
   const featuredCMS = cmsList?.filter(cms => cms.featured).slice(0, 3) || [];
 
@@ -32,16 +54,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <head>
-        <title>CMS Compare - Find the Perfect Content Management System</title>
-        <meta name="description" content="Compare features, performance, and user experiences across leading content management systems. Find the perfect CMS for your next project." />
-        <meta name="keywords" content="CMS comparison, content management system, website builder, CMS features, CMS pricing" />
-        <meta property="og:title" content="CMS Compare - Find the Perfect Content Management System" />
-        <meta property="og:description" content="Compare features, performance, and user experiences across leading content management systems." />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-      </head>
-
       <HeroSection
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
