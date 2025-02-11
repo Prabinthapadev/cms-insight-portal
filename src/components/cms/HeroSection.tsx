@@ -1,8 +1,8 @@
 
 import { Link } from "react-router-dom";
-import { ArrowRight, Search } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { SearchBar } from "@/components/search/SearchBar";
 
 interface HeroSectionProps {
   searchQuery: string;
@@ -25,20 +25,13 @@ export const HeroSection = ({
           Compare features, performance, and user experiences across leading
           content management systems.
         </p>
-        <form onSubmit={onSearchSubmit} className="max-w-2xl mx-auto flex gap-2">
-          <Input
-            type="text"
-            placeholder="Search for a CMS..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="text-lg"
-          />
-          <Button type="submit">
-            <Search className="mr-2 h-4 w-4" />
-            Search
-          </Button>
-        </form>
-        <div className="flex justify-center gap-4 pt-4">
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={onSearchChange}
+          onSearchSubmit={onSearchSubmit}
+          className="mt-8"
+        />
+        <div className="flex flex-wrap justify-center gap-4 pt-4">
           <Link to="/cms">
             <Button className="font-medium">
               Explore CMS Directory
