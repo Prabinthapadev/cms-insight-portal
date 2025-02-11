@@ -34,6 +34,7 @@ export const getCMSList = async () => {
     website: cms.website,
     imageUrl: cms.image_url,
     featured: cms.featured || false,
+    slug: cms.slug,
     tags: cms.tags || [],
     features: cms.features?.map((f: any) => f.title) || [],
     pros: cms.pros?.map((p: any) => p.description) || [],
@@ -78,6 +79,10 @@ export const getCMSList = async () => {
 };
 
 export const getCMSById = async (id: string) => {
+  if (!id) {
+    throw new Error("CMS ID is required");
+  }
+
   const { data, error } = await supabase
     .from('cms')
     .select(`
@@ -105,6 +110,7 @@ export const getCMSById = async (id: string) => {
     website: data.website,
     imageUrl: data.image_url,
     featured: data.featured || false,
+    slug: data.slug,
     tags: data.tags || [],
     features: data.features?.map((f: any) => f.title) || [],
     pros: data.pros?.map((p: any) => p.description) || [],
@@ -148,6 +154,10 @@ export const getCMSById = async (id: string) => {
 };
 
 export const getCMSBySlug = async (slug: string) => {
+  if (!slug) {
+    throw new Error("CMS slug is required");
+  }
+
   const { data, error } = await supabase
     .from('cms')
     .select(`
@@ -175,6 +185,7 @@ export const getCMSBySlug = async (slug: string) => {
     website: data.website,
     imageUrl: data.image_url,
     featured: data.featured || false,
+    slug: data.slug,
     tags: data.tags || [],
     features: data.features?.map((f: any) => f.title) || [],
     pros: data.pros?.map((p: any) => p.description) || [],
@@ -218,6 +229,10 @@ export const getCMSBySlug = async (slug: string) => {
 };
 
 export const getCMSByTag = async (tag: string) => {
+  if (!tag) {
+    throw new Error("Tag is required");
+  }
+
   const { data, error } = await supabase
     .from('cms')
     .select(`
@@ -226,7 +241,10 @@ export const getCMSByTag = async (tag: string) => {
       performance_metrics (*),
       ratings (*),
       pricing (*),
-      tech_stack (*)
+      tech_stack (*),
+      pros (*),
+      cons (*),
+      cms_additional_info (*)
     `)
     .contains('tags', [tag])
     .eq('is_published', true);
@@ -241,10 +259,11 @@ export const getCMSByTag = async (tag: string) => {
     website: cms.website,
     imageUrl: cms.image_url,
     featured: cms.featured || false,
+    slug: cms.slug,
     tags: cms.tags || [],
     features: cms.features?.map((f: any) => f.title) || [],
-    pros: [],
-    cons: [],
+    pros: cms.pros?.map((p: any) => p.description) || [],
+    cons: cms.cons?.map((c: any) => c.description) || [],
     techStack: cms.tech_stack?.map((t: any) => t.name) || [],
     performance: {
       loadTime: cms.performance_metrics?.find((p: any) => p.metric_name === 'load_time')?.value || 0,
@@ -270,13 +289,13 @@ export const getCMSByTag = async (tag: string) => {
       icon: f.icon,
     })) || [],
     additionalInfo: {
-      easeOfUse: "",
-      customization: "",
-      seoAndPerformance: "",
-      security: "",
-      scalability: "",
-      communitySupport: "",
-      officialSupport: "",
+      easeOfUse: cms.cms_additional_info?.[0]?.ease_of_use || "",
+      customization: cms.cms_additional_info?.[0]?.customization || "",
+      seoAndPerformance: cms.cms_additional_info?.[0]?.seo_and_performance || "",
+      security: cms.cms_additional_info?.[0]?.security || "",
+      scalability: cms.cms_additional_info?.[0]?.scalability || "",
+      communitySupport: cms.cms_additional_info?.[0]?.community_support || "",
+      officialSupport: cms.cms_additional_info?.[0]?.official_support || "",
     },
   }));
 };
