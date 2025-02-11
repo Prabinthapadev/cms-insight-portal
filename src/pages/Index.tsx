@@ -5,6 +5,7 @@ import { getCMSList } from "@/services/cms";
 import { HeroSection } from "@/components/cms/HeroSection";
 import { SearchResults } from "@/components/cms/SearchResults";
 import { FeaturedCMS } from "@/components/cms/FeaturedCMS";
+import { CodySection } from "@/components/cms/CodySection";
 import { FeaturesSection } from "@/components/cms/FeaturesSection";
 import { PopularCategories } from "@/components/cms/PopularCategories";
 import { Footer } from "@/components/cms/Footer";
@@ -63,7 +64,10 @@ const Index = () => {
       {searchQuery ? (
         <SearchResults searchQuery={searchQuery} searchResults={searchResults} />
       ) : (
-        <FeaturedCMS featuredCMS={featuredCMS} />
+        <>
+          <FeaturedCMS featuredCMS={featuredCMS} />
+          <CodySection />
+        </>
       )}
 
       <FeaturesSection />
