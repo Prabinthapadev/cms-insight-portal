@@ -4,7 +4,6 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
@@ -21,29 +20,36 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Disable minification
-    minify: false,
-    // Enable code splitting
+    // Basic build configuration
+    outDir: 'dist',
+    assetsDir: 'assets',
+    emptyOutDir: true,
+    // Simple code splitting configuration
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'ui-vendor': [
-            '@radix-ui/react-alert-dialog',
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-toast',
-            '@radix-ui/react-tooltip',
-          ],
-        },
-      },
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react')) {
+              return 'react-vendor';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'ui-vendor';
+            }
+            return 'vendor';
+          }
+        }
+      }
     },
-    // Enable chunk size optimization
-    chunkSizeWarningLimit: 1000,
-    // Enable source maps for production
-    sourcemap: mode === 'development',
+    // Conservative chunk size warning
+    chunkSizeWarningLimit: 2000,
+    // Only generate sourcemaps in development
+    sourcemap: mode === 'development'
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
+    exclude: ['@radix-ui/react-alert-dialog']
   },
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+  }
 }));
