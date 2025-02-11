@@ -6,8 +6,8 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   ssr: {
-    format: 'cjs',
     target: 'node',
+    noExternal: ['react-router-dom'],
   },
   resolve: {
     alias: {
