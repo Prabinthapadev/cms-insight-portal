@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSBySlug, getCMSList } from "@/services/cms";
@@ -158,10 +157,11 @@ const CMSProfile = () => {
       {cms && (
         <MetaTags
           seo={{
+            id: `cms-${cms.slug}`,
             url_pattern: `/cms/${cms.slug}`,
             meta_title: `${cms.name} - CMS Profile and Review`,
             meta_description: `${cms.description.slice(0, 155)}...`,
-            meta_og_image: cms.image_url || undefined,
+            meta_og_image: cms.imageUrl || undefined,
           }}
         />
       )}
