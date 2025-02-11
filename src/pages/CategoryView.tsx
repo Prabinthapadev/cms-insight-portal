@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { MetaTags } from "@/components/shared/MetaTags";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { CMS } from "@/types/cms";
 
 const CategoryView = () => {
   const { tag } = useParams();
@@ -57,8 +58,10 @@ const CategoryView = () => {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
-          <Skeleton className="h-12 w-3/4 mx-auto mb-4" />
-          <Skeleton className="h-6 w-2/3 mx-auto mb-12" />
+          <div className="text-center mb-12">
+            <Skeleton className="h-12 w-3/4 mx-auto mb-4" />
+            <Skeleton className="h-6 w-2/3 mx-auto" />
+          </div>
           <Skeleton className="h-32 w-full mb-6" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
             {[1, 2, 3, 4].map((i) => (
@@ -79,6 +82,7 @@ const CategoryView = () => {
     <>
       <MetaTags 
         seo={{
+          id: `category-${tag}`,
           url_pattern: `/categories/${tag}`,
           meta_title: tagContent?.metaTitle || `Best CMS for ${formattedTag}`,
           meta_description: tagContent?.metaDescription || `Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`,
