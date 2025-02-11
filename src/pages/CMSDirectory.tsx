@@ -6,9 +6,13 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { SearchBar } from "@/components/search/SearchBar";
+import { useState } from "react";
 
 const CMSDirectory = () => {
   const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
+  
   const { data: cmsList, isLoading, error } = useQuery({
     queryKey: ["cms-list"],
     queryFn: getCMSList,
@@ -23,6 +27,17 @@ const CMSDirectory = () => {
       },
     },
   });
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle search submit if needed
+  };
+
+  const filteredCMS = cmsList?.filter(cms => 
+    cms.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    cms.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    cms.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   if (isLoading) {
     return (
@@ -69,8 +84,17 @@ const CMSDirectory = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-display font-bold mb-8">CMS Directory</h1>
+        
+        <div className="mb-8">
+          <SearchBar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            onSearchSubmit={handleSearchSubmit}
+          />
+        </div>
+
         <div className="space-y-6">
-          {cmsList.map((cms) => (
+          {filteredCMS.map((cms) => (
             <Link key={cms.id} to={`/cms/${cms.id}`}>
               <Card className="p-6 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start">
