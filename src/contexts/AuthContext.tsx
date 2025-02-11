@@ -12,7 +12,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check active sessions and get the user's profile
     const getProfile = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       
@@ -29,6 +28,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             role: profile.role as 'admin' | 'user',
             created_at: profile.created_at
           });
+        } else {
+          // If no profile or invalid role, sign out
+          await supabase.auth.signOut();
+          setUser(null);
         }
       }
       
@@ -37,7 +40,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     getProfile();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         const { data: profile } = await supabase
@@ -52,6 +54,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             role: profile.role as 'admin' | 'user',
             created_at: profile.created_at
           });
+        } else {
+          // If no profile or invalid role, sign out
+          await supabase.auth.signOut();
+          setUser(null);
         }
       } else {
         setUser(null);
@@ -72,11 +78,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) throw error;
-      
-      toast({
-        title: "Welcome back!",
-        description: "You've successfully signed in.",
-      });
     } catch (error: any) {
       toast({
         title: "Error signing in",
