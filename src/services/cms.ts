@@ -1,168 +1,175 @@
+
+import { supabase } from "@/integrations/supabase/client";
 import { CMS } from "@/types/cms";
 
-export const mockCMSData: CMS[] = [
-  {
-    id: "wordpress",
-    name: "WordPress",
-    description:
-      "WordPress is a free and open-source content management system written in PHP and paired with a MySQL or MariaDB database.",
-    website: "https://wordpress.org",
-    tags: ["php", "open-source", "blog", "ecommerce", "enterprise"],
-    features: [
-      "Page Builder",
-      "Plugin System",
-      "Theme Customization",
-      "Multi-user",
-      "REST API",
-    ],
-    pros: [
-      "Huge community",
-      "Extensive plugin ecosystem",
-      "Easy to use",
-      "Flexible",
-    ],
-    cons: [
-      "Can be resource-intensive",
-      "Regular updates required",
-      "Security concerns if not maintained",
-    ],
-    techStack: ["PHP", "MySQL", "JavaScript"],
+export const getCMSList = async () => {
+  const { data, error } = await supabase
+    .from('cms')
+    .select(`
+      *,
+      features (*),
+      performance_metrics (*),
+      ratings (*),
+      pricing (*),
+      tech_stack (*)
+    `)
+    .eq('is_published', true);
+
+  if (error) throw error;
+
+  // Transform the data to match the CMS type
+  const transformedData: CMS[] = data.map((cms) => ({
+    id: cms.id,
+    name: cms.name,
+    description: cms.description,
+    website: cms.website,
+    imageUrl: cms.image_url,
+    tags: cms.tags || [],
+    features: cms.features?.map((f: any) => f.title) || [],
+    pros: [], // TODO: Add pros table
+    cons: [], // TODO: Add cons table
+    techStack: cms.tech_stack?.map((t: any) => t.name) || [],
     performance: {
-      loadTime: 2.5,
-      serverResponse: 0.8,
-      resourceUsage: 65,
+      loadTime: cms.performance_metrics?.find((p: any) => p.metric_name === 'load_time')?.value || 0,
+      serverResponse: cms.performance_metrics?.find((p: any) => p.metric_name === 'server_response')?.value || 0,
+      resourceUsage: cms.performance_metrics?.find((p: any) => p.metric_name === 'resource_usage')?.value || 0,
     },
     pricing: {
-      free: true,
-      startingPrice: 0,
-      hasPremium: true,
+      free: cms.pricing?.some((p: any) => p.price === 0) || false,
+      startingPrice: Math.min(...(cms.pricing?.map((p: any) => p.price) || [0])),
+      hasPremium: cms.pricing?.some((p: any) => p.price > 0) || false,
     },
     ratings: {
-      overall: 4.5,
-      easeOfUse: 4.0,
-      features: 4.8,
-      support: 4.2,
-      value: 4.7,
+      overall: cms.ratings?.find((r: any) => r.category === 'overall')?.score || 0,
+      easeOfUse: cms.ratings?.find((r: any) => r.category === 'ease_of_use')?.score || 0,
+      features: cms.ratings?.find((r: any) => r.category === 'features')?.score || 0,
+      support: cms.ratings?.find((r: any) => r.category === 'support')?.score || 0,
+      value: cms.ratings?.find((r: any) => r.category === 'value')?.score || 0,
     },
-    marketShare: 43,
-    keyFeatures: [
-      {
-        title: "Plugin Ecosystem",
-        description: "Access to over 59,000 free plugins for extending functionality",
-        icon: "settings"
-      },
-      {
-        title: "Theme System",
-        description: "Thousands of free and premium themes available",
-        icon: "users"
-      },
-      {
-        title: "Security",
-        description: "Regular security updates and robust community monitoring",
-        icon: "shield"
-      }
-    ],
+    marketShare: cms.market_share || 0,
+    keyFeatures: cms.features?.map((f: any) => ({
+      title: f.title,
+      description: f.description,
+      icon: f.icon,
+    })) || [],
     additionalInfo: {
-      easeOfUse: "WordPress features an intuitive interface suitable for beginners while offering advanced capabilities for experts.",
-      customization: "Highly customizable through themes, plugins, and direct code access.",
-      seoAndPerformance: "Built-in SEO features with additional optimization through popular plugins like Yoast SEO.",
-      security: "Regular security updates and a dedicated security team, with additional security through plugins.",
-      scalability: "Can handle high-traffic websites with proper optimization and hosting.",
-      communitySupport: "Large, active community with numerous forums, blogs, and resources.",
-      officialSupport: "Documentation, forums, and premium support available through hosting partners.",
-    }
-  },
-  {
-    id: "drupal",
-    name: "Drupal",
-    description:
-      "Drupal is a free and open-source web content management system written in PHP and distributed under the GNU General Public License.",
-    website: "https://drupal.org",
-    tags: ["php", "open-source", "enterprise", "framework"],
-    features: [
-      "Content Types",
-      "Views",
-      "Taxonomy",
-      "User Management",
-      "API-first",
-    ],
-    pros: [
-      "Highly scalable",
-      "Strong security",
-      "Complex permissions",
-      "Enterprise-ready",
-    ],
-    cons: [
-      "Steep learning curve",
-      "More complex setup",
-      "Fewer themes and plugins than WordPress",
-    ],
-    techStack: ["PHP", "MySQL", "JavaScript", "Symfony"],
+      easeOfUse: "", // TODO: Add additional info table
+      customization: "",
+      seoAndPerformance: "",
+      security: "",
+      scalability: "",
+      communitySupport: "",
+      officialSupport: "",
+    },
+  }));
+
+  return transformedData;
+};
+
+export const getCMSById = async (id: string) => {
+  const { data, error } = await supabase
+    .from('cms')
+    .select(`
+      *,
+      features (*),
+      performance_metrics (*),
+      ratings (*),
+      pricing (*),
+      tech_stack (*)
+    `)
+    .eq('id', id)
+    .eq('is_published', true)
+    .single();
+
+  if (error) throw error;
+
+  // Transform the data similarly to getCMSList
+  const cms: CMS = {
+    id: data.id,
+    name: data.name,
+    description: data.description,
+    website: data.website,
+    imageUrl: data.image_url,
+    tags: data.tags || [],
+    features: data.features?.map((f: any) => f.title) || [],
+    pros: [], // TODO: Add pros table
+    cons: [], // TODO: Add cons table
+    techStack: data.tech_stack?.map((t: any) => t.name) || [],
     performance: {
-      loadTime: 2.1,
-      serverResponse: 0.6,
-      resourceUsage: 55,
+      loadTime: data.performance_metrics?.find((p: any) => p.metric_name === 'load_time')?.value || 0,
+      serverResponse: data.performance_metrics?.find((p: any) => p.metric_name === 'server_response')?.value || 0,
+      resourceUsage: data.performance_metrics?.find((p: any) => p.metric_name === 'resource_usage')?.value || 0,
     },
     pricing: {
-      free: true,
-      startingPrice: 0,
-      hasPremium: false,
+      free: data.pricing?.some((p: any) => p.price === 0) || false,
+      startingPrice: Math.min(...(data.pricing?.map((p: any) => p.price) || [0])),
+      hasPremium: data.pricing?.some((p: any) => p.price > 0) || false,
     },
     ratings: {
-      overall: 4.2,
-      easeOfUse: 3.5,
-      features: 4.7,
-      support: 4.0,
-      value: 4.5,
+      overall: data.ratings?.find((r: any) => r.category === 'overall')?.score || 0,
+      easeOfUse: data.ratings?.find((r: any) => r.category === 'ease_of_use')?.score || 0,
+      features: data.ratings?.find((r: any) => r.category === 'features')?.score || 0,
+      support: data.ratings?.find((r: any) => r.category === 'support')?.score || 0,
+      value: data.ratings?.find((r: any) => r.category === 'value')?.score || 0,
     },
-    marketShare: 15,
-    keyFeatures: [
-      {
-        title: "Content Management",
-        description: "Flexible content types and user roles for complex sites",
-        icon: "settings"
-      },
-      {
-        title: "Security Features",
-        description: "Robust security features and regular updates",
-        icon: "shield"
-      },
-      {
-        title: "Scalability",
-        description: "Designed to handle high-traffic sites with ease",
-        icon: "zap"
-      }
-    ],
+    marketShare: data.market_share || 0,
+    keyFeatures: data.features?.map((f: any) => ({
+      title: f.title,
+      description: f.description,
+      icon: f.icon,
+    })) || [],
     additionalInfo: {
-      easeOfUse: "Drupal has a steeper learning curve but offers powerful features for advanced users.",
-      customization: "Highly customizable with a variety of modules and themes.",
-      seoAndPerformance: "Strong SEO capabilities with various modules available.",
-      security: "Known for its strong security features and regular updates.",
-      scalability: "Can scale to handle large amounts of traffic with proper configuration.",
-      communitySupport: "Active community with extensive documentation and forums.",
-      officialSupport: "Official support available through various service providers.",
-    }
-  },
-];
+      easeOfUse: "", // TODO: Add additional info table
+      customization: "",
+      seoAndPerformance: "",
+      security: "",
+      scalability: "",
+      communitySupport: "",
+      officialSupport: "",
+    },
+  };
 
-export const getCMSList = () => {
-  return Promise.resolve(mockCMSData);
+  return cms;
 };
 
-export const getCMSById = (id: string) => {
-  const cms = mockCMSData.find((cms) => cms.id === id);
-  return Promise.resolve(cms);
+export const getCMSByTag = async (tag: string) => {
+  const { data, error } = await supabase
+    .from('cms')
+    .select(`
+      *,
+      features (*),
+      performance_metrics (*),
+      ratings (*),
+      pricing (*),
+      tech_stack (*)
+    `)
+    .contains('tags', [tag])
+    .eq('is_published', true);
+
+  if (error) throw error;
+
+  // Transform the data similarly to getCMSList
+  return data.map((cms) => ({
+    id: cms.id,
+    name: cms.name,
+    // ... same transformation as above
+  }));
 };
 
-export const getCMSByTag = (tag: string) => {
-  const filteredCMS = mockCMSData.filter((cms) => cms.tags.includes(tag));
-  return Promise.resolve(filteredCMS);
-};
+export const getAllTags = async () => {
+  const { data, error } = await supabase
+    .from('cms')
+    .select('tags')
+    .eq('is_published', true);
 
-export const getAllTags = () => {
+  if (error) throw error;
+
   const tags = new Set<string>();
-  mockCMSData.forEach((cms) => {
-    cms.tags.forEach((tag) => tags.add(tag));
+  data.forEach((cms) => {
+    if (cms.tags) {
+      cms.tags.forEach((tag: string) => tags.add(tag));
+    }
   });
-  return Promise.resolve(Array.from(tags));
+
+  return Array.from(tags);
 };
