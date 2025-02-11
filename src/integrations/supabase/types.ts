@@ -36,6 +36,7 @@ export type Database = {
           seo_keywords: string[] | null
           seo_title: string | null
           slug: string
+          tags: string[] | null
           updated_at: string | null
           website: string | null
         }
@@ -65,6 +66,7 @@ export type Database = {
           seo_keywords?: string[] | null
           seo_title?: string | null
           slug: string
+          tags?: string[] | null
           updated_at?: string | null
           website?: string | null
         }
@@ -94,6 +96,7 @@ export type Database = {
           seo_keywords?: string[] | null
           seo_title?: string | null
           slug?: string
+          tags?: string[] | null
           updated_at?: string | null
           website?: string | null
         }

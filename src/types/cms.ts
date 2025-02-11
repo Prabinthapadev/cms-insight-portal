@@ -5,6 +5,7 @@ export interface CMS {
   description: string;
   website: string;
   imageUrl?: string;
+  featured: boolean; // Added this field
   tags: string[];
   features: string[];
   pros: string[];
@@ -43,3 +44,4 @@ export interface CMS {
     officialSupport: string;
   };
 }
+

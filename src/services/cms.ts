@@ -24,6 +24,7 @@ export const getCMSList = async () => {
     description: cms.description,
     website: cms.website,
     imageUrl: cms.image_url,
+    featured: cms.featured || false,
     tags: cms.tags || [],
     features: cms.features?.map((f: any) => f.title) || [],
     pros: [], // TODO: Add pros table
@@ -90,6 +91,7 @@ export const getCMSById = async (id: string) => {
     description: data.description,
     website: data.website,
     imageUrl: data.image_url,
+    featured: data.featured || false,
     tags: data.tags || [],
     features: data.features?.map((f: any) => f.title) || [],
     pros: [], // TODO: Add pros table
@@ -152,7 +154,47 @@ export const getCMSByTag = async (tag: string) => {
   return data.map((cms) => ({
     id: cms.id,
     name: cms.name,
-    // ... same transformation as above
+    description: cms.description,
+    website: cms.website,
+    imageUrl: cms.image_url,
+    featured: cms.featured || false,
+    tags: cms.tags || [],
+    features: cms.features?.map((f: any) => f.title) || [],
+    pros: [],
+    cons: [],
+    techStack: cms.tech_stack?.map((t: any) => t.name) || [],
+    performance: {
+      loadTime: cms.performance_metrics?.find((p: any) => p.metric_name === 'load_time')?.value || 0,
+      serverResponse: cms.performance_metrics?.find((p: any) => p.metric_name === 'server_response')?.value || 0,
+      resourceUsage: cms.performance_metrics?.find((p: any) => p.metric_name === 'resource_usage')?.value || 0,
+    },
+    pricing: {
+      free: cms.pricing?.some((p: any) => p.price === 0) || false,
+      startingPrice: Math.min(...(cms.pricing?.map((p: any) => p.price) || [0])),
+      hasPremium: cms.pricing?.some((p: any) => p.price > 0) || false,
+    },
+    ratings: {
+      overall: cms.ratings?.find((r: any) => r.category === 'overall')?.score || 0,
+      easeOfUse: cms.ratings?.find((r: any) => r.category === 'ease_of_use')?.score || 0,
+      features: cms.ratings?.find((r: any) => r.category === 'features')?.score || 0,
+      support: cms.ratings?.find((r: any) => r.category === 'support')?.score || 0,
+      value: cms.ratings?.find((r: any) => r.category === 'value')?.score || 0,
+    },
+    marketShare: cms.market_share || 0,
+    keyFeatures: cms.features?.map((f: any) => ({
+      title: f.title,
+      description: f.description,
+      icon: f.icon,
+    })) || [],
+    additionalInfo: {
+      easeOfUse: "",
+      customization: "",
+      seoAndPerformance: "",
+      security: "",
+      scalability: "",
+      communitySupport: "",
+      officialSupport: "",
+    },
   }));
 };
 
