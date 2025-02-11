@@ -11,10 +11,8 @@ interface CMSCardProps {
 }
 
 export const CMSCard = ({ cms }: CMSCardProps) => {
-  const generateCmsUrl = (name: string) => `/cms/${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
-
   return (
-    <Link to={generateCmsUrl(cms.name)}>
+    <Link to={`/cms/${cms.slug}`}>
       <Card className="p-6 hover:shadow-lg transition-all">
         <div className="flex justify-between items-start mb-4">
           <h3 className="text-xl font-semibold">{cms.name}</h3>

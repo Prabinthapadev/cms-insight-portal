@@ -37,7 +37,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/cms" element={<CMSDirectory />} />
-              <Route path="/cms/:name" element={<CMSProfile />} />
+              <Route path="/cms/:slug" element={<CMSProfile />} />
               <Route path="/compare" element={<Compare />} />
               <Route path="/compare/:slugs" element={<CompareSpecific />} />
               <Route path="/cms/best-for-:tag" element={<CategoryView />} />
