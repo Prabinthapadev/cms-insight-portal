@@ -16,6 +16,7 @@ import CategoryView from "./pages/CategoryView";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/admin/Dashboard";
 import NotFound from "./pages/NotFound";
+import Sitemap from "./pages/Sitemap";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/categories/:tag" element={<CategoryView />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/admin" element={<Dashboard />} />
+              <Route path="/sitemap" element={<Sitemap />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

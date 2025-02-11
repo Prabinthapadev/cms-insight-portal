@@ -18,6 +18,7 @@ export const Footer = () => {
               <li><Link to="/cms" className="text-gray-400 hover:text-white">CMS Directory</Link></li>
               <li><Link to="/compare" className="text-gray-400 hover:text-white">Compare CMS</Link></li>
               <li><Link to="/categories" className="text-gray-400 hover:text-white">Categories</Link></li>
+              <li><Link to="/sitemap" className="text-gray-400 hover:text-white">Sitemap</Link></li>
             </ul>
           </div>
           <div>
