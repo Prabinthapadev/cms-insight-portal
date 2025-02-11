@@ -392,6 +392,69 @@ export type Database = {
           },
         ]
       }
+      page_seo: {
+        Row: {
+          changefreq: string | null
+          created_at: string | null
+          id: string
+          meta_canonical: string | null
+          meta_description: string | null
+          meta_keywords: string[] | null
+          meta_og_description: string | null
+          meta_og_image: string | null
+          meta_og_title: string | null
+          meta_robots: string | null
+          meta_title: string | null
+          meta_twitter_card: string | null
+          meta_twitter_description: string | null
+          meta_twitter_image: string | null
+          meta_twitter_title: string | null
+          priority: number | null
+          updated_at: string | null
+          url_pattern: string
+        }
+        Insert: {
+          changefreq?: string | null
+          created_at?: string | null
+          id?: string
+          meta_canonical?: string | null
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          meta_og_description?: string | null
+          meta_og_image?: string | null
+          meta_og_title?: string | null
+          meta_robots?: string | null
+          meta_title?: string | null
+          meta_twitter_card?: string | null
+          meta_twitter_description?: string | null
+          meta_twitter_image?: string | null
+          meta_twitter_title?: string | null
+          priority?: number | null
+          updated_at?: string | null
+          url_pattern: string
+        }
+        Update: {
+          changefreq?: string | null
+          created_at?: string | null
+          id?: string
+          meta_canonical?: string | null
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          meta_og_description?: string | null
+          meta_og_image?: string | null
+          meta_og_title?: string | null
+          meta_robots?: string | null
+          meta_title?: string | null
+          meta_twitter_card?: string | null
+          meta_twitter_description?: string | null
+          meta_twitter_image?: string | null
+          meta_twitter_title?: string | null
+          priority?: number | null
+          updated_at?: string | null
+          url_pattern?: string
+        }
+        Relationships: []
+      }
       performance_metrics: {
         Row: {
           cms_id: string | null

@@ -17,6 +17,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/admin/Dashboard";
 import NotFound from "./pages/NotFound";
 import Sitemap from "./pages/Sitemap";
+import SitemapXml from "./pages/SitemapXml";
 
 // Security headers
 if (typeof document !== 'undefined') {
@@ -70,6 +71,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/admin" element={<Dashboard />} />
               <Route path="/sitemap" element={<Sitemap />} />
+              <Route path="/sitemap.xml" element={<SitemapXml />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
