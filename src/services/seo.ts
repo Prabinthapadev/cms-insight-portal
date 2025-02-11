@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export interface PageSEO {
+  id?: string;
   url_pattern: string;
   meta_title?: string;
   meta_description?: string;
@@ -31,7 +32,14 @@ export const getPageSEO = async (urlPattern: string): Promise<PageSEO | null> =>
     return null;
   }
 
-  return data;
+  return {
+    ...data,
+    meta_og_title: data.meta_og_title || data.meta_title,
+    meta_og_description: data.meta_og_description || data.meta_description,
+    meta_twitter_title: data.meta_twitter_title || data.meta_title,
+    meta_twitter_description: data.meta_twitter_description || data.meta_description,
+    meta_canonical: data.meta_canonical || window.location.href,
+  };
 };
 
 export const updatePageSEO = async (seoData: PageSEO): Promise<void> => {

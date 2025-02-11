@@ -53,7 +53,17 @@ export const SEOManagement = () => {
     if (!editForm) return;
 
     try {
-      await updatePageSEO(editForm);
+      // Generate Open Graph and Twitter card meta tags automatically
+      const updatedForm = {
+        ...editForm,
+        meta_og_title: editForm.meta_og_title || editForm.meta_title,
+        meta_og_description: editForm.meta_og_description || editForm.meta_description,
+        meta_twitter_title: editForm.meta_twitter_title || editForm.meta_title,
+        meta_twitter_description: editForm.meta_twitter_description || editForm.meta_description,
+        meta_canonical: editForm.meta_canonical || window.location.origin + editForm.url_pattern.replace(/:(\w+)/g, ''),
+      };
+
+      await updatePageSEO(updatedForm);
       toast({
         title: "SEO Updated",
         description: "The SEO settings have been updated successfully.",
