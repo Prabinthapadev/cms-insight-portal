@@ -43,10 +43,10 @@ export const generateSitemapXml = async (baseUrl: string): Promise<string> => {
     });
   });
 
-  // Add category pages
+  // Add category pages - note that we only select 'slug' since 'updated_at' doesn't exist
   const { data: tags } = await supabase
     .from('tags')
-    .select('slug, updated_at');
+    .select('slug');
 
   tags?.forEach(tag => {
     urls.push({
