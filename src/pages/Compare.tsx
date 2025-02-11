@@ -130,10 +130,7 @@ const Compare = () => {
                           variant="outline"
                           size="sm"
                           onClick={() =>
-                            handleCompareSpecific(
-                              cms.id,
-                              cmsList.find((c) => c.id !== cms.id)?.id || ""
-                            )
+                            navigate(`/compare/${cms.id}/${cmsList.find((c) => c.id !== cms.id)?.id || ""}`)
                           }
                         >
                           Compare
