@@ -9,7 +9,286 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      cms: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          featured: boolean | null
+          id: string
+          image_url: string | null
+          market_share: number | null
+          name: string
+          seo_description: string | null
+          seo_keywords: string[] | null
+          seo_title: string | null
+          slug: string
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          image_url?: string | null
+          market_share?: number | null
+          name: string
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
+          slug: string
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          image_url?: string | null
+          market_share?: number | null
+          name?: string
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
+          slug?: string
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
+      cms_tags: {
+        Row: {
+          cms_id: string
+          tag_id: string
+        }
+        Insert: {
+          cms_id: string
+          tag_id: string
+        }
+        Update: {
+          cms_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cms_tags_cms_id_fkey"
+            columns: ["cms_id"]
+            isOneToOne: false
+            referencedRelation: "cms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cms_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      features: {
+        Row: {
+          cms_id: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          title: string
+        }
+        Insert: {
+          cms_id?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          title: string
+        }
+        Update: {
+          cms_id?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "features_cms_id_fkey"
+            columns: ["cms_id"]
+            isOneToOne: false
+            referencedRelation: "cms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      performance_metrics: {
+        Row: {
+          cms_id: string | null
+          id: string
+          metric_name: string
+          unit: string | null
+          value: number
+        }
+        Insert: {
+          cms_id?: string | null
+          id?: string
+          metric_name: string
+          unit?: string | null
+          value: number
+        }
+        Update: {
+          cms_id?: string | null
+          id?: string
+          metric_name?: string
+          unit?: string | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "performance_metrics_cms_id_fkey"
+            columns: ["cms_id"]
+            isOneToOne: false
+            referencedRelation: "cms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pricing: {
+        Row: {
+          billing_period: string | null
+          cms_id: string | null
+          features: string[] | null
+          id: string
+          plan_name: string
+          price: number | null
+        }
+        Insert: {
+          billing_period?: string | null
+          cms_id?: string | null
+          features?: string[] | null
+          id?: string
+          plan_name: string
+          price?: number | null
+        }
+        Update: {
+          billing_period?: string | null
+          cms_id?: string | null
+          features?: string[] | null
+          id?: string
+          plan_name?: string
+          price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pricing_cms_id_fkey"
+            columns: ["cms_id"]
+            isOneToOne: false
+            referencedRelation: "cms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: string
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          role?: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: string
+        }
+        Relationships: []
+      }
+      ratings: {
+        Row: {
+          category: string
+          cms_id: string | null
+          id: string
+          score: number
+          weight: number | null
+        }
+        Insert: {
+          category: string
+          cms_id?: string | null
+          id?: string
+          score: number
+          weight?: number | null
+        }
+        Update: {
+          category?: string
+          cms_id?: string | null
+          id?: string
+          score?: number
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ratings_cms_id_fkey"
+            columns: ["cms_id"]
+            isOneToOne: false
+            referencedRelation: "cms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tags: {
+        Row: {
+          description: string | null
+          id: string
+          name: string
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          name: string
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          name?: string
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+        }
+        Relationships: []
+      }
+      tech_stack: {
+        Row: {
+          cms_id: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          cms_id?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          cms_id?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tech_stack_cms_id_fkey"
+            columns: ["cms_id"]
+            isOneToOne: false
+            referencedRelation: "cms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
