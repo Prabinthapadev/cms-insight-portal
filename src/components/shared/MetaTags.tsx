@@ -34,10 +34,10 @@ export const MetaTags = ({ seo }: MetaTagsProps) => {
       <meta name="twitter:description" content={seo.meta_twitter_description || seo.meta_description} />
       {seo.meta_twitter_image && <meta name="twitter:image" content={seo.meta_twitter_image} />}
       
-      {/* Cache Control */}
-      <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-      <meta http-equiv="Pragma" content="no-cache" />
-      <meta http-equiv="Expires" content="0" />
+      {/* Cache Control - Using both standard and legacy headers */}
+      <meta httpEquiv="Cache-Control" content="no-store, must-revalidate" />
+      <meta httpEquiv="Pragma" content="no-cache" />
+      <meta httpEquiv="Expires" content="0" />
       
       {/* Robots Meta Tag */}
       {seo.meta_robots && <meta name="robots" content={seo.meta_robots} />}

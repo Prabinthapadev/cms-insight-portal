@@ -33,8 +33,9 @@ export const getPageSEO = async (urlPattern: string): Promise<PageSEO | null> =>
     return null;
   }
 
-  // Ensure canonical URL and fallbacks for social media metadata
-  const canonical = data.meta_canonical || `${window.location.origin}${urlPattern}`;
+  // Generate canonical URL and set fallbacks for metadata
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const canonical = data.meta_canonical || `${origin}${urlPattern}`;
 
   return {
     ...data,
@@ -47,9 +48,10 @@ export const getPageSEO = async (urlPattern: string): Promise<PageSEO | null> =>
 };
 
 export const updatePageSEO = async (seoData: PageSEO): Promise<void> => {
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const dataToSave = {
     ...seoData,
-    meta_canonical: seoData.meta_canonical || `${window.location.origin}${seoData.url_pattern}`,
+    meta_canonical: seoData.meta_canonical || `${origin}${seoData.url_pattern}`,
     updated_at: new Date().toISOString(),
   };
 
