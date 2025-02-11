@@ -1,5 +1,53 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { CMS } from "@/types/cms";
+
+const transformCMSData = (data: any): CMS => ({
+  id: data.id,
+  name: data.name,
+  description: data.description,
+  website: data.website,
+  imageUrl: data.image_url,
+  featured: data.featured || false,
+  slug: data.slug,
+  tags: data.tags || [],
+  features: data.features?.map((f: any) => f.title) || [],
+  pros: data.pros?.map((p: any) => p.description) || [],
+  cons: data.cons?.map((c: any) => c.description) || [],
+  techStack: data.tech_stack?.map((t: any) => t.name) || [],
+  performance: {
+    loadTime: data.performance_metrics?.find((p: any) => p.metric_name === 'load_time')?.value || 0,
+    serverResponse: data.performance_metrics?.find((p: any) => p.metric_name === 'server_response')?.value || 0,
+    resourceUsage: data.performance_metrics?.find((p: any) => p.metric_name === 'resource_usage')?.value || 0,
+  },
+  pricing: {
+    free: data.pricing?.some((p: any) => p.price === 0) || false,
+    startingPrice: Math.min(...(data.pricing?.map((p: any) => p.price) || [0])),
+    hasPremium: data.pricing?.some((p: any) => p.price > 0) || false,
+  },
+  ratings: {
+    overall: data.ratings?.find((r: any) => r.category === 'overall')?.score || 0,
+    easeOfUse: data.ratings?.find((r: any) => r.category === 'ease_of_use')?.score || 0,
+    features: data.ratings?.find((r: any) => r.category === 'features')?.score || 0,
+    support: data.ratings?.find((r: any) => r.category === 'support')?.score || 0,
+    value: data.ratings?.find((r: any) => r.category === 'value')?.score || 0,
+  },
+  marketShare: data.market_share || 0,
+  keyFeatures: data.features?.map((f: any) => ({
+    title: f.title,
+    description: f.description,
+    icon: f.icon,
+  })) || [],
+  additionalInfo: {
+    easeOfUse: data.cms_additional_info?.[0]?.ease_of_use || "",
+    customization: data.cms_additional_info?.[0]?.customization || "",
+    seoAndPerformance: data.cms_additional_info?.[0]?.seo_and_performance || "",
+    security: data.cms_additional_info?.[0]?.security || "",
+    scalability: data.cms_additional_info?.[0]?.scalability || "",
+    communitySupport: data.cms_additional_info?.[0]?.community_support || "",
+    officialSupport: data.cms_additional_info?.[0]?.official_support || "",
+  },
+});
 
 export const getCMSList = async () => {
   console.log("Fetching CMS list...");
@@ -24,55 +72,7 @@ export const getCMSList = async () => {
   }
 
   console.log("Raw CMS data:", data);
-
-  // Transform the data to match the CMS type
-  const transformedData: CMS[] = data.map((cms) => ({
-    id: cms.id,
-    name: cms.name,
-    description: cms.description,
-    website: cms.website,
-    imageUrl: cms.image_url,
-    featured: cms.featured || false,
-    slug: cms.slug,
-    tags: cms.tags || [],
-    features: cms.features?.map((f: any) => f.title) || [],
-    pros: cms.pros?.map((p: any) => p.description) || [],
-    cons: cms.cons?.map((c: any) => c.description) || [],
-    techStack: cms.tech_stack?.map((t: any) => t.name) || [],
-    performance: {
-      loadTime: cms.performance_metrics?.find((p: any) => p.metric_name === 'load_time')?.value || 0,
-      serverResponse: cms.performance_metrics?.find((p: any) => p.metric_name === 'server_response')?.value || 0,
-      resourceUsage: cms.performance_metrics?.find((p: any) => p.metric_name === 'resource_usage')?.value || 0,
-    },
-    pricing: {
-      free: cms.pricing?.some((p: any) => p.price === 0) || false,
-      startingPrice: Math.min(...(cms.pricing?.map((p: any) => p.price) || [0])),
-      hasPremium: cms.pricing?.some((p: any) => p.price > 0) || false,
-    },
-    ratings: {
-      overall: cms.ratings?.find((r: any) => r.category === 'overall')?.score || 0,
-      easeOfUse: cms.ratings?.find((r: any) => r.category === 'ease_of_use')?.score || 0,
-      features: cms.ratings?.find((r: any) => r.category === 'features')?.score || 0,
-      support: cms.ratings?.find((r: any) => r.category === 'support')?.score || 0,
-      value: cms.ratings?.find((r: any) => r.category === 'value')?.score || 0,
-    },
-    marketShare: cms.market_share || 0,
-    keyFeatures: cms.features?.map((f: any) => ({
-      title: f.title,
-      description: f.description,
-      icon: f.icon,
-    })) || [],
-    additionalInfo: {
-      easeOfUse: cms.cms_additional_info?.[0]?.ease_of_use || "",
-      customization: cms.cms_additional_info?.[0]?.customization || "",
-      seoAndPerformance: cms.cms_additional_info?.[0]?.seo_and_performance || "",
-      security: cms.cms_additional_info?.[0]?.security || "",
-      scalability: cms.cms_additional_info?.[0]?.scalability || "",
-      communitySupport: cms.cms_additional_info?.[0]?.community_support || "",
-      officialSupport: cms.cms_additional_info?.[0]?.official_support || "",
-    },
-  }));
-
+  const transformedData = data.map(transformCMSData);
   console.log("Transformed CMS data:", transformedData);
   return transformedData;
 };
@@ -97,59 +97,12 @@ export const getCMSById = async (id: string) => {
     `)
     .eq('id', id)
     .eq('is_published', true)
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
+  if (!data) throw new Error("CMS not found");
 
-  // Transform the data similarly to getCMSList
-  const cms: CMS = {
-    id: data.id,
-    name: data.name,
-    description: data.description,
-    website: data.website,
-    imageUrl: data.image_url,
-    featured: data.featured || false,
-    slug: data.slug,
-    tags: data.tags || [],
-    features: data.features?.map((f: any) => f.title) || [],
-    pros: data.pros?.map((p: any) => p.description) || [],
-    cons: data.cons?.map((c: any) => c.description) || [],
-    techStack: data.tech_stack?.map((t: any) => t.name) || [],
-    performance: {
-      loadTime: data.performance_metrics?.find((p: any) => p.metric_name === 'load_time')?.value || 0,
-      serverResponse: data.performance_metrics?.find((p: any) => p.metric_name === 'server_response')?.value || 0,
-      resourceUsage: data.performance_metrics?.find((p: any) => p.metric_name === 'resource_usage')?.value || 0,
-    },
-    pricing: {
-      free: data.pricing?.some((p: any) => p.price === 0) || false,
-      startingPrice: Math.min(...(data.pricing?.map((p: any) => p.price) || [0])),
-      hasPremium: data.pricing?.some((p: any) => p.price > 0) || false,
-    },
-    ratings: {
-      overall: data.ratings?.find((r: any) => r.category === 'overall')?.score || 0,
-      easeOfUse: data.ratings?.find((r: any) => r.category === 'ease_of_use')?.score || 0,
-      features: data.ratings?.find((r: any) => r.category === 'features')?.score || 0,
-      support: data.ratings?.find((r: any) => r.category === 'support')?.score || 0,
-      value: data.ratings?.find((r: any) => r.category === 'value')?.score || 0,
-    },
-    marketShare: data.market_share || 0,
-    keyFeatures: data.features?.map((f: any) => ({
-      title: f.title,
-      description: f.description,
-      icon: f.icon,
-    })) || [],
-    additionalInfo: {
-      easeOfUse: data.cms_additional_info?.[0]?.ease_of_use || "",
-      customization: data.cms_additional_info?.[0]?.customization || "",
-      seoAndPerformance: data.cms_additional_info?.[0]?.seo_and_performance || "",
-      security: data.cms_additional_info?.[0]?.security || "",
-      scalability: data.cms_additional_info?.[0]?.scalability || "",
-      communitySupport: data.cms_additional_info?.[0]?.community_support || "",
-      officialSupport: data.cms_additional_info?.[0]?.official_support || "",
-    },
-  };
-
-  return cms;
+  return transformCMSData(data);
 };
 
 export const getCMSBySlug = async (slug: string) => {
@@ -172,59 +125,12 @@ export const getCMSBySlug = async (slug: string) => {
     `)
     .eq('slug', slug)
     .eq('is_published', true)
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
+  if (!data) throw new Error("CMS not found");
 
-  // Transform the data similarly to getCMSList
-  const cms: CMS = {
-    id: data.id,
-    name: data.name,
-    description: data.description,
-    website: data.website,
-    imageUrl: data.image_url,
-    featured: data.featured || false,
-    slug: data.slug,
-    tags: data.tags || [],
-    features: data.features?.map((f: any) => f.title) || [],
-    pros: data.pros?.map((p: any) => p.description) || [],
-    cons: data.cons?.map((c: any) => c.description) || [],
-    techStack: data.tech_stack?.map((t: any) => t.name) || [],
-    performance: {
-      loadTime: data.performance_metrics?.find((p: any) => p.metric_name === 'load_time')?.value || 0,
-      serverResponse: data.performance_metrics?.find((p: any) => p.metric_name === 'server_response')?.value || 0,
-      resourceUsage: data.performance_metrics?.find((p: any) => p.metric_name === 'resource_usage')?.value || 0,
-    },
-    pricing: {
-      free: data.pricing?.some((p: any) => p.price === 0) || false,
-      startingPrice: Math.min(...(data.pricing?.map((p: any) => p.price) || [0])),
-      hasPremium: data.pricing?.some((p: any) => p.price > 0) || false,
-    },
-    ratings: {
-      overall: data.ratings?.find((r: any) => r.category === 'overall')?.score || 0,
-      easeOfUse: data.ratings?.find((r: any) => r.category === 'ease_of_use')?.score || 0,
-      features: data.ratings?.find((r: any) => r.category === 'features')?.score || 0,
-      support: data.ratings?.find((r: any) => r.category === 'support')?.score || 0,
-      value: data.ratings?.find((r: any) => r.category === 'value')?.score || 0,
-    },
-    marketShare: data.market_share || 0,
-    keyFeatures: data.features?.map((f: any) => ({
-      title: f.title,
-      description: f.description,
-      icon: f.icon,
-    })) || [],
-    additionalInfo: {
-      easeOfUse: data.cms_additional_info?.[0]?.ease_of_use || "",
-      customization: data.cms_additional_info?.[0]?.customization || "",
-      seoAndPerformance: data.cms_additional_info?.[0]?.seo_and_performance || "",
-      security: data.cms_additional_info?.[0]?.security || "",
-      scalability: data.cms_additional_info?.[0]?.scalability || "",
-      communitySupport: data.cms_additional_info?.[0]?.community_support || "",
-      officialSupport: data.cms_additional_info?.[0]?.official_support || "",
-    },
-  };
-
-  return cms;
+  return transformCMSData(data);
 };
 
 export const getCMSByTag = async (tag: string) => {
@@ -237,50 +143,15 @@ export const getCMSByTag = async (tag: string) => {
   const { data, error } = await supabase
     .from('cms')
     .select(`
-      id,
-      name,
-      description,
-      website,
-      image_url,
-      featured,
-      slug,
-      tags,
-      features (
-        title,
-        description,
-        icon
-      ),
-      performance_metrics (
-        metric_name,
-        value
-      ),
-      ratings (
-        category,
-        score
-      ),
-      pricing (
-        price,
-        plan_name
-      ),
-      tech_stack (
-        name
-      ),
-      pros (
-        description
-      ),
-      cons (
-        description
-      ),
-      market_share,
-      cms_additional_info (
-        ease_of_use,
-        customization,
-        seo_and_performance,
-        security,
-        scalability,
-        community_support,
-        official_support
-      )
+      *,
+      features (*),
+      performance_metrics (*),
+      ratings (*),
+      pricing (*),
+      tech_stack (*),
+      pros (*),
+      cons (*),
+      cms_additional_info (*)
     `)
     .contains('tags', [tag])
     .eq('is_published', true);
@@ -290,53 +161,7 @@ export const getCMSByTag = async (tag: string) => {
     throw error;
   }
 
-  // Transform the data to match the CMS type
-  return data.map((cms) => ({
-    id: cms.id,
-    name: cms.name,
-    description: cms.description,
-    website: cms.website,
-    imageUrl: cms.image_url,
-    featured: cms.featured || false,
-    slug: cms.slug,
-    tags: cms.tags || [],
-    features: cms.features?.map((f: any) => f.title) || [],
-    pros: cms.pros?.map((p: any) => p.description) || [],
-    cons: cms.cons?.map((c: any) => c.description) || [],
-    techStack: cms.tech_stack?.map((t: any) => t.name) || [],
-    performance: {
-      loadTime: cms.performance_metrics?.find((p: any) => p.metric_name === 'load_time')?.value || 0,
-      serverResponse: cms.performance_metrics?.find((p: any) => p.metric_name === 'server_response')?.value || 0,
-      resourceUsage: cms.performance_metrics?.find((p: any) => p.metric_name === 'resource_usage')?.value || 0,
-    },
-    pricing: {
-      free: cms.pricing?.some((p: any) => p.price === 0) || false,
-      startingPrice: Math.min(...(cms.pricing?.map((p: any) => p.price) || [0])),
-      hasPremium: cms.pricing?.some((p: any) => p.price > 0) || false,
-    },
-    ratings: {
-      overall: cms.ratings?.find((r: any) => r.category === 'overall')?.score || 0,
-      easeOfUse: cms.ratings?.find((r: any) => r.category === 'ease_of_use')?.score || 0,
-      features: cms.ratings?.find((r: any) => r.category === 'features')?.score || 0,
-      support: cms.ratings?.find((r: any) => r.category === 'support')?.score || 0,
-      value: cms.ratings?.find((r: any) => r.category === 'value')?.score || 0,
-    },
-    marketShare: cms.market_share || 0,
-    keyFeatures: cms.features?.map((f: any) => ({
-      title: f.title,
-      description: f.description,
-      icon: f.icon,
-    })) || [],
-    additionalInfo: {
-      easeOfUse: cms.cms_additional_info?.[0]?.ease_of_use || "",
-      customization: cms.cms_additional_info?.[0]?.customization || "",
-      seoAndPerformance: cms.cms_additional_info?.[0]?.seo_and_performance || "",
-      security: cms.cms_additional_info?.[0]?.security || "",
-      scalability: cms.cms_additional_info?.[0]?.scalability || "",
-      communitySupport: cms.cms_additional_info?.[0]?.community_support || "",
-      officialSupport: cms.cms_additional_info?.[0]?.official_support || "",
-    },
-  }));
+  return data.map(transformCMSData);
 };
 
 export const getAllTags = async () => {
@@ -365,11 +190,22 @@ export const getTagContent = async (tag: string) => {
     .from('tags')
     .select('id')
     .eq('slug', tag)
-    .single();
+    .maybeSingle();
 
   if (tagError) {
     console.error("Error fetching tag:", tagError);
     throw tagError;
+  }
+
+  if (!tagData) {
+    return {
+      bannerTitle: null,
+      bannerSubtitle: null,
+      metaTitle: null,
+      metaDescription: null,
+      introductionText: null,
+      categoryBenefits: [],
+    };
   }
 
   // Then get the content
