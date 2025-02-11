@@ -12,13 +12,15 @@ const CMSDirectory = () => {
   const { data: cmsList, isLoading, error } = useQuery({
     queryKey: ["cms-list"],
     queryFn: getCMSList,
-    onError: (error) => {
-      console.error("Error fetching CMS list:", error);
-      toast({
-        title: "Error loading CMS data",
-        description: "There was a problem loading the CMS directory. Please try again later.",
-        variant: "destructive",
-      });
+    meta: {
+      onError: (error: Error) => {
+        console.error("Error fetching CMS list:", error);
+        toast({
+          title: "Error loading CMS data",
+          description: "There was a problem loading the CMS directory. Please try again later.",
+          variant: "destructive",
+        });
+      },
     },
   });
 
@@ -102,4 +104,3 @@ const CMSDirectory = () => {
 };
 
 export default CMSDirectory;
-
