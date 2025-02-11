@@ -11,7 +11,7 @@ export const PopularCategories = () => {
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {["ecommerce", "blog", "enterprise", "portfolio"].map((category) => (
-            <Link key={category} to={`/best-for-${category}`}>
+            <Link key={category} to={`/categories/${category}`}>
               <Card className="p-6 text-center hover:shadow-md transition-all">
                 <h3 className="text-lg font-semibold capitalize mb-2">
                   {category}

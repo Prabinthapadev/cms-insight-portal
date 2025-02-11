@@ -45,8 +45,8 @@ export const SearchBar = ({
     setShowDropdown(!!searchQuery && suggestions?.length > 0);
   }, [searchQuery, suggestions]);
 
-  const handleSuggestionClick = (id: string) => {
-    navigate(`/cms/${id}`);
+  const handleSuggestionClick = (slug: string) => {
+    navigate(`/cms/${slug}`);
     setShowDropdown(false);
     onSearchChange("");
   };
@@ -92,7 +92,7 @@ export const SearchBar = ({
           {suggestions.map((cms) => (
             <button
               key={cms.id}
-              onClick={() => handleSuggestionClick(cms.id)}
+              onClick={() => handleSuggestionClick(cms.slug)}
               className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-start gap-3"
             >
               <div className="flex-1">
