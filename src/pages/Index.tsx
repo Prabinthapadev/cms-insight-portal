@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSList } from "@/services/cms";
+import { getPageSEO } from "@/services/seo";
+import { MetaTags } from "@/components/shared/MetaTags";
 import { HeroSection } from "@/components/cms/HeroSection";
 import { SearchResults } from "@/components/cms/SearchResults";
 import { FeaturedCMS } from "@/components/cms/FeaturedCMS";
@@ -12,9 +14,15 @@ import { Footer } from "@/components/cms/Footer";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
+
   const { data: cmsList, isLoading, error } = useQuery({
     queryKey: ["cms-list"],
     queryFn: getCMSList,
+  });
+
+  const { data: seoData } = useQuery({
+    queryKey: ["page-seo", "/"],
+    queryFn: () => getPageSEO("/"),
   });
 
   const handleSearch = (e: React.FormEvent) => {
@@ -55,6 +63,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
+      {seoData && <MetaTags seo={seoData} />}
       <HeroSection
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
