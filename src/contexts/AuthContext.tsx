@@ -22,7 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) {
         console.error("Error fetching profile:", error);
-        return null;
+        throw error;
       }
 
       console.log("Fetched profile:", profile);
@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return null;
     } catch (error) {
       console.error("Error in fetchProfile:", error);
-      return null;
+      throw error;
     }
   };
 
@@ -113,19 +113,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: { user: authUser }, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) {
-        toast({
-          title: "Error signing in",
-          description: error.message,
-          variant: "destructive",
-        });
-        throw error;
+      if (signInError) throw signInError;
+
+      if (authUser) {
+        const profile = await fetchProfile(authUser.id);
+        if (!profile) {
+          throw new Error("Unauthorized access");
+        }
       }
+
     } catch (error: any) {
       toast({
         title: "Error signing in",

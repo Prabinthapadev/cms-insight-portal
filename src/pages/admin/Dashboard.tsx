@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/contexts/AuthContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +22,18 @@ const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!user || user.role !== 'admin') {
+      navigate('/auth');
+      toast({
+        title: "Access Denied",
+        description: "You must be an admin to view this page.",
+        variant: "destructive",
+      });
+    }
+  }, [user, navigate, toast]);
+
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<{
     processed: number;
@@ -150,17 +161,6 @@ Example CMS,A powerful content management system,https://example.com,5.2,"headle
       updates: editForm,
     });
   };
-
-  if (!user || user.role !== 'admin') {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="p-6">
-          <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
-          <p>You don't have permission to access this page.</p>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto px-4 py-8">
