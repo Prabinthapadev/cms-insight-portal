@@ -23,8 +23,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .eq('id', session.user.id)
           .single();
 
-        if (profile) {
-          setUser(profile);
+        if (profile && (profile.role === 'admin' || profile.role === 'user')) {
+          setUser({
+            id: profile.id,
+            role: profile.role as 'admin' | 'user',
+            created_at: profile.created_at
+          });
         }
       }
       
@@ -42,8 +46,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .eq('id', session.user.id)
           .single();
 
-        if (profile) {
-          setUser(profile);
+        if (profile && (profile.role === 'admin' || profile.role === 'user')) {
+          setUser({
+            id: profile.id,
+            role: profile.role as 'admin' | 'user',
+            created_at: profile.created_at
+          });
         }
       } else {
         setUser(null);
