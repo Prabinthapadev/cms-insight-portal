@@ -2,11 +2,13 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
 
   const navItems = [
     { path: "/", label: "Home" },
@@ -27,7 +29,7 @@ const Navigation = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -42,6 +44,22 @@ const Navigation = () => {
                 {item.label}
               </Link>
             ))}
+            {user?.role === 'admin' ? (
+              <Link
+                to="/admin"
+                className="text-sm font-medium text-gray-600 hover:text-primary transition-colors"
+              >
+                Admin
+              </Link>
+            ) : (
+              <Link
+                to="/auth"
+                className="text-sm font-medium text-gray-600 hover:text-primary transition-colors flex items-center"
+              >
+                <LogIn className="w-4 h-4 mr-1" />
+                Login
+              </Link>
+            )}
           </div>
 
           {/* Mobile Navigation Button */}
@@ -76,6 +94,24 @@ const Navigation = () => {
                 {item.label}
               </Link>
             ))}
+            {user?.role === 'admin' ? (
+              <Link
+                to="/admin"
+                className="block py-2 text-sm font-medium text-gray-600 hover:text-primary transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Admin
+              </Link>
+            ) : (
+              <Link
+                to="/auth"
+                className="block py-2 text-sm font-medium text-gray-600 hover:text-primary transition-colors flex items-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <LogIn className="w-4 h-4 mr-1" />
+                Login
+              </Link>
+            )}
           </div>
         )}
       </div>
