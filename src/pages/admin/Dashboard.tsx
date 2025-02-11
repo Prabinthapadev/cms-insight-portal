@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/contexts/AuthContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -107,8 +106,8 @@ const Dashboard = () => {
   };
 
   const downloadTemplate = () => {
-    const template = `name,description,website,market_share,tags
-Example CMS,A powerful content management system,https://example.com,5.2,"headless,enterprise,nodejs"`;
+    const template = `name,description,website,market_share,tags,setup_difficulty,learning_curve,community_size,last_major_release,github_stars,documentation_quality,enterprise_ready,multilingual_support,api_support,hosting_options,template_engine,plugin_ecosystem,migration_tools,dedicated_hosting,cloud_hosting,self_hosting,free_ssl,cdn_integration,backup_restore,auto_updates,development_platform,release_frequency,support_channels,training_resources
+Example CMS,A powerful content management system,https://example.com,5.2,"headless,enterprise,nodejs",Easy,Moderate,10000,2023-12-01,5000,Excellent,true,true,true,"cloud,self-hosted",Handlebars,Extensive,"[db-migrate,content-migrate]",true,true,true,true,true,true,true,"[nodejs,typescript]",Monthly,"[github,discord,email]","[docs,video,webinars]"`;
     
     const blob = new Blob([template], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
