@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSById } from "@/services/cms";
@@ -32,12 +33,21 @@ import {
   DollarSign,
   ThumbsUp,
   ThumbsDown,
+  Server,
 } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const CMSProfile = () => {
   const { id } = useParams();
@@ -73,6 +83,12 @@ const CMSProfile = () => {
     { subject: "Overall", value: cms.ratings.overall },
   ];
 
+  const performanceMetrics = [
+    { label: "Load Time", value: `${cms.performance.loadTime}s`, icon: Clock },
+    { label: "Server Response", value: `${cms.performance.serverResponse}s`, icon: Server },
+    { label: "Resource Usage", value: `${cms.performance.resourceUsage}%`, icon: Cpu },
+  ];
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-7xl mx-auto">
@@ -81,7 +97,7 @@ const CMSProfile = () => {
           <div className="flex-1">
             <h1 className="text-4xl font-display font-bold mb-4">{cms.name}</h1>
             <p className="text-gray-600 mb-4">{cms.description}</p>
-            <div className="flex items-center space-x-4 mb-4">
+            <div className="flex flex-wrap items-center gap-4 mb-4">
               <div className="flex items-center">
                 <Star className="h-5 w-5 text-yellow-400 fill-current" />
                 <span className="ml-1 font-medium">
@@ -89,6 +105,9 @@ const CMSProfile = () => {
                 </span>
               </div>
               <Badge variant="secondary">Market Share: {cms.marketShare}%</Badge>
+              <Badge variant={cms.pricing.free ? "secondary" : "destructive"}>
+                {cms.pricing.free ? "Free" : `From $${cms.pricing.startingPrice}`}
+              </Badge>
             </div>
             <Button asChild className="mb-4">
               <a href={cms.website} target="_blank" rel="noopener noreferrer">
@@ -113,18 +132,72 @@ const CMSProfile = () => {
           </div>
         </div>
 
-        {/* Categories and Use Cases */}
+        {/* Performance Metrics */}
         <Card className="p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <Menu className="h-5 w-5 mr-2" /> Categories & Best For
+          <h2 className="text-xl font-semibold mb-6 flex items-center">
+            <Zap className="h-5 w-5 mr-2" /> Performance Metrics
           </h2>
-          <div className="flex flex-wrap gap-2">
-            {cms.tags.map((tag) => (
-              <Badge key={tag} variant="outline">
-                {tag}
-              </Badge>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {performanceMetrics.map(({ label, value, icon: Icon }) => (
+              <div key={label} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center">
+                  <Icon className="h-5 w-5 text-blue-500 mr-2" />
+                  <span className="text-gray-600">{label}</span>
+                </div>
+                <span className="font-semibold">{value}</span>
+              </div>
             ))}
           </div>
+        </Card>
+
+        {/* Detailed Ratings */}
+        <Card className="p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-6 flex items-center">
+            <Star className="h-5 w-5 mr-2" /> Detailed Ratings
+          </h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Category</TableHead>
+                <TableHead>Rating</TableHead>
+                <TableHead>Details</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>Ease of Use</TableCell>
+                <TableCell>{cms.ratings.easeOfUse.toFixed(1)}</TableCell>
+                <TableCell>{cms.additionalInfo.easeOfUse}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Features</TableCell>
+                <TableCell>{cms.ratings.features.toFixed(1)}</TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {cms.features.map((feature) => (
+                      <Badge variant="outline" key={feature}>
+                        {feature}
+                      </Badge>
+                    ))}
+                  </div>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Support</TableCell>
+                <TableCell>{cms.ratings.support.toFixed(1)}</TableCell>
+                <TableCell>{cms.additionalInfo.officialSupport}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Value</TableCell>
+                <TableCell>{cms.ratings.value.toFixed(1)}</TableCell>
+                <TableCell>
+                  {cms.pricing.free
+                    ? "Free version available"
+                    : `Starting from $${cms.pricing.startingPrice}`}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </Card>
 
         {/* Technology Stack */}
@@ -141,73 +214,36 @@ const CMSProfile = () => {
           </div>
         </Card>
 
-        {/* Key Features Expandable Sections */}
-        <div className="grid gap-4 mb-8">
-          {Object.entries(cms.additionalInfo).map(([key, value]) => (
-            <Collapsible key={key}>
-              <Card className="p-4">
-                <CollapsibleTrigger className="flex items-center justify-between w-full">
-                  <div className="flex items-center">
-                    {key === "easeOfUse" && <User className="h-5 w-5 mr-2" />}
-                    {key === "customization" && <Settings className="h-5 w-5 mr-2" />}
-                    {key === "seoAndPerformance" && <Zap className="h-5 w-5 mr-2" />}
-                    {key === "security" && <Shield className="h-5 w-5 mr-2" />}
-                    {key === "scalability" && <Cpu className="h-5 w-5 mr-2" />}
-                    {key === "communitySupport" && <MessageCircle className="h-5 w-5 mr-2" />}
-                    {key === "officialSupport" && <Headphones className="h-5 w-5 mr-2" />}
-                    <h3 className="text-lg font-medium">
-                      {key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}
-                    </h3>
-                  </div>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-4">
-                  <p className="text-gray-600">{value}</p>
-                </CollapsibleContent>
-              </Card>
-            </Collapsible>
-          ))}
-        </div>
-
-        {/* Performance Metrics */}
+        {/* Categories and Use Cases */}
         <Card className="p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <Clock className="h-5 w-5 mr-2" /> Performance Metrics
+            <Menu className="h-5 w-5 mr-2" /> Categories & Use Cases
           </h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            <div>
-              <p className="text-sm text-gray-600">Load Time</p>
-              <p className="text-2xl font-semibold">{cms.performance.loadTime}s</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Server Response</p>
-              <p className="text-2xl font-semibold">{cms.performance.serverResponse}s</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Resource Usage</p>
-              <p className="text-2xl font-semibold">{cms.performance.resourceUsage}%</p>
-            </div>
-          </div>
-        </Card>
-
-        {/* Pricing */}
-        <Card className="p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <DollarSign className="h-5 w-5 mr-2" /> Pricing
-          </h2>
-          <div className="space-y-2">
-            <div className="flex items-center">
-              <Badge variant={cms.pricing.free ? "secondary" : "destructive"}>
-                {cms.pricing.free ? "Free Version Available" : "Paid Only"}
+          <div className="flex flex-wrap gap-2">
+            {cms.tags.map((tag) => (
+              <Badge key={tag} variant="outline">
+                {tag}
               </Badge>
-            </div>
-            <p className="text-lg">
-              Starting from: {cms.pricing.startingPrice === 0 ? "Free" : `$${cms.pricing.startingPrice}`}
-            </p>
-            {cms.pricing.hasPremium && (
-              <p className="text-gray-600">Premium plans available</p>
-            )}
+            ))}
           </div>
         </Card>
+
+        {/* Security & Scalability */}
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4 flex items-center">
+              <Shield className="h-5 w-5 mr-2" /> Security
+            </h2>
+            <p className="text-gray-600">{cms.additionalInfo.security}</p>
+          </Card>
+
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4 flex items-center">
+              <Users className="h-5 w-5 mr-2" /> Scalability
+            </h2>
+            <p className="text-gray-600">{cms.additionalInfo.scalability}</p>
+          </Card>
+        </div>
 
         {/* Pros and Cons */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
