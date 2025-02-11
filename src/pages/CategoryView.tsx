@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCMSByTag } from "@/services/cms";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star } from "lucide-react";
+import { Star, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { useToast } from "@/components/ui/use-toast";
@@ -28,6 +28,28 @@ const CategoryView = () => {
     },
   });
 
+  // Generate comparison pairs for the current category
+  const generateComparisonPairs = () => {
+    if (!cmsList || cmsList.length < 2) return [];
+    
+    const pairs = [];
+    // Only get the first 4 CMS for comparisons
+    const cmsToCompare = cmsList.slice(0, 4);
+    
+    // Generate pairs between these CMS
+    for (let i = 0; i < cmsToCompare.length - 1; i++) {
+      for (let j = i + 1; j < cmsToCompare.length; j++) {
+        pairs.push({
+          cms1: cmsToCompare[i],
+          cms2: cmsToCompare[j],
+        });
+      }
+    }
+    
+    // Return only the first 3 pairs
+    return pairs.slice(0, 3);
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -40,6 +62,7 @@ const CategoryView = () => {
   }
 
   const formattedTag = tag?.replace(/-/g, ' ') || '';
+  const comparisonPairs = generateComparisonPairs();
 
   return (
     <>
@@ -84,6 +107,32 @@ const CategoryView = () => {
               </Link>
             ))}
           </div>
+
+          {comparisonPairs.length > 0 && (
+            <div className="mt-12">
+              <h2 className="text-2xl font-display font-bold mb-6">Popular Comparisons</h2>
+              <div className="space-y-4">
+                {comparisonPairs.map(({ cms1, cms2 }, index) => (
+                  <Link
+                    key={index}
+                    to={`/compare/${cms1.slug}-vs-${cms2.slug}`}
+                    className="block"
+                  >
+                    <Card className="p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <span className="font-medium">{cms1.name}</span>
+                          <ArrowRight className="h-4 w-4 text-gray-400" />
+                          <span className="font-medium">{cms2.name}</span>
+                        </div>
+                        <Badge variant="secondary">Compare</Badge>
+                      </div>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
