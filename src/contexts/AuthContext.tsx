@@ -1,8 +1,11 @@
 
+'use client'
+
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContextType, UserProfile } from "@/types/auth";
 import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -10,6 +13,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const router = useRouter();
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -76,6 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (event === 'SIGNED_OUT') {
         setUser(null);
+        router.push('/');
         setLoading(false);
         return;
       }
@@ -91,6 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   title: "Welcome Admin",
                   description: "You've successfully signed in.",
                 });
+                router.push('/admin');
               }
             } else {
               await supabase.auth.signOut();
@@ -109,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [toast]);
+  }, [toast, router]);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -153,6 +159,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         title: "Signed out",
         description: "You've been successfully signed out.",
       });
+      router.push('/');
     } catch (error: any) {
       toast({
         title: "Error signing out",
