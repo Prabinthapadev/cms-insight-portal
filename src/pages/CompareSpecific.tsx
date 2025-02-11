@@ -1,5 +1,5 @@
 
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSBySlug, getCMSList } from "@/services/cms";
 import { Card } from "@/components/ui/card";

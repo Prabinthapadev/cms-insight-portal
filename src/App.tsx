@@ -37,11 +37,10 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/cms" element={<CMSDirectory />} />
-              <Route path="/cms/:id" element={<CMSProfile />} />
+              <Route path="/cms/:name" element={<CMSProfile />} />
               <Route path="/compare" element={<Compare />} />
               <Route path="/compare/:slugs" element={<CompareSpecific />} />
-              <Route path="/categories" element={<Categories />} />
-              <Route path="/categories/:tag" element={<CategoryView />} />
+              <Route path="/cms/best-for-:tag" element={<CategoryView />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/admin" element={<Dashboard />} />
               <Route path="/sitemap" element={<Sitemap />} />
