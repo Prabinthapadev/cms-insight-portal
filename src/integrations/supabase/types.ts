@@ -99,6 +99,42 @@ export type Database = {
         }
         Relationships: []
       }
+      cms_imports: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          filename: string
+          id: string
+          records_failed: number | null
+          records_processed: number | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          filename: string
+          id?: string
+          records_failed?: number | null
+          records_processed?: number | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          filename?: string
+          id?: string
+          records_failed?: number | null
+          records_processed?: number | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       cms_tags: {
         Row: {
           cms_id: string

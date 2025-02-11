@@ -14,6 +14,7 @@ import CompareSpecific from "./pages/CompareSpecific";
 import Categories from "./pages/Categories";
 import CategoryView from "./pages/CategoryView";
 import Auth from "./pages/Auth";
+import Dashboard from "./pages/admin/Dashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="/categories" element={<Categories />} />
               <Route path="/categories/:tag" element={<CategoryView />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/admin" element={<Dashboard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
