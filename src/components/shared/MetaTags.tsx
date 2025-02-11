@@ -1,30 +1,36 @@
 
 import { Helmet } from "react-helmet";
 import { PageSEO } from "@/services/seo";
+import { useEffect, useState } from "react";
 
 interface MetaTagsProps {
   seo: PageSEO;
 }
 
 export const MetaTags = ({ seo }: MetaTagsProps) => {
-  const getDescription = () => {
-    if (seo.meta_description) return seo.meta_description;
-    
-    // Get the main content from the page
-    const mainContent = document.querySelector('main')?.textContent || 
-                       document.body.textContent || 
-                       "";
-    
-    // Clean up the text and get first 130 characters
-    const cleanText = mainContent
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, 130);
-    
-    return cleanText.length === 130 ? `${cleanText}...` : cleanText;
-  };
+  const [description, setDescription] = useState<string>("");
 
-  const description = getDescription();
+  useEffect(() => {
+    const getDescription = () => {
+      if (seo.meta_description) return seo.meta_description;
+      
+      // Get the main content from the page
+      const mainContent = document.querySelector('main')?.textContent || 
+                         document.body.textContent || 
+                         "";
+      
+      // Clean up the text and get first 130 characters
+      const cleanText = mainContent
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 130);
+      
+      return cleanText.length === 130 ? `${cleanText}...` : cleanText;
+    };
+
+    setDescription(getDescription());
+  }, [seo.meta_description]);
+
   const canonicalUrl = seo.meta_canonical || `${window.location.origin}${seo.url_pattern}`;
 
   return (
