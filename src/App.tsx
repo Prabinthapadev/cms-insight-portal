@@ -13,6 +13,7 @@ import Compare from "./pages/Compare";
 import CompareSpecific from "./pages/CompareSpecific";
 import Categories from "./pages/Categories";
 import CategoryView from "./pages/CategoryView";
+import DetectCMS from "./pages/DetectCMS";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/admin/Dashboard";
 import NotFound from "./pages/NotFound";
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/compare/:slugs" element={<CompareSpecific />} />
               <Route path="/categories" element={<Categories />} />
               <Route path="/categories/:tag" element={<CategoryView />} />
+              <Route path="/detect" element={<DetectCMS />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/admin" element={<Dashboard />} />
               <Route path="/sitemap" element={<Sitemap />} />
