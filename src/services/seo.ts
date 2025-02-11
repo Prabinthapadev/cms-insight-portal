@@ -18,6 +18,7 @@ export interface PageSEO {
   meta_twitter_image?: string;
   priority?: number;
   changefreq?: string;
+  updated_at?: string;
 }
 
 export const getPageSEO = async (urlPattern: string): Promise<PageSEO | null> => {
@@ -32,26 +33,34 @@ export const getPageSEO = async (urlPattern: string): Promise<PageSEO | null> =>
     return null;
   }
 
+  // Ensure canonical URL is set
+  const canonical = data.meta_canonical || `${window.location.origin}${data.url_pattern}`;
+
   return {
     ...data,
     meta_og_title: data.meta_og_title || data.meta_title,
     meta_og_description: data.meta_og_description || data.meta_description,
     meta_twitter_title: data.meta_twitter_title || data.meta_title,
     meta_twitter_description: data.meta_twitter_description || data.meta_description,
-    meta_canonical: data.meta_canonical || window.location.href,
+    meta_canonical: canonical,
   };
 };
 
 export const updatePageSEO = async (seoData: PageSEO): Promise<void> => {
+  // Ensure canonical URL is set before saving
+  const dataToSave = {
+    ...seoData,
+    meta_canonical: seoData.meta_canonical || `${window.location.origin}${seoData.url_pattern}`,
+    updated_at: new Date().toISOString(),
+  };
+
   const { error } = await supabase
     .from('page_seo')
-    .upsert({
-      ...seoData,
-      updated_at: new Date().toISOString(),
-    });
+    .upsert(dataToSave);
 
   if (error) {
     console.error('Error updating page SEO:', error);
     throw error;
   }
 };
+

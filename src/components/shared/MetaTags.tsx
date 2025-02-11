@@ -7,7 +7,7 @@ interface MetaTagsProps {
 }
 
 export const MetaTags = ({ seo }: MetaTagsProps) => {
-  const canonicalUrl = seo.meta_canonical || window.location.href;
+  const canonicalUrl = seo.meta_canonical || `${window.location.origin}${seo.url_pattern}`;
 
   return (
     <Helmet>
@@ -34,8 +34,14 @@ export const MetaTags = ({ seo }: MetaTagsProps) => {
       <meta name="twitter:description" content={seo.meta_twitter_description || seo.meta_description} />
       {seo.meta_twitter_image && <meta name="twitter:image" content={seo.meta_twitter_image} />}
       
+      {/* Cache Control */}
+      <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+      <meta http-equiv="Pragma" content="no-cache" />
+      <meta http-equiv="Expires" content="0" />
+      
       {/* Robots Meta Tag */}
       {seo.meta_robots && <meta name="robots" content={seo.meta_robots} />}
     </Helmet>
   );
 };
+
