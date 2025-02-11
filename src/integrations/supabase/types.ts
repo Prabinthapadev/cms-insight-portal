@@ -543,6 +543,8 @@ export type Database = {
       }
       tag_content: {
         Row: {
+          banner_subtitle: string | null
+          banner_title: string | null
           content: string | null
           content_type: string
           created_at: string | null
@@ -554,6 +556,8 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          banner_subtitle?: string | null
+          banner_title?: string | null
           content?: string | null
           content_type: string
           created_at?: string | null
@@ -565,6 +569,8 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          banner_subtitle?: string | null
+          banner_title?: string | null
           content?: string | null
           content_type?: string
           created_at?: string | null
