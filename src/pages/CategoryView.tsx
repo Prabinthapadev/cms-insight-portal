@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSByTag } from "@/services/cms";
@@ -12,14 +13,9 @@ const CategoryView = () => {
   const { tag } = useParams();
   const { toast } = useToast();
   
-  const { data: cmsList, isLoading, refetch } = useQuery({
+  const { data: cmsList, isLoading } = useQuery({
     queryKey: ["cms-by-tag", tag],
     queryFn: () => getCMSByTag(tag as string),
-    staleTime: 1000 * 60 * 5, // Data stays fresh for 5 minutes
-    gcTime: 1000 * 60 * 30, // Cache persists for 30 minutes (formerly cacheTime)
-    refetchOnMount: true, // Refetch when component mounts
-    refetchOnWindowFocus: true, // Refetch when window gains focus
-    retry: 3, // Retry failed requests 3 times
     meta: {
       onError: (error: Error) => {
         console.error("Error fetching CMS by tag:", error);
