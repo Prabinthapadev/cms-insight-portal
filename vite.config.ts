@@ -21,12 +21,17 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Enable minification
+    // Enable minification with terser
     minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
+        pure_funcs: ['console.log'],
+      },
+      mangle: true,
+      format: {
+        comments: false,
       },
     },
     // Enable code splitting
