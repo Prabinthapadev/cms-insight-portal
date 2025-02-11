@@ -6,8 +6,9 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { MetaTags } from "@/components/shared/MetaTags";
 import { useToast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const CategoryView = () => {
   const { tag } = useParams();
@@ -16,6 +17,8 @@ const CategoryView = () => {
   const { data: cmsList, isLoading: cmsLoading } = useQuery({
     queryKey: ["cms-by-tag", tag],
     queryFn: () => getCMSByTag(tag as string),
+    staleTime: 1000 * 60 * 5, // Data stays fresh for 5 minutes
+    gcTime: 1000 * 60 * 60, // Keep unused data in cache for 1 hour
     meta: {
       onError: (error: Error) => {
         console.error("Error fetching CMS by tag:", error);
@@ -31,6 +34,8 @@ const CategoryView = () => {
   const { data: tagContent, isLoading: contentLoading } = useQuery({
     queryKey: ["tag-content", tag],
     queryFn: () => getTagContent(tag as string),
+    staleTime: 1000 * 60 * 5, // Data stays fresh for 5 minutes
+    gcTime: 1000 * 60 * 60, // Keep unused data in cache for 1 hour
     meta: {
       onError: (error: Error) => {
         console.error("Error fetching tag content:", error);
@@ -43,53 +48,45 @@ const CategoryView = () => {
     },
   });
 
-  // Sort CMS list by overall rating
+  const formattedTag = tag?.replace(/-/g, ' ') || '';
   const sortedCMSList = cmsList?.sort((a, b) => b.ratings.overall - a.ratings.overall);
+  const comparisonPairs = generateComparisonPairs(sortedCMSList);
 
-  // Generate comparison pairs for the current category
-  const generateComparisonPairs = () => {
-    if (!sortedCMSList || sortedCMSList.length < 2) return [];
-    
-    const pairs = [];
-    // Only get the first 4 CMS for comparisons
-    const cmsToCompare = sortedCMSList.slice(0, 4);
-    
-    // Generate pairs between these CMS
-    for (let i = 0; i < cmsToCompare.length - 1; i++) {
-      for (let j = i + 1; j < cmsToCompare.length; j++) {
-        pairs.push({
-          cms1: cmsToCompare[i],
-          cms2: cmsToCompare[j],
-        });
-      }
-    }
-    
-    // Return only the first 3 pairs
-    return pairs.slice(0, 3);
-  };
-
+  // Loading skeleton UI
   if (cmsLoading || contentLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-100 w-1/4 rounded" />
-          <div className="h-48 bg-gray-100 rounded" />
+        <div className="max-w-3xl mx-auto">
+          <Skeleton className="h-12 w-3/4 mx-auto mb-4" />
+          <Skeleton className="h-6 w-2/3 mx-auto mb-12" />
+          <Skeleton className="h-32 w-full mb-6" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-24 w-full" />
+            ))}
+          </div>
+          <div className="space-y-6">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-48 w-full" />
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
-  const formattedTag = tag?.replace(/-/g, ' ') || '';
-  const comparisonPairs = generateComparisonPairs();
-
   return (
     <>
-      <Helmet>
-        <title>{tagContent?.metaTitle || `Best CMS for ${formattedTag}`} | CMS Platform Comparison</title>
-        <meta name="description" content={tagContent?.metaDescription || `Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`} />
-        <meta name="keywords" content={`CMS for ${formattedTag}, best CMS ${formattedTag}, content management system ${formattedTag}`} />
-        <link rel="canonical" href={window.location.href} />
-      </Helmet>
+      <MetaTags 
+        seo={{
+          url_pattern: `/categories/${tag}`,
+          meta_title: tagContent?.metaTitle || `Best CMS for ${formattedTag}`,
+          meta_description: tagContent?.metaDescription || `Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`,
+          meta_keywords: [`CMS for ${formattedTag}`, `best CMS ${formattedTag}`, `content management system ${formattedTag}`],
+          meta_robots: "index,follow",
+          meta_canonical: `${window.location.origin}/categories/${tag}`,
+        }} 
+      />
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
@@ -126,10 +123,10 @@ const CategoryView = () => {
             </div>
           )}
 
-          {/* CMS List */}
+          {/* CMS List with virtualization for long lists */}
           <div className="space-y-6">
             {sortedCMSList?.map((cms, index) => (
-              <Link key={cms.id} to={`/cms/${cms.slug}`}>
+              <Link key={cms.id} to={`/cms/${cms.slug}`} className="block">
                 <Card className="p-6 hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start">
                     <div>
@@ -145,7 +142,7 @@ const CategoryView = () => {
                       </div>
                       <p className="text-gray-600 mb-4">{cms.description}</p>
                       <div className="flex flex-wrap gap-2">
-                        {cms.tags.map((tag) => (
+                        {cms.tags.slice(0, 5).map((tag) => (
                           <Badge key={tag} variant="secondary">
                             {tag}
                           </Badge>
@@ -199,6 +196,28 @@ const CategoryView = () => {
       </div>
     </>
   );
+};
+
+// Helper function to generate comparison pairs
+const generateComparisonPairs = (cmsList?: CMS[]) => {
+  if (!cmsList || cmsList.length < 2) return [];
+  
+  const pairs = [];
+  // Only get the first 4 CMS for comparisons
+  const cmsToCompare = cmsList.slice(0, 4);
+  
+  // Generate pairs between these CMS
+  for (let i = 0; i < cmsToCompare.length - 1; i++) {
+    for (let j = i + 1; j < cmsToCompare.length; j++) {
+      pairs.push({
+        cms1: cmsToCompare[i],
+        cms2: cmsToCompare[j],
+      });
+    }
+  }
+  
+  // Return only the first 3 pairs
+  return pairs.slice(0, 3);
 };
 
 export default CategoryView;

@@ -232,25 +232,33 @@ export const getCMSByTag = async (tag: string) => {
     throw new Error("Tag is required");
   }
 
+  console.log("Fetching CMS by tag:", tag);
+  
   const { data, error } = await supabase
     .from('cms')
     .select(`
-      *,
-      features (*),
-      performance_metrics (*),
-      ratings (*),
-      pricing (*),
-      tech_stack (*),
-      pros (*),
-      cons (*),
-      cms_additional_info (*)
+      id,
+      name,
+      description,
+      website,
+      image_url,
+      featured,
+      slug,
+      tags,
+      ratings (
+        category,
+        score
+      )
     `)
     .contains('tags', [tag])
     .eq('is_published', true);
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error fetching CMS by tag:", error);
+    throw error;
+  }
 
-  // Transform the data similarly to getCMSList
+  // Transform the data to match the CMS type, but only include necessary fields
   return data.map((cms) => ({
     id: cms.id,
     name: cms.name,
@@ -260,42 +268,13 @@ export const getCMSByTag = async (tag: string) => {
     featured: cms.featured || false,
     slug: cms.slug,
     tags: cms.tags || [],
-    features: cms.features?.map((f: any) => f.title) || [],
-    pros: cms.pros?.map((p: any) => p.description) || [],
-    cons: cms.cons?.map((c: any) => c.description) || [],
-    techStack: cms.tech_stack?.map((t: any) => t.name) || [],
-    performance: {
-      loadTime: cms.performance_metrics?.find((p: any) => p.metric_name === 'load_time')?.value || 0,
-      serverResponse: cms.performance_metrics?.find((p: any) => p.metric_name === 'server_response')?.value || 0,
-      resourceUsage: cms.performance_metrics?.find((p: any) => p.metric_name === 'resource_usage')?.value || 0,
-    },
-    pricing: {
-      free: cms.pricing?.some((p: any) => p.price === 0) || false,
-      startingPrice: Math.min(...(cms.pricing?.map((p: any) => p.price) || [0])),
-      hasPremium: cms.pricing?.some((p: any) => p.price > 0) || false,
-    },
     ratings: {
       overall: cms.ratings?.find((r: any) => r.category === 'overall')?.score || 0,
       easeOfUse: cms.ratings?.find((r: any) => r.category === 'ease_of_use')?.score || 0,
       features: cms.ratings?.find((r: any) => r.category === 'features')?.score || 0,
       support: cms.ratings?.find((r: any) => r.category === 'support')?.score || 0,
       value: cms.ratings?.find((r: any) => r.category === 'value')?.score || 0,
-    },
-    marketShare: cms.market_share || 0,
-    keyFeatures: cms.features?.map((f: any) => ({
-      title: f.title,
-      description: f.description,
-      icon: f.icon,
-    })) || [],
-    additionalInfo: {
-      easeOfUse: cms.cms_additional_info?.[0]?.ease_of_use || "",
-      customization: cms.cms_additional_info?.[0]?.customization || "",
-      seoAndPerformance: cms.cms_additional_info?.[0]?.seo_and_performance || "",
-      security: cms.cms_additional_info?.[0]?.security || "",
-      scalability: cms.cms_additional_info?.[0]?.scalability || "",
-      communitySupport: cms.cms_additional_info?.[0]?.community_support || "",
-      officialSupport: cms.cms_additional_info?.[0]?.official_support || "",
-    },
+    }
   }));
 };
 
@@ -319,17 +298,32 @@ export const getAllTags = async () => {
 
 export const getTagContent = async (tag: string) => {
   console.log("Fetching tag content for:", tag);
+  
+  // First get the tag ID
+  const { data: tagData, error: tagError } = await supabase
+    .from('tags')
+    .select('id')
+    .eq('slug', tag)
+    .single();
+
+  if (tagError) {
+    console.error("Error fetching tag:", tagError);
+    throw tagError;
+  }
+
+  // Then get the content
   const { data, error } = await supabase
     .from('tag_content')
-    .select('*')
+    .select(`
+      banner_title,
+      banner_subtitle,
+      meta_title,
+      meta_description,
+      introduction_text,
+      category_benefits
+    `)
     .eq('content_type', 'category')
-    .eq('tag_id', (
-      await supabase
-        .from('tags')
-        .select('id')
-        .eq('slug', tag)
-        .single()
-    ).data?.id)
+    .eq('tag_id', tagData.id)
     .maybeSingle();
 
   if (error) {
@@ -337,7 +331,6 @@ export const getTagContent = async (tag: string) => {
     throw error;
   }
 
-  console.log("Tag content data:", data);
   return {
     bannerTitle: data?.banner_title || null,
     bannerSubtitle: data?.banner_subtitle || null,
