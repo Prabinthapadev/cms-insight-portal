@@ -18,7 +18,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("Error fetching profile:", error);
@@ -27,7 +27,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       console.log("Fetched profile:", profile);
 
-      if (profile && (profile.role === 'admin' || profile.role === 'user')) {
+      if (!profile) {
+        // Create a new profile if one doesn't exist
+        const { data: newProfile, error: insertError } = await supabase
+          .from('profiles')
+          .insert([{ id: userId, role: 'user' }])
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error("Error creating profile:", insertError);
+          throw insertError;
+        }
+
+        return {
+          id: newProfile.id,
+          role: newProfile.role as 'admin' | 'user',
+          created_at: newProfile.created_at
+        };
+      }
+
+      if (profile.role === 'admin' || profile.role === 'user') {
         return {
           id: profile.id,
           role: profile.role as 'admin' | 'user',
