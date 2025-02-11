@@ -14,8 +14,10 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
-      },
+      }
     },
+    outDir: 'dist',
+    assetsDir: 'assets',
   },
   plugins: [
     react(),
@@ -25,6 +27,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "/entry-client.tsx": path.resolve(__dirname, "./src/entry-client.tsx")
     },
   },
 }));
