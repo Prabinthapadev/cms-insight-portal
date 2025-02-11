@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import CMSDirectory from "./pages/CMSDirectory";
 import CMSProfile from "./pages/CMSProfile";
 import Compare from "./pages/Compare";
+import CompareSpecific from "./pages/CompareSpecific";
 import Categories from "./pages/Categories";
 import CategoryView from "./pages/CategoryView";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/cms" element={<CMSDirectory />} />
             <Route path="/cms/:id" element={<CMSProfile />} />
             <Route path="/compare" element={<Compare />} />
+            <Route path="/compare/:cms1Id/:cms2Id" element={<CompareSpecific />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/categories/:tag" element={<CategoryView />} />
             <Route path="*" element={<NotFound />} />

@@ -2,12 +2,36 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCMSList } from "@/services/cms";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Star,
+  ArrowRight,
+  Clock,
+  Zap,
+  DollarSign,
+  Users,
+} from "lucide-react";
 
 const Compare = () => {
+  const navigate = useNavigate();
   const { data: cmsList, isLoading } = useQuery({
     queryKey: ["cms-list"],
     queryFn: getCMSList,
   });
+
+  const handleCompareSpecific = (cms1: string, cms2: string) => {
+    navigate(`/compare/${cms1}/${cms2}`);
+  };
 
   if (isLoading) {
     return (
@@ -24,38 +48,130 @@ const Compare = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-display font-bold mb-8">Compare CMS</h1>
-        <Card className="p-6 overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left py-4">Name</th>
-                <th className="text-left py-4">Overall Rating</th>
-                <th className="text-left py-4">Free</th>
-                <th className="text-left py-4">Starting Price</th>
-                <th className="text-left py-4">Load Time</th>
-                <th className="text-left py-4">Server Response</th>
-              </tr>
-            </thead>
-            <tbody>
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-display font-bold mb-8">CMS Comparison</h1>
+
+        {/* Main Comparison Table */}
+        <Card className="p-6 mb-8 overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>CMS</TableHead>
+                <TableHead>Rating</TableHead>
+                <TableHead>Market Share</TableHead>
+                <TableHead>Performance</TableHead>
+                <TableHead>Pricing</TableHead>
+                <TableHead>Key Features</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {cmsList.map((cms) => (
-                <tr key={cms.id} className="border-b">
-                  <td className="py-4">{cms.name}</td>
-                  <td className="py-4">{cms.ratings.overall.toFixed(1)}</td>
-                  <td className="py-4">{cms.pricing.free ? "Yes" : "No"}</td>
-                  <td className="py-4">
-                    {cms.pricing.startingPrice
-                      ? `$${cms.pricing.startingPrice}`
-                      : "Free"}
-                  </td>
-                  <td className="py-4">{cms.performance.loadTime}s</td>
-                  <td className="py-4">{cms.performance.serverResponse}s</td>
-                </tr>
+                <TableRow key={cms.id}>
+                  <TableCell className="font-medium">{cms.name}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center">
+                      <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
+                      {cms.ratings.overall.toFixed(1)}
+                    </div>
+                  </TableCell>
+                  <TableCell>{cms.marketShare}%</TableCell>
+                  <TableCell>
+                    <div className="flex items-center">
+                      <Clock className="h-4 w-4 mr-1" />
+                      {cms.performance.loadTime}s
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={cms.pricing.free ? "secondary" : "destructive"}>
+                      {cms.pricing.free ? "Free" : `$${cms.pricing.startingPrice}`}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {cms.features.slice(0, 2).map((feature) => (
+                        <Badge variant="outline" key={feature}>
+                          {feature}
+                        </Badge>
+                      ))}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/cms/${cms.id}`)}
+                      >
+                        Details
+                      </Button>
+                      {cmsList.length > 1 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            handleCompareSpecific(
+                              cms.id,
+                              cmsList.find((c) => c.id !== cms.id)?.id || ""
+                            )
+                          }
+                        >
+                          Compare
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </Card>
+
+        {/* Quick Comparison Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {cmsList.map((cms) => (
+            <Card key={cms.id} className="p-6">
+              <h3 className="text-xl font-semibold mb-4">{cms.name}</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Performance</span>
+                  <div className="flex items-center">
+                    <Zap className="h-4 w-4 mr-1 text-blue-500" />
+                    {cms.performance.loadTime}s
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Rating</span>
+                  <div className="flex items-center">
+                    <Star className="h-4 w-4 mr-1 text-yellow-400 fill-current" />
+                    {cms.ratings.overall.toFixed(1)}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Market Share</span>
+                  <div className="flex items-center">
+                    <Users className="h-4 w-4 mr-1 text-green-500" />
+                    {cms.marketShare}%
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Pricing</span>
+                  <div className="flex items-center">
+                    <DollarSign className="h-4 w-4 mr-1 text-purple-500" />
+                    {cms.pricing.free ? "Free" : `From $${cms.pricing.startingPrice}`}
+                  </div>
+                </div>
+              </div>
+              <Button
+                className="w-full mt-4"
+                variant="outline"
+                onClick={() => navigate(`/cms/${cms.id}`)}
+              >
+                View Details <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );
