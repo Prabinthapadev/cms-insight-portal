@@ -16,8 +16,22 @@ export type Database = {
           featured: boolean | null
           id: string
           image_url: string | null
+          is_published: boolean | null
           market_share: number | null
+          meta_canonical: string | null
+          meta_description: string | null
+          meta_keywords: string[] | null
+          meta_og_description: string | null
+          meta_og_image: string | null
+          meta_og_title: string | null
+          meta_robots: string | null
+          meta_title: string | null
+          meta_twitter_card: string | null
+          meta_twitter_description: string | null
+          meta_twitter_image: string | null
+          meta_twitter_title: string | null
           name: string
+          published_at: string | null
           seo_description: string | null
           seo_keywords: string[] | null
           seo_title: string | null
@@ -31,8 +45,22 @@ export type Database = {
           featured?: boolean | null
           id?: string
           image_url?: string | null
+          is_published?: boolean | null
           market_share?: number | null
+          meta_canonical?: string | null
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          meta_og_description?: string | null
+          meta_og_image?: string | null
+          meta_og_title?: string | null
+          meta_robots?: string | null
+          meta_title?: string | null
+          meta_twitter_card?: string | null
+          meta_twitter_description?: string | null
+          meta_twitter_image?: string | null
+          meta_twitter_title?: string | null
           name: string
+          published_at?: string | null
           seo_description?: string | null
           seo_keywords?: string[] | null
           seo_title?: string | null
@@ -46,8 +74,22 @@ export type Database = {
           featured?: boolean | null
           id?: string
           image_url?: string | null
+          is_published?: boolean | null
           market_share?: number | null
+          meta_canonical?: string | null
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          meta_og_description?: string | null
+          meta_og_image?: string | null
+          meta_og_title?: string | null
+          meta_robots?: string | null
+          meta_title?: string | null
+          meta_twitter_card?: string | null
+          meta_twitter_description?: string | null
+          meta_twitter_image?: string | null
+          meta_twitter_title?: string | null
           name?: string
+          published_at?: string | null
           seo_description?: string | null
           seo_keywords?: string[] | null
           seo_title?: string | null
