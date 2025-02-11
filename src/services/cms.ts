@@ -1,4 +1,3 @@
-
 import { CMS } from "@/types/cms";
 
 export const mockCMSData: CMS[] = [
@@ -45,6 +44,33 @@ export const mockCMSData: CMS[] = [
       support: 4.2,
       value: 4.7,
     },
+    marketShare: 43,
+    keyFeatures: [
+      {
+        title: "Plugin Ecosystem",
+        description: "Access to over 59,000 free plugins for extending functionality",
+        icon: "settings"
+      },
+      {
+        title: "Theme System",
+        description: "Thousands of free and premium themes available",
+        icon: "users"
+      },
+      {
+        title: "Security",
+        description: "Regular security updates and robust community monitoring",
+        icon: "shield"
+      }
+    ],
+    additionalInfo: {
+      easeOfUse: "WordPress features an intuitive interface suitable for beginners while offering advanced capabilities for experts.",
+      customization: "Highly customizable through themes, plugins, and direct code access.",
+      seoAndPerformance: "Built-in SEO features with additional optimization through popular plugins like Yoast SEO.",
+      security: "Regular security updates and a dedicated security team, with additional security through plugins.",
+      scalability: "Can handle high-traffic websites with proper optimization and hosting.",
+      communitySupport: "Large, active community with numerous forums, blogs, and resources.",
+      officialSupport: "Documentation, forums, and premium support available through hosting partners.",
+    }
   },
   {
     id: "drupal",
@@ -89,6 +115,33 @@ export const mockCMSData: CMS[] = [
       support: 4.0,
       value: 4.5,
     },
+    marketShare: 15,
+    keyFeatures: [
+      {
+        title: "Content Management",
+        description: "Flexible content types and user roles for complex sites",
+        icon: "settings"
+      },
+      {
+        title: "Security Features",
+        description: "Robust security features and regular updates",
+        icon: "shield"
+      },
+      {
+        title: "Scalability",
+        description: "Designed to handle high-traffic sites with ease",
+        icon: "zap"
+      }
+    ],
+    additionalInfo: {
+      easeOfUse: "Drupal has a steeper learning curve but offers powerful features for advanced users.",
+      customization: "Highly customizable with a variety of modules and themes.",
+      seoAndPerformance: "Strong SEO capabilities with various modules available.",
+      security: "Known for its strong security features and regular updates.",
+      scalability: "Can scale to handle large amounts of traffic with proper configuration.",
+      communitySupport: "Active community with extensive documentation and forums.",
+      officialSupport: "Official support available through various service providers.",
+    }
   },
 ];
 

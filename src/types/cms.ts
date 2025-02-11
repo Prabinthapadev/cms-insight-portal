@@ -4,6 +4,7 @@ export interface CMS {
   name: string;
   description: string;
   website: string;
+  imageUrl?: string;
   tags: string[];
   features: string[];
   pros: string[];
@@ -16,7 +17,7 @@ export interface CMS {
   };
   pricing: {
     free: boolean;
-    startingPrice: number | null;
+    startingPrice: number;
     hasPremium: boolean;
   };
   ratings: {
@@ -25,5 +26,20 @@ export interface CMS {
     features: number;
     support: number;
     value: number;
+  };
+  marketShare: number;
+  keyFeatures: {
+    title: string;
+    description: string;
+    icon: string;
+  }[];
+  additionalInfo: {
+    easeOfUse: string;
+    customization: string;
+    seoAndPerformance: string;
+    security: string;
+    scalability: string;
+    communitySupport: string;
+    officialSupport: string;
   };
 }
