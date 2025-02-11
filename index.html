@@ -8,11 +8,6 @@
     <meta name="author" content="Lovable" />
     <meta property="og:image" content="/og-image.png" />
     
-    <!-- Modern fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -20,9 +15,9 @@
   </head>
 
   <body>
-    <div id="root"><!--ssr-outlet--></div>
-    <!-- Lovable Select Feature Script -->
+    <div id="root"></div>
+    <!-- GPT Engineer script must be before main.tsx -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="/entry-client.tsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
