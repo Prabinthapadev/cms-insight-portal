@@ -11,7 +11,10 @@ export const getCMSList = async () => {
       performance_metrics (*),
       ratings (*),
       pricing (*),
-      tech_stack (*)
+      tech_stack (*),
+      pros (*),
+      cons (*),
+      cms_additional_info (*)
     `)
     .eq('is_published', true);
 
@@ -27,8 +30,8 @@ export const getCMSList = async () => {
     featured: cms.featured || false,
     tags: cms.tags || [],
     features: cms.features?.map((f: any) => f.title) || [],
-    pros: [], // TODO: Add pros table
-    cons: [], // TODO: Add cons table
+    pros: cms.pros?.map((p: any) => p.description) || [],
+    cons: cms.cons?.map((c: any) => c.description) || [],
     techStack: cms.tech_stack?.map((t: any) => t.name) || [],
     performance: {
       loadTime: cms.performance_metrics?.find((p: any) => p.metric_name === 'load_time')?.value || 0,
@@ -54,13 +57,13 @@ export const getCMSList = async () => {
       icon: f.icon,
     })) || [],
     additionalInfo: {
-      easeOfUse: "", // TODO: Add additional info table
-      customization: "",
-      seoAndPerformance: "",
-      security: "",
-      scalability: "",
-      communitySupport: "",
-      officialSupport: "",
+      easeOfUse: cms.cms_additional_info?.[0]?.ease_of_use || "",
+      customization: cms.cms_additional_info?.[0]?.customization || "",
+      seoAndPerformance: cms.cms_additional_info?.[0]?.seo_and_performance || "",
+      security: cms.cms_additional_info?.[0]?.security || "",
+      scalability: cms.cms_additional_info?.[0]?.scalability || "",
+      communitySupport: cms.cms_additional_info?.[0]?.community_support || "",
+      officialSupport: cms.cms_additional_info?.[0]?.official_support || "",
     },
   }));
 
@@ -76,7 +79,10 @@ export const getCMSById = async (id: string) => {
       performance_metrics (*),
       ratings (*),
       pricing (*),
-      tech_stack (*)
+      tech_stack (*),
+      pros (*),
+      cons (*),
+      cms_additional_info (*)
     `)
     .eq('id', id)
     .eq('is_published', true)
@@ -94,8 +100,8 @@ export const getCMSById = async (id: string) => {
     featured: data.featured || false,
     tags: data.tags || [],
     features: data.features?.map((f: any) => f.title) || [],
-    pros: [], // TODO: Add pros table
-    cons: [], // TODO: Add cons table
+    pros: data.pros?.map((p: any) => p.description) || [],
+    cons: data.cons?.map((c: any) => c.description) || [],
     techStack: data.tech_stack?.map((t: any) => t.name) || [],
     performance: {
       loadTime: data.performance_metrics?.find((p: any) => p.metric_name === 'load_time')?.value || 0,
@@ -121,13 +127,13 @@ export const getCMSById = async (id: string) => {
       icon: f.icon,
     })) || [],
     additionalInfo: {
-      easeOfUse: "", // TODO: Add additional info table
-      customization: "",
-      seoAndPerformance: "",
-      security: "",
-      scalability: "",
-      communitySupport: "",
-      officialSupport: "",
+      easeOfUse: data.cms_additional_info?.[0]?.ease_of_use || "",
+      customization: data.cms_additional_info?.[0]?.customization || "",
+      seoAndPerformance: data.cms_additional_info?.[0]?.seo_and_performance || "",
+      security: data.cms_additional_info?.[0]?.security || "",
+      scalability: data.cms_additional_info?.[0]?.scalability || "",
+      communitySupport: data.cms_additional_info?.[0]?.community_support || "",
+      officialSupport: data.cms_additional_info?.[0]?.official_support || "",
     },
   };
 
