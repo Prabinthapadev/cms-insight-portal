@@ -1,8 +1,8 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { CMS } from "@/types/cms";
 
 export const getCMSList = async () => {
+  console.log("Fetching CMS list...");
   const { data, error } = await supabase
     .from('cms')
     .select(`
@@ -18,7 +18,12 @@ export const getCMSList = async () => {
     `)
     .eq('is_published', true);
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error fetching CMS list:", error);
+    throw error;
+  }
+
+  console.log("Raw CMS data:", data);
 
   // Transform the data to match the CMS type
   const transformedData: CMS[] = data.map((cms) => ({
@@ -67,6 +72,7 @@ export const getCMSList = async () => {
     },
   }));
 
+  console.log("Transformed CMS data:", transformedData);
   return transformedData;
 };
 

@@ -5,11 +5,21 @@ import { getCMSList } from "@/services/cms";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const CMSDirectory = () => {
-  const { data: cmsList, isLoading } = useQuery({
+  const { toast } = useToast();
+  const { data: cmsList, isLoading, error } = useQuery({
     queryKey: ["cms-list"],
     queryFn: getCMSList,
+    onError: (error) => {
+      console.error("Error fetching CMS list:", error);
+      toast({
+        title: "Error loading CMS data",
+        description: "There was a problem loading the CMS directory. Please try again later.",
+        variant: "destructive",
+      });
+    },
   });
 
   if (isLoading) {
@@ -27,12 +37,38 @@ const CMSDirectory = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-3xl font-display font-bold mb-4">Error Loading CMS Directory</h1>
+          <p className="text-gray-600 mb-4">
+            There was a problem loading the CMS directory. Please try again later.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!cmsList || cmsList.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-3xl font-display font-bold mb-4">CMS Directory</h1>
+          <p className="text-gray-600 mb-4">
+            No CMS entries found. Please check back later.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-display font-bold mb-8">CMS Directory</h1>
         <div className="space-y-6">
-          {cmsList?.map((cms) => (
+          {cmsList.map((cms) => (
             <Link key={cms.id} to={`/cms/${cms.id}`}>
               <Card className="p-6 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start">
@@ -66,3 +102,4 @@ const CMSDirectory = () => {
 };
 
 export default CMSDirectory;
+
