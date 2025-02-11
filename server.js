@@ -58,6 +58,7 @@ async function createServer() {
       // Send rendered HTML
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
     } catch (e) {
+      console.error('Error processing request:', e);
       if (!isProduction && vite) {
         vite.ssrFixStacktrace(e);
       }

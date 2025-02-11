@@ -1,7 +1,7 @@
 
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import { StaticRouter } from 'react-router-dom/server';
+import { StaticRouterProvider, createStaticRouter, createStaticHandler } from '@remix-run/router';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -21,14 +21,21 @@ export function render(url: string) {
     },
   });
 
+  const routes = [
+    {
+      path: "*",
+      element: <App />,
+    },
+  ];
+
+  const router = createStaticRouter(routes, url);
+
   return ReactDOMServer.renderToString(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <TooltipProvider>
-            <StaticRouter location={url}>
-              <App />
-            </StaticRouter>
+            <StaticRouterProvider router={router} context={{}} />
           </TooltipProvider>
         </AuthProvider>
       </QueryClientProvider>
