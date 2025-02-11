@@ -1,5 +1,7 @@
 
-import { Link } from "react-router-dom";
+'use client'
+
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/components/search/SearchBar";
@@ -32,13 +34,13 @@ export const HeroSection = ({
           className="mt-8"
         />
         <div className="flex flex-wrap justify-center gap-4 pt-4">
-          <Link to="/cms">
+          <Link href="/cms">
             <Button className="font-medium">
               Explore CMS Directory
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
-          <Link to="/compare">
+          <Link href="/compare">
             <Button variant="outline" className="font-medium">
               Compare CMS
             </Button>
