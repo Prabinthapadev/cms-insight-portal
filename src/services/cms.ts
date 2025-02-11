@@ -245,9 +245,41 @@ export const getCMSByTag = async (tag: string) => {
       featured,
       slug,
       tags,
+      features (
+        title,
+        description,
+        icon
+      ),
+      performance_metrics (
+        metric_name,
+        value
+      ),
       ratings (
         category,
         score
+      ),
+      pricing (
+        price,
+        plan_name
+      ),
+      tech_stack (
+        name
+      ),
+      pros (
+        description
+      ),
+      cons (
+        description
+      ),
+      market_share,
+      cms_additional_info (
+        ease_of_use,
+        customization,
+        seo_and_performance,
+        security,
+        scalability,
+        community_support,
+        official_support
       )
     `)
     .contains('tags', [tag])
@@ -258,7 +290,7 @@ export const getCMSByTag = async (tag: string) => {
     throw error;
   }
 
-  // Transform the data to match the CMS type, but only include necessary fields
+  // Transform the data to match the CMS type
   return data.map((cms) => ({
     id: cms.id,
     name: cms.name,
@@ -268,13 +300,42 @@ export const getCMSByTag = async (tag: string) => {
     featured: cms.featured || false,
     slug: cms.slug,
     tags: cms.tags || [],
+    features: cms.features?.map((f: any) => f.title) || [],
+    pros: cms.pros?.map((p: any) => p.description) || [],
+    cons: cms.cons?.map((c: any) => c.description) || [],
+    techStack: cms.tech_stack?.map((t: any) => t.name) || [],
+    performance: {
+      loadTime: cms.performance_metrics?.find((p: any) => p.metric_name === 'load_time')?.value || 0,
+      serverResponse: cms.performance_metrics?.find((p: any) => p.metric_name === 'server_response')?.value || 0,
+      resourceUsage: cms.performance_metrics?.find((p: any) => p.metric_name === 'resource_usage')?.value || 0,
+    },
+    pricing: {
+      free: cms.pricing?.some((p: any) => p.price === 0) || false,
+      startingPrice: Math.min(...(cms.pricing?.map((p: any) => p.price) || [0])),
+      hasPremium: cms.pricing?.some((p: any) => p.price > 0) || false,
+    },
     ratings: {
       overall: cms.ratings?.find((r: any) => r.category === 'overall')?.score || 0,
       easeOfUse: cms.ratings?.find((r: any) => r.category === 'ease_of_use')?.score || 0,
       features: cms.ratings?.find((r: any) => r.category === 'features')?.score || 0,
       support: cms.ratings?.find((r: any) => r.category === 'support')?.score || 0,
       value: cms.ratings?.find((r: any) => r.category === 'value')?.score || 0,
-    }
+    },
+    marketShare: cms.market_share || 0,
+    keyFeatures: cms.features?.map((f: any) => ({
+      title: f.title,
+      description: f.description,
+      icon: f.icon,
+    })) || [],
+    additionalInfo: {
+      easeOfUse: cms.cms_additional_info?.[0]?.ease_of_use || "",
+      customization: cms.cms_additional_info?.[0]?.customization || "",
+      seoAndPerformance: cms.cms_additional_info?.[0]?.seo_and_performance || "",
+      security: cms.cms_additional_info?.[0]?.security || "",
+      scalability: cms.cms_additional_info?.[0]?.scalability || "",
+      communitySupport: cms.cms_additional_info?.[0]?.community_support || "",
+      officialSupport: cms.cms_additional_info?.[0]?.official_support || "",
+    },
   }));
 };
 
