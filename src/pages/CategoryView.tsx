@@ -13,9 +13,14 @@ const CategoryView = () => {
   const { tag } = useParams();
   const { toast } = useToast();
   
-  const { data: cmsList, isLoading } = useQuery({
+  const { data: cmsList, isLoading, refetch } = useQuery({
     queryKey: ["cms-by-tag", tag],
     queryFn: () => getCMSByTag(tag as string),
+    staleTime: 1000 * 60 * 5, // Data stays fresh for 5 minutes
+    cacheTime: 1000 * 60 * 30, // Cache persists for 30 minutes
+    refetchOnMount: true, // Refetch when component mounts
+    refetchOnWindowFocus: true, // Refetch when window gains focus
+    retry: 3, // Retry failed requests 3 times
     meta: {
       onError: (error: Error) => {
         console.error("Error fetching CMS by tag:", error);
