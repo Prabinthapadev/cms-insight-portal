@@ -28,13 +28,16 @@ const CategoryView = () => {
     },
   });
 
+  // Sort CMS list by overall rating
+  const sortedCMSList = cmsList?.sort((a, b) => b.ratings.overall - a.ratings.overall);
+
   // Generate comparison pairs for the current category
   const generateComparisonPairs = () => {
-    if (!cmsList || cmsList.length < 2) return [];
+    if (!sortedCMSList || sortedCMSList.length < 2) return [];
     
     const pairs = [];
     // Only get the first 4 CMS for comparisons
-    const cmsToCompare = cmsList.slice(0, 4);
+    const cmsToCompare = sortedCMSList.slice(0, 4);
     
     // Generate pairs between these CMS
     for (let i = 0; i < cmsToCompare.length - 1; i++) {
@@ -79,14 +82,21 @@ const CategoryView = () => {
             Best CMS for {formattedTag}
           </h1>
           <div className="space-y-6">
-            {cmsList?.map((cms) => (
+            {sortedCMSList?.map((cms, index) => (
               <Link key={cms.id} to={`/cms/${cms.slug}`}>
                 <Card className="p-6 hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h2 className="text-xl font-display font-semibold mb-2">
-                        {cms.name}
-                      </h2>
+                      <div className="flex items-center gap-2 mb-2">
+                        <h2 className="text-xl font-display font-semibold">
+                          {cms.name}
+                        </h2>
+                        {index === 0 && (
+                          <Badge variant="default" className="bg-yellow-500">
+                            Top Rated
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-gray-600 mb-4">{cms.description}</p>
                       <div className="flex flex-wrap gap-2">
                         {cms.tags.map((tag) => (
@@ -96,11 +106,16 @@ const CategoryView = () => {
                         ))}
                       </div>
                     </div>
-                    <div className="flex items-center">
-                      <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                      <span className="ml-1 font-medium">
-                        {cms.ratings.overall.toFixed(1)}
-                      </span>
+                    <div className="flex flex-col items-end">
+                      <div className="flex items-center mb-2">
+                        <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                        <span className="ml-1 font-medium">
+                          {cms.ratings.overall.toFixed(1)} / 10
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Rank #{index + 1}
+                      </div>
                     </div>
                   </div>
                 </Card>
