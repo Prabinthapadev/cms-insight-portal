@@ -102,6 +102,56 @@ export type Database = {
         }
         Relationships: []
       }
+      cms_additional_info: {
+        Row: {
+          cms_id: string | null
+          community_support: string | null
+          created_at: string | null
+          customization: string | null
+          ease_of_use: string | null
+          id: string
+          official_support: string | null
+          scalability: string | null
+          security: string | null
+          seo_and_performance: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cms_id?: string | null
+          community_support?: string | null
+          created_at?: string | null
+          customization?: string | null
+          ease_of_use?: string | null
+          id?: string
+          official_support?: string | null
+          scalability?: string | null
+          security?: string | null
+          seo_and_performance?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cms_id?: string | null
+          community_support?: string | null
+          created_at?: string | null
+          customization?: string | null
+          ease_of_use?: string | null
+          id?: string
+          official_support?: string | null
+          scalability?: string | null
+          security?: string | null
+          seo_and_performance?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cms_additional_info_cms_id_fkey"
+            columns: ["cms_id"]
+            isOneToOne: false
+            referencedRelation: "cms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cms_imports: {
         Row: {
           created_at: string | null
@@ -164,6 +214,38 @@ export type Database = {
             columns: ["tag_id"]
             isOneToOne: false
             referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cons: {
+        Row: {
+          cms_id: string | null
+          created_at: string | null
+          description: string
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          cms_id?: string | null
+          created_at?: string | null
+          description: string
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          cms_id?: string | null
+          created_at?: string | null
+          description?: string
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cons_cms_id_fkey"
+            columns: ["cms_id"]
+            isOneToOne: false
+            referencedRelation: "cms"
             referencedColumns: ["id"]
           },
         ]
@@ -284,6 +366,38 @@ export type Database = {
           role?: string
         }
         Relationships: []
+      }
+      pros: {
+        Row: {
+          cms_id: string | null
+          created_at: string | null
+          description: string
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          cms_id?: string | null
+          created_at?: string | null
+          description: string
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          cms_id?: string | null
+          created_at?: string | null
+          description?: string
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pros_cms_id_fkey"
+            columns: ["cms_id"]
+            isOneToOne: false
+            referencedRelation: "cms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ratings: {
         Row: {
