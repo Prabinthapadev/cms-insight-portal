@@ -1,5 +1,6 @@
 
 import { CodeIcon, Server, Globe, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const CodySection = () => {
   return (
@@ -10,6 +11,15 @@ export const CodySection = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
               Create your own web environment in Javascript with Cody and Node.js
             </h2>
+            <div className="flex justify-center">
+              <Button 
+                variant="outline"
+                className="mt-4"
+                onClick={() => window.open('https://github.com/jcoppieters/cody', '_blank')}
+              >
+                View on GitHub
+              </Button>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
