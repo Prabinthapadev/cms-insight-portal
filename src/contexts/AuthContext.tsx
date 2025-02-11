@@ -12,25 +12,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   const fetchProfile = async (userId: string) => {
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
 
-    if (error) {
-      console.error("Error fetching profile:", error);
+      if (error) {
+        console.error("Error fetching profile:", error);
+        return null;
+      }
+
+      if (profile && (profile.role === 'admin' || profile.role === 'user')) {
+        return {
+          id: profile.id,
+          role: profile.role as 'admin' | 'user',
+          created_at: profile.created_at
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error("Error in fetchProfile:", error);
       return null;
     }
-
-    if (profile && (profile.role === 'admin' || profile.role === 'user')) {
-      return {
-        id: profile.id,
-        role: profile.role as 'admin' | 'user',
-        created_at: profile.created_at
-      };
-    }
-    return null;
   };
 
   useEffect(() => {
@@ -126,7 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 }
