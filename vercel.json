@@ -2,11 +2,11 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-  "redirects": [
+  "routes": [
     {
-      "source": "/:path*",
-      "destination": "/",
-      "statusCode": 200
+      "src": "/[^.]+",
+      "dest": "/",
+      "status": 200
     }
   ],
   "headers": [
