@@ -15,7 +15,6 @@ const CategoryView = () => {
   const { tag } = useParams();
   const { toast } = useToast();
   
-  // Get tag content first to ensure we have the proper SEO data
   const { data: tagContent, isLoading: contentLoading } = useQuery({
     queryKey: ["tag-content", tag],
     queryFn: () => getTagContent(tag as string),
@@ -33,11 +32,10 @@ const CategoryView = () => {
     },
   });
 
-  // Get SEO data from page_seo table
   const { data: seoData } = useQuery({
     queryKey: ["page-seo", `/categories/${tag}`],
     queryFn: () => getPageSEO(`/categories/${tag}`),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 
   const { data: cmsList, isLoading: cmsLoading } = useQuery({
