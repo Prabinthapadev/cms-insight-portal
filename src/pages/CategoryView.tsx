@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSByTag, getTagContent } from "@/services/cms";
@@ -84,23 +85,30 @@ const CategoryView = () => {
     );
   }
 
+  // Set up SEO data with page_seo as primary source and tag_content as fallback
+  const defaultTitle = `Best CMS for ${formattedTag}`;
+  const defaultDescription = `Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`;
+  
+  const metaData = {
+    id: seoData?.id || `category-${tag}`,
+    url_pattern: seoData?.url_pattern || `/categories/${tag}`,
+    meta_title: seoData?.meta_title || tagContent?.seo_title || defaultTitle,
+    meta_description: seoData?.meta_description || tagContent?.seo_description || defaultDescription,
+    meta_keywords: seoData?.meta_keywords || tagContent?.seo_keywords || [`CMS for ${formattedTag}`, `best CMS ${formattedTag}`, `content management system ${formattedTag}`],
+    meta_robots: seoData?.meta_robots || tagContent?.meta_robots || "index,follow",
+    meta_canonical: seoData?.meta_canonical || `${window.location.origin}/categories/${tag}`,
+    meta_og_title: seoData?.meta_og_title || seoData?.meta_title || tagContent?.meta_og_title || defaultTitle,
+    meta_og_description: seoData?.meta_og_description || seoData?.meta_description || tagContent?.meta_og_description || defaultDescription,
+    meta_og_image: seoData?.meta_og_image || tagContent?.meta_og_image,
+    meta_twitter_title: seoData?.meta_twitter_title || seoData?.meta_title || tagContent?.meta_twitter_title || defaultTitle,
+    meta_twitter_description: seoData?.meta_twitter_description || seoData?.meta_description || tagContent?.meta_twitter_description || defaultDescription,
+    meta_twitter_image: seoData?.meta_twitter_image || tagContent?.meta_twitter_image,
+    meta_twitter_card: seoData?.meta_twitter_card || "summary_large_image",
+  };
+
   return (
     <>
-      <MetaTags seo={seoData || {
-        id: `category-${tag}`,
-        url_pattern: `/categories/${tag}`,
-        meta_title: tagContent?.seo_title || `Best CMS for ${formattedTag}`,
-        meta_description: tagContent?.seo_description || `Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`,
-        meta_keywords: tagContent?.seo_keywords || [`CMS for ${formattedTag}`, `best CMS ${formattedTag}`, `content management system ${formattedTag}`],
-        meta_robots: tagContent?.meta_robots || "index,follow",
-        meta_canonical: `${window.location.origin}/categories/${tag}`,
-        meta_og_title: tagContent?.meta_og_title || tagContent?.seo_title,
-        meta_og_description: tagContent?.meta_og_description || tagContent?.seo_description,
-        meta_og_image: tagContent?.meta_og_image,
-        meta_twitter_title: tagContent?.meta_twitter_title || tagContent?.seo_title,
-        meta_twitter_description: tagContent?.meta_twitter_description || tagContent?.seo_description,
-        meta_twitter_image: tagContent?.meta_twitter_image,
-      }} />
+      <MetaTags seo={metaData} />
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
