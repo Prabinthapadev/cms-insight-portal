@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { getCMSList } from "@/services/cms";
@@ -7,11 +8,19 @@ import { Star } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { SearchBar } from "@/components/search/SearchBar";
 import { useState } from "react";
+import { MetaTags } from "@/components/shared/MetaTags";
+import { getPageSEO } from "@/services/seo";
 
 const CMSDirectory = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   
+  const { data: seoData } = useQuery({
+    queryKey: ["page-seo", "/cms"],
+    queryFn: () => getPageSEO("/cms"),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
   const { data: cmsList, isLoading, error } = useQuery({
     queryKey: ["cms-list"],
     queryFn: getCMSList,
@@ -26,11 +35,6 @@ const CMSDirectory = () => {
       },
     },
   });
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle search submit if needed
-  };
 
   const filteredCMS = cmsList?.filter(cms => 
     cms.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -66,63 +70,62 @@ const CMSDirectory = () => {
     );
   }
 
-  if (!cmsList || cmsList.length === 0) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-3xl font-display font-bold mb-4">CMS Directory</h1>
-          <p className="text-gray-600 mb-4">
-            No CMS entries found. Please check back later.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-display font-bold mb-8">CMS Directory</h1>
-        
-        <div className="mb-8">
-          <SearchBar
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            onSearchSubmit={(e) => e.preventDefault()}
-          />
-        </div>
+    <>
+      <MetaTags seo={seoData || {
+        id: "cms-directory",
+        url_pattern: "/cms",
+        meta_title: "CMS Directory - Compare Top Content Management Systems",
+        meta_description: "Browse and compare the best Content Management Systems (CMS). Find detailed reviews, features, pricing, and ratings to choose the perfect CMS for your needs.",
+        meta_keywords: ["CMS", "Content Management System", "CMS Comparison", "Website Platform"],
+        meta_robots: "index,follow",
+        meta_canonical: `${window.location.origin}/cms`,
+      }} />
 
-        <div className="space-y-6">
-          {filteredCMS?.map((cms) => (
-            <Link key={cms.id} to={`/cms/${cms.slug}`}>
-              <Card className="p-6 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h2 className="text-xl font-display font-semibold mb-2">
-                      {cms.name}
-                    </h2>
-                    <p className="text-gray-600 mb-4">{cms.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {cms.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary">
-                          {tag}
-                        </Badge>
-                      ))}
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-3xl font-display font-bold mb-8">CMS Directory</h1>
+          
+          <div className="mb-8">
+            <SearchBar
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              onSearchSubmit={(e) => e.preventDefault()}
+            />
+          </div>
+
+          <div className="space-y-6">
+            {filteredCMS?.map((cms) => (
+              <Link key={cms.id} to={`/cms/${cms.slug}`}>
+                <Card className="p-6 hover:shadow-md transition-shadow">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h2 className="text-xl font-display font-semibold mb-2">
+                        {cms.name}
+                      </h2>
+                      <p className="text-gray-600 mb-4">{cms.description}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {cms.tags.map((tag) => (
+                          <Badge key={tag} variant="secondary">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                      <span className="ml-1 font-medium">
+                        {cms.ratings.overall.toFixed(1)}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex items-center">
-                    <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                    <span className="ml-1 font-medium">
-                      {cms.ratings.overall.toFixed(1)}
-                    </span>
-                  </div>
-                </div>
-              </Card>
-            </Link>
-          ))}
+                </Card>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

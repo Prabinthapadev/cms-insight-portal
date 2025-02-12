@@ -159,9 +159,16 @@ const CMSProfile = () => {
           seo={{
             id: `cms-${cms.slug}`,
             url_pattern: `/cms/${cms.slug}`,
-            meta_title: `${cms.name} - CMS Profile and Review`,
-            meta_description: `${cms.description.slice(0, 155)}...`,
-            meta_og_image: cms.imageUrl || undefined,
+            meta_title: cms.meta_title || `${cms.name} - CMS Profile and Review`,
+            meta_description: cms.meta_description || `Comprehensive review and analysis of ${cms.name}. Learn about features, pricing, pros and cons, and see if it's the right CMS for your needs.`,
+            meta_og_title: cms.meta_og_title || cms.meta_title || cms.name,
+            meta_og_description: cms.meta_og_description || cms.meta_description || cms.description,
+            meta_og_image: cms.meta_og_image || cms.imageUrl,
+            meta_twitter_title: cms.meta_twitter_title || cms.meta_title || cms.name,
+            meta_twitter_description: cms.meta_twitter_description || cms.meta_description || cms.description,
+            meta_twitter_image: cms.meta_twitter_image || cms.imageUrl,
+            meta_robots: cms.meta_robots || "index,follow",
+            meta_canonical: `${window.location.origin}/cms/${cms.slug}`,
           }}
         />
       )}

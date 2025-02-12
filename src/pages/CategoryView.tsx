@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSByTag, getTagContent } from "@/services/cms";
@@ -16,6 +15,25 @@ const CategoryView = () => {
   const { tag } = useParams();
   const { toast } = useToast();
   
+  // Get tag content first to ensure we have the proper SEO data
+  const { data: tagContent, isLoading: contentLoading } = useQuery({
+    queryKey: ["tag-content", tag],
+    queryFn: () => getTagContent(tag as string),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 60,
+    meta: {
+      onError: (error: Error) => {
+        console.error("Error fetching tag content:", error);
+        toast({
+          title: "Error loading category content",
+          description: "There was a problem loading the category content. Please try again later.",
+          variant: "destructive",
+        });
+      },
+    },
+  });
+
+  // Get SEO data from page_seo table
   const { data: seoData } = useQuery({
     queryKey: ["page-seo", `/categories/${tag}`],
     queryFn: () => getPageSEO(`/categories/${tag}`),
@@ -33,23 +51,6 @@ const CategoryView = () => {
         toast({
           title: "Error loading CMS data",
           description: "There was a problem loading the CMS list. Please try again later.",
-          variant: "destructive",
-        });
-      },
-    },
-  });
-
-  const { data: tagContent, isLoading: contentLoading } = useQuery({
-    queryKey: ["tag-content", tag],
-    queryFn: () => getTagContent(tag as string),
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 60,
-    meta: {
-      onError: (error: Error) => {
-        console.error("Error fetching tag content:", error);
-        toast({
-          title: "Error loading category content",
-          description: "There was a problem loading the category content. Please try again later.",
           variant: "destructive",
         });
       },
@@ -90,11 +91,17 @@ const CategoryView = () => {
       <MetaTags seo={seoData || {
         id: `category-${tag}`,
         url_pattern: `/categories/${tag}`,
-        meta_title: tagContent?.bannerTitle || `Best CMS for ${formattedTag}`,
-        meta_description: tagContent?.introductionText || `Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`,
-        meta_keywords: [`CMS for ${formattedTag}`, `best CMS ${formattedTag}`, `content management system ${formattedTag}`],
-        meta_robots: "index,follow",
+        meta_title: tagContent?.seo_title || `Best CMS for ${formattedTag}`,
+        meta_description: tagContent?.seo_description || `Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`,
+        meta_keywords: tagContent?.seo_keywords || [`CMS for ${formattedTag}`, `best CMS ${formattedTag}`, `content management system ${formattedTag}`],
+        meta_robots: tagContent?.meta_robots || "index,follow",
         meta_canonical: `${window.location.origin}/categories/${tag}`,
+        meta_og_title: tagContent?.meta_og_title || tagContent?.seo_title,
+        meta_og_description: tagContent?.meta_og_description || tagContent?.seo_description,
+        meta_og_image: tagContent?.meta_og_image,
+        meta_twitter_title: tagContent?.meta_twitter_title || tagContent?.seo_title,
+        meta_twitter_description: tagContent?.meta_twitter_description || tagContent?.seo_description,
+        meta_twitter_image: tagContent?.meta_twitter_image,
       }} />
 
       <div className="container mx-auto px-4 py-8">
