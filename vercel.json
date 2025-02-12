@@ -1,19 +1,12 @@
 
 {
-  "version": 2,
   "cleanUrls": true,
   "trailingSlash": false,
-  "builds": [
+  "redirects": [
     {
-      "src": "dist/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/[^.]+",
-      "dest": "/",
-      "status": 200
+      "source": "/:path*",
+      "destination": "/",
+      "statusCode": 200
     }
   ],
   "headers": [

@@ -1,4 +1,3 @@
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
@@ -24,10 +23,10 @@ import About from "./pages/About";
 
 // Security headers
 if (typeof document !== 'undefined') {
-  // Set CSP header with broader permissions for development
+  // Set CSP header
   const meta = document.createElement('meta');
   meta.httpEquiv = 'Content-Security-Policy';
-  meta.content = "default-src 'self' https://* wss://*; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://* cdn.gpteng.co; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://* wss://*; frame-src 'self' https://*";
+  meta.content = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co";
   document.head.appendChild(meta);
 
   // Set XSS Protection header
