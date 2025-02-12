@@ -1,16 +1,10 @@
-
 {
-  "rewrites": [
+  "cleanUrls": true,
+  "redirects": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/[^.]+",
-      "dest": "/",
-      "status": 200
+      "source": "/:path*",
+      "destination": "/",
+      "statusCode": 200
     }
   ]
 }
