@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSByTag, getTagContent } from "@/services/cms";
@@ -89,8 +90,8 @@ const CategoryView = () => {
       <MetaTags seo={seoData || {
         id: `category-${tag}`,
         url_pattern: `/categories/${tag}`,
-        meta_title: tagContent?.banner_title || `Best CMS for ${formattedTag}`,
-        meta_description: tagContent?.introduction_text || `Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`,
+        meta_title: tagContent?.bannerTitle || `Best CMS for ${formattedTag}`,
+        meta_description: tagContent?.introductionText || `Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`,
         meta_keywords: [`CMS for ${formattedTag}`, `best CMS ${formattedTag}`, `content management system ${formattedTag}`],
         meta_robots: "index,follow",
         meta_canonical: `${window.location.origin}/categories/${tag}`,
@@ -131,7 +132,7 @@ const CategoryView = () => {
             </div>
           )}
 
-          {/* CMS List with virtualization for long lists */}
+          {/* CMS List */}
           <div className="space-y-6">
             {sortedCMSList?.map((cms, index) => (
               <Link key={cms.id} to={`/cms/${cms.slug}`} className="block">
