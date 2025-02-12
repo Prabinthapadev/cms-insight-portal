@@ -26,11 +26,16 @@ export const getPageSEO = async (urlPattern: string): Promise<PageSEO | null> =>
     .from('page_seo')
     .select('*')
     .eq('url_pattern', urlPattern)
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error('Error fetching page SEO:', error);
     return null;
+  }
+
+  // If no specific SEO data found, generate default based on current route
+  if (!data) {
+    return generateDefaultSEO(urlPattern);
   }
 
   // Generate canonical URL and set fallbacks for metadata
@@ -44,6 +49,65 @@ export const getPageSEO = async (urlPattern: string): Promise<PageSEO | null> =>
     meta_og_description: data.meta_og_description || data.meta_description,
     meta_twitter_title: data.meta_twitter_title || data.meta_title,
     meta_twitter_description: data.meta_twitter_description || data.meta_description,
+  };
+};
+
+const generateDefaultSEO = (urlPattern: string): PageSEO => {
+  const segments = urlPattern.split('/').filter(Boolean);
+  let title = 'CMS Insight';
+  let description = '';
+
+  // Generate title and description based on URL pattern
+  if (segments.length > 0) {
+    switch (segments[0]) {
+      case 'cms':
+        if (segments[1]) {
+          title = `${segments[1].replace(/-/g, ' ')} CMS Review and Features`;
+          description = `Detailed review, features, pricing, and comparison of ${segments[1].replace(/-/g, ' ')} CMS. Find out if it's the right content management system for your needs.`;
+        } else {
+          title = 'CMS Directory - Browse Content Management Systems';
+          description = 'Explore our comprehensive directory of Content Management Systems. Compare features, read reviews, and find the perfect CMS for your project.';
+        }
+        break;
+      case 'categories':
+        if (segments[1]) {
+          const category = segments[1].replace(/-/g, ' ');
+          title = `Best CMS for ${category} - Category Guide`;
+          description = `Find the best Content Management System (CMS) for ${category}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`;
+        } else {
+          title = 'CMS Categories - Find CMS by Type';
+          description = 'Browse Content Management Systems by category. Find the perfect CMS for your specific needs, from e-commerce to blogging platforms.';
+        }
+        break;
+      case 'compare':
+        if (segments[1]) {
+          const compareParts = segments[1].split('-vs-');
+          title = `${compareParts.map(p => p.replace(/-/g, ' ')).join(' vs ')} - CMS Comparison`;
+          description = `Compare ${compareParts.map(p => p.replace(/-/g, ' ')).join(' and ')} side by side. Features, pricing, performance, and detailed analysis to help you choose the right CMS.`;
+        } else {
+          title = 'Compare CMS - Side by Side Comparison Tool';
+          description = 'Compare different Content Management Systems side by side. Analyze features, pricing, and performance to make an informed decision.';
+        }
+        break;
+      default:
+        title = 'CMS Insight - Compare Content Management Systems';
+        description = 'Find and compare the best Content Management Systems (CMS) for your needs. Expert reviews, detailed comparisons, and insights to help you make the right choice.';
+    }
+  }
+
+  return {
+    id: 'default',
+    url_pattern: urlPattern,
+    meta_title: title,
+    meta_description: description,
+    meta_robots: 'index,follow',
+    meta_keywords: ['cms', 'content management system', 'cms comparison', 'website builder'],
+    meta_canonical: typeof window !== 'undefined' ? `${window.location.origin}${urlPattern}` : urlPattern,
+    meta_og_title: title,
+    meta_og_description: description,
+    meta_twitter_card: 'summary_large_image',
+    meta_twitter_title: title,
+    meta_twitter_description: description
   };
 };
 
