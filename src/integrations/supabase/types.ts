@@ -615,7 +615,16 @@ export type Database = {
           id: string
           introduction_text: string | null
           meta_description: string | null
+          meta_og_description: string | null
+          meta_og_image: string | null
+          meta_og_title: string | null
           meta_title: string | null
+          meta_twitter_description: string | null
+          meta_twitter_image: string | null
+          meta_twitter_title: string | null
+          seo_description: string | null
+          seo_keywords: string[] | null
+          seo_title: string | null
           tag_id: string | null
           title: string | null
           updated_at: string | null
@@ -630,7 +639,16 @@ export type Database = {
           id?: string
           introduction_text?: string | null
           meta_description?: string | null
+          meta_og_description?: string | null
+          meta_og_image?: string | null
+          meta_og_title?: string | null
           meta_title?: string | null
+          meta_twitter_description?: string | null
+          meta_twitter_image?: string | null
+          meta_twitter_title?: string | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
           tag_id?: string | null
           title?: string | null
           updated_at?: string | null
@@ -645,7 +663,16 @@ export type Database = {
           id?: string
           introduction_text?: string | null
           meta_description?: string | null
+          meta_og_description?: string | null
+          meta_og_image?: string | null
+          meta_og_title?: string | null
           meta_title?: string | null
+          meta_twitter_description?: string | null
+          meta_twitter_image?: string | null
+          meta_twitter_title?: string | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
           tag_id?: string | null
           title?: string | null
           updated_at?: string | null

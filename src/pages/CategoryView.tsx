@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSByTag, getTagContent } from "@/services/cms";
@@ -10,16 +9,23 @@ import { MetaTags } from "@/components/shared/MetaTags";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CMS } from "@/types/cms";
+import { getPageSEO } from "@/services/seo";
 
 const CategoryView = () => {
   const { tag } = useParams();
   const { toast } = useToast();
   
+  const { data: seoData } = useQuery({
+    queryKey: ["page-seo", `/categories/${tag}`],
+    queryFn: () => getPageSEO(`/categories/${tag}`),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
   const { data: cmsList, isLoading: cmsLoading } = useQuery({
     queryKey: ["cms-by-tag", tag],
     queryFn: () => getCMSByTag(tag as string),
-    staleTime: 1000 * 60 * 5, // Data stays fresh for 5 minutes
-    gcTime: 1000 * 60 * 60, // Keep unused data in cache for 1 hour
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 60,
     meta: {
       onError: (error: Error) => {
         console.error("Error fetching CMS by tag:", error);
@@ -35,8 +41,8 @@ const CategoryView = () => {
   const { data: tagContent, isLoading: contentLoading } = useQuery({
     queryKey: ["tag-content", tag],
     queryFn: () => getTagContent(tag as string),
-    staleTime: 1000 * 60 * 5, // Data stays fresh for 5 minutes
-    gcTime: 1000 * 60 * 60, // Keep unused data in cache for 1 hour
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 60,
     meta: {
       onError: (error: Error) => {
         console.error("Error fetching tag content:", error);
@@ -80,17 +86,15 @@ const CategoryView = () => {
 
   return (
     <>
-      <MetaTags 
-        seo={{
-          id: `category-${tag}`,
-          url_pattern: `/categories/${tag}`,
-          meta_title: tagContent?.metaTitle || `Best CMS for ${formattedTag}`,
-          meta_description: tagContent?.metaDescription || `Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`,
-          meta_keywords: [`CMS for ${formattedTag}`, `best CMS ${formattedTag}`, `content management system ${formattedTag}`],
-          meta_robots: "index,follow",
-          meta_canonical: `${window.location.origin}/categories/${tag}`,
-        }} 
-      />
+      <MetaTags seo={seoData || {
+        id: `category-${tag}`,
+        url_pattern: `/categories/${tag}`,
+        meta_title: tagContent?.banner_title || `Best CMS for ${formattedTag}`,
+        meta_description: tagContent?.introduction_text || `Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`,
+        meta_keywords: [`CMS for ${formattedTag}`, `best CMS ${formattedTag}`, `content management system ${formattedTag}`],
+        meta_robots: "index,follow",
+        meta_canonical: `${window.location.origin}/categories/${tag}`,
+      }} />
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
@@ -207,10 +211,8 @@ const generateComparisonPairs = (cmsList?: CMS[]) => {
   if (!cmsList || cmsList.length < 2) return [];
   
   const pairs = [];
-  // Only get the first 4 CMS for comparisons
   const cmsToCompare = cmsList.slice(0, 4);
   
-  // Generate pairs between these CMS
   for (let i = 0; i < cmsToCompare.length - 1; i++) {
     for (let j = i + 1; j < cmsToCompare.length; j++) {
       pairs.push({
@@ -220,7 +222,6 @@ const generateComparisonPairs = (cmsList?: CMS[]) => {
     }
   }
   
-  // Return only the first 3 pairs
   return pairs.slice(0, 3);
 };
 
