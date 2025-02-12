@@ -618,6 +618,7 @@ export type Database = {
           meta_og_description: string | null
           meta_og_image: string | null
           meta_og_title: string | null
+          meta_robots: string | null
           meta_title: string | null
           meta_twitter_description: string | null
           meta_twitter_image: string | null
@@ -642,6 +643,7 @@ export type Database = {
           meta_og_description?: string | null
           meta_og_image?: string | null
           meta_og_title?: string | null
+          meta_robots?: string | null
           meta_title?: string | null
           meta_twitter_description?: string | null
           meta_twitter_image?: string | null
@@ -666,6 +668,7 @@ export type Database = {
           meta_og_description?: string | null
           meta_og_image?: string | null
           meta_og_title?: string | null
+          meta_robots?: string | null
           meta_title?: string | null
           meta_twitter_description?: string | null
           meta_twitter_image?: string | null
