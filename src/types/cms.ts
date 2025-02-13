@@ -6,7 +6,7 @@ export interface CMS {
   website: string;
   imageUrl?: string;
   featured: boolean;
-  slug: string; // Added this field
+  slug: string;
   tags: string[];
   features: string[];
   pros: string[];
@@ -44,5 +44,16 @@ export interface CMS {
     communitySupport: string;
     officialSupport: string;
   };
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string[];
+  meta_robots?: string;
+  meta_canonical?: string;
+  meta_og_title?: string;
+  meta_og_description?: string;
+  meta_og_image?: string;
+  meta_twitter_title?: string;
+  meta_twitter_description?: string;
+  meta_twitter_image?: string;
+  meta_twitter_card?: string;
 }
-

@@ -16,7 +16,6 @@ const CMS_SELECT_QUERY = `
   cms_additional_info (*)
 `;
 
-// Move transformer function here since we can't access the separate file
 const transformCMSData = (data: any): CMS => ({
   id: data.id,
   name: data.name || 'Untitled CMS',
@@ -62,14 +61,25 @@ const transformCMSData = (data: any): CMS => ({
     communitySupport: data.cms_additional_info?.[0]?.community_support || '',
     officialSupport: data.cms_additional_info?.[0]?.official_support || '',
   },
+  meta_title: data.meta_title || null,
+  meta_description: data.meta_description || null,
+  meta_keywords: data.meta_keywords || [],
+  meta_robots: data.meta_robots || 'index,follow',
+  meta_canonical: data.meta_canonical || null,
+  meta_og_title: data.meta_og_title || null,
+  meta_og_description: data.meta_og_description || null,
+  meta_og_image: data.meta_og_image || null,
+  meta_twitter_title: data.meta_twitter_title || null,
+  meta_twitter_description: data.meta_twitter_description || null,
+  meta_twitter_image: data.meta_twitter_image || null,
+  meta_twitter_card: data.meta_twitter_card || 'summary_large_image',
 });
 
 export const getCMSList = async () => {
   console.log("Fetching CMS list...");
   const { data, error } = await supabase
     .from('cms')
-    .select(CMS_SELECT_QUERY)
-    .eq('is_published', true);
+    .select(CMS_SELECT_QUERY);
 
   if (error) {
     console.error("Error fetching CMS list:", error);
@@ -91,7 +101,6 @@ export const getCMSById = async (id: string) => {
     .from('cms')
     .select(CMS_SELECT_QUERY)
     .eq('id', id)
-    .eq('is_published', true)
     .maybeSingle();
 
   if (error) throw error;
@@ -109,7 +118,6 @@ export const getCMSBySlug = async (slug: string) => {
     .from('cms')
     .select(CMS_SELECT_QUERY)
     .eq('slug', slug)
-    .eq('is_published', true)
     .maybeSingle();
 
   if (error) throw error;
@@ -124,8 +132,8 @@ export const useRealtimeUpdates = () => {
 
   useEffect(() => {
     // Subscribe to changes in the cms table
-    const cmsChannel = supabase
-      .channel('cms-changes')
+    const channel = supabase
+      .channel('any')
       .on(
         'postgres_changes',
         {
@@ -133,17 +141,11 @@ export const useRealtimeUpdates = () => {
           schema: 'public',
           table: 'cms'
         },
-        () => {
-          console.log('CMS data changed, invalidating queries...');
-          // Invalidate all queries that start with 'cms'
+        (payload) => {
+          console.log('CMS table changed:', payload);
           queryClient.invalidateQueries({ queryKey: ['cms'] });
         }
       )
-      .subscribe();
-
-    // Subscribe to changes in related tables
-    const relatedTablesChannel = supabase
-      .channel('related-changes')
       .on(
         'postgres_changes',
         {
@@ -151,7 +153,10 @@ export const useRealtimeUpdates = () => {
           schema: 'public',
           table: 'features'
         },
-        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+        () => {
+          console.log('Features changed');
+          queryClient.invalidateQueries({ queryKey: ['cms'] });
+        }
       )
       .on(
         'postgres_changes',
@@ -160,7 +165,10 @@ export const useRealtimeUpdates = () => {
           schema: 'public',
           table: 'performance_metrics'
         },
-        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+        () => {
+          console.log('Performance metrics changed');
+          queryClient.invalidateQueries({ queryKey: ['cms'] });
+        }
       )
       .on(
         'postgres_changes',
@@ -169,7 +177,10 @@ export const useRealtimeUpdates = () => {
           schema: 'public',
           table: 'ratings'
         },
-        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+        () => {
+          console.log('Ratings changed');
+          queryClient.invalidateQueries({ queryKey: ['cms'] });
+        }
       )
       .on(
         'postgres_changes',
@@ -178,7 +189,10 @@ export const useRealtimeUpdates = () => {
           schema: 'public',
           table: 'pricing'
         },
-        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+        () => {
+          console.log('Pricing changed');
+          queryClient.invalidateQueries({ queryKey: ['cms'] });
+        }
       )
       .on(
         'postgres_changes',
@@ -187,7 +201,10 @@ export const useRealtimeUpdates = () => {
           schema: 'public',
           table: 'tech_stack'
         },
-        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+        () => {
+          console.log('Tech stack changed');
+          queryClient.invalidateQueries({ queryKey: ['cms'] });
+        }
       )
       .on(
         'postgres_changes',
@@ -196,7 +213,10 @@ export const useRealtimeUpdates = () => {
           schema: 'public',
           table: 'pros'
         },
-        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+        () => {
+          console.log('Pros changed');
+          queryClient.invalidateQueries({ queryKey: ['cms'] });
+        }
       )
       .on(
         'postgres_changes',
@@ -205,7 +225,10 @@ export const useRealtimeUpdates = () => {
           schema: 'public',
           table: 'cons'
         },
-        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+        () => {
+          console.log('Cons changed');
+          queryClient.invalidateQueries({ queryKey: ['cms'] });
+        }
       )
       .on(
         'postgres_changes',
@@ -214,14 +237,16 @@ export const useRealtimeUpdates = () => {
           schema: 'public',
           table: 'cms_additional_info'
         },
-        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+        () => {
+          console.log('Additional info changed');
+          queryClient.invalidateQueries({ queryKey: ['cms'] });
+        }
       )
       .subscribe();
 
-    // Cleanup subscriptions
+    // Cleanup subscription
     return () => {
-      cmsChannel.unsubscribe();
-      relatedTablesChannel.unsubscribe();
+      channel.unsubscribe();
     };
   }, [queryClient]);
 };
