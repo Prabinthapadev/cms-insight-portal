@@ -132,10 +132,10 @@ const CategoryView = () => {
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-3xl mx-auto">
             {/* Introduction Text */}
-            {tagContent?.introduction_text && (
+            {tagContent?.introductionText && (
               <div className="prose max-w-none mb-12">
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  {tagContent.introduction_text}
+                  {tagContent.introductionText}
                 </p>
               </div>
             )}
