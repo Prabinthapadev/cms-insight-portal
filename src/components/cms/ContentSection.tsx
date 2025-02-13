@@ -17,7 +17,10 @@ export const ContentSection = ({ sections }: ContentSectionProps) => {
               <h2 className="text-2xl font-display font-bold mb-4">
                 {section.title}
               </h2>
-              <div dangerouslySetInnerHTML={{ __html: section.content }} />
+              <div 
+                className="text-gray-600 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: section.content }} 
+              />
             </div>
           ))}
         </div>

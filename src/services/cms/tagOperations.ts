@@ -34,21 +34,39 @@ export const getCMSByTag = async (tag: string) => {
 };
 
 export const getAllTags = async () => {
-  const { data, error } = await supabase
+  // First get all unique tags from CMS table
+  const { data: cmsData, error: cmsError } = await supabase
     .from('cms')
     .select('tags')
     .eq('is_published', true);
 
-  if (error) throw error;
+  if (cmsError) throw cmsError;
 
-  const tags = new Set<string>();
-  data.forEach((cms) => {
+  // Then get all tags that have content
+  const { data: tagsData, error: tagsError } = await supabase
+    .from('tags')
+    .select('slug, name');
+
+  if (tagsError) throw tagsError;
+
+  // Combine and deduplicate tags
+  const tagSet = new Set<string>();
+  
+  // Add tags from CMS
+  cmsData?.forEach((cms) => {
     if (cms.tags) {
-      cms.tags.forEach((tag: string) => tags.add(tag));
+      cms.tags.forEach((tag: string) => tagSet.add(tag.toLowerCase()));
     }
   });
 
-  return Array.from(tags);
+  // Add tags from tags table
+  tagsData?.forEach((tag) => {
+    if (tag.slug) {
+      tagSet.add(tag.slug.toLowerCase());
+    }
+  });
+
+  return Array.from(tagSet);
 };
 
 export const getTagContent = async (tag: string): Promise<TagContent> => {
@@ -56,7 +74,7 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
   
   const { data: tagData, error: tagError } = await supabase
     .from('tags')
-    .select('id')
+    .select('id, name')
     .eq('slug', tag)
     .maybeSingle();
 
@@ -67,9 +85,9 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
 
   if (!tagData) {
     return {
-      bannerTitle: null,
+      bannerTitle: `Best CMS for ${tag.replace(/-/g, ' ')}`,
       bannerSubtitle: null,
-      introductionText: null,
+      introductionText: `Discover the top Content Management Systems for ${tag.replace(/-/g, ' ')} projects.`,
       categoryBenefits: [],
       fullContent: null,
       contentSections: [],
@@ -130,9 +148,9 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
   }
 
   return {
-    bannerTitle: contentData?.banner_title || null,
+    bannerTitle: contentData?.banner_title || `Best CMS for ${tagData.name}`,
     bannerSubtitle: contentData?.banner_subtitle || null,
-    introductionText: contentData?.introduction_text || null,
+    introductionText: contentData?.introduction_text || `Discover the top Content Management Systems for ${tagData.name} projects.`,
     categoryBenefits: contentData?.category_benefits || [],
     fullContent: contentData?.full_content || null,
     contentSections: contentData?.content_sections || [],

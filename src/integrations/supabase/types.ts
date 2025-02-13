@@ -610,8 +610,10 @@ export type Database = {
           banner_title: string | null
           category_benefits: string[] | null
           content: string | null
+          content_sections: Json[] | null
           content_type: string
           created_at: string | null
+          full_content: string | null
           id: string
           introduction_text: string | null
           meta_description: string | null
@@ -635,8 +637,10 @@ export type Database = {
           banner_title?: string | null
           category_benefits?: string[] | null
           content?: string | null
+          content_sections?: Json[] | null
           content_type: string
           created_at?: string | null
+          full_content?: string | null
           id?: string
           introduction_text?: string | null
           meta_description?: string | null
@@ -660,8 +664,10 @@ export type Database = {
           banner_title?: string | null
           category_benefits?: string[] | null
           content?: string | null
+          content_sections?: Json[] | null
           content_type?: string
           created_at?: string | null
+          full_content?: string | null
           id?: string
           introduction_text?: string | null
           meta_description?: string | null
@@ -757,7 +763,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      slugify: {
+        Args: {
+          value: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
