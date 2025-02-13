@@ -190,7 +190,7 @@ const CategoryView = () => {
                         <div className="flex items-center mb-2">
                           <Star className="h-5 w-5 text-yellow-400 fill-current" />
                           <span className="ml-1 font-medium">
-                            {cms.ratings.overall.toFixed(1)} / 10
+                            {cms.ratings.overall.toFixed(1)} / 5
                           </span>
                         </div>
                         <div className="text-sm text-muted-foreground">
