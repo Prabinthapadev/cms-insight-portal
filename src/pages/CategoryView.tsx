@@ -11,6 +11,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CMS } from "@/types/cms";
 import { getPageSEO } from "@/services/seo";
+import { FAQSection } from "@/components/cms/FAQSection";
+import { ContentSection } from "@/components/cms/ContentSection";
 
 const CategoryView = () => {
   const { tag } = useParams();
@@ -110,110 +112,129 @@ const CategoryView = () => {
     <>
       <MetaTags seo={metaData} />
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto">
-          {/* Hero Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-display font-bold mb-4 capitalize">
-              {tagContent?.bannerTitle || `Best CMS for ${formattedTag}`}
-            </h1>
-            {tagContent?.bannerSubtitle && (
-              <p className="text-xl text-gray-600 mb-6">{tagContent.bannerSubtitle}</p>
+      <div className="min-h-screen">
+        {/* Hero Section */}
+        <div className="bg-gradient-to-b from-primary/10 to-background pt-20 pb-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto text-center">
+              <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 capitalize">
+                {tagContent?.bannerTitle || `Best CMS for ${formattedTag}`}
+              </h1>
+              {tagContent?.bannerSubtitle && (
+                <p className="text-xl text-muted-foreground mb-8">
+                  {tagContent.bannerSubtitle}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-3xl mx-auto">
+            {/* Introduction Text */}
+            {tagContent?.introductionText && (
+              <div className="prose max-w-none mb-12">
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  {tagContent.introductionText}
+                </p>
+              </div>
+            )}
+
+            {/* Category Benefits */}
+            {tagContent?.categoryBenefits && tagContent.categoryBenefits.length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-2xl font-display font-bold mb-6">Key Benefits</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {tagContent.categoryBenefits.map((benefit, index) => (
+                    <Card key={index} className="p-4">
+                      <p className="text-muted-foreground">{benefit}</p>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Content Sections */}
+            {tagContent?.contentSections && tagContent.contentSections.length > 0 && (
+              <ContentSection sections={tagContent.contentSections} />
+            )}
+
+            {/* CMS List */}
+            <div className="space-y-6 mb-12">
+              <h2 className="text-2xl font-display font-bold mb-6">Top Rated Solutions</h2>
+              {sortedCMSList?.map((cms, index) => (
+                <Link key={cms.id} to={`/cms/${cms.slug}`} className="block">
+                  <Card className="p-6 hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="text-xl font-display font-semibold">
+                            {cms.name}
+                          </h3>
+                          {index === 0 && (
+                            <Badge variant="default" className="bg-yellow-500">
+                              Top Rated
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-muted-foreground mb-4">{cms.description}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {cms.tags.slice(0, 5).map((tag) => (
+                            <Badge key={tag} variant="secondary">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <div className="flex items-center mb-2">
+                          <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                          <span className="ml-1 font-medium">
+                            {cms.ratings.overall.toFixed(1)} / 10
+                          </span>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Rank #{index + 1}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+
+            {/* FAQ Section */}
+            {tagContent?.faqs && tagContent.faqs.length > 0 && (
+              <FAQSection faqs={tagContent.faqs} />
+            )}
+
+            {/* Comparison Section */}
+            {comparisonPairs.length > 0 && (
+              <div className="mt-12">
+                <h2 className="text-2xl font-display font-bold mb-6">Popular Comparisons</h2>
+                <div className="space-y-4">
+                  {comparisonPairs.map(({ cms1, cms2 }, index) => (
+                    <Link
+                      key={index}
+                      to={`/compare/${cms1.slug}-vs-${cms2.slug}`}
+                      className="block"
+                    >
+                      <Card className="p-4 hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <span className="font-medium">{cms1.name}</span>
+                            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-medium">{cms2.name}</span>
+                          </div>
+                          <Badge variant="secondary">Compare</Badge>
+                        </div>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
-
-          {/* Introduction Text */}
-          {tagContent?.introductionText && (
-            <div className="prose max-w-none mb-12">
-              <p className="text-gray-700 leading-relaxed">
-                {tagContent.introductionText}
-              </p>
-            </div>
-          )}
-
-          {/* Category Benefits */}
-          {tagContent?.categoryBenefits && tagContent.categoryBenefits.length > 0 && (
-            <div className="mb-12">
-              <h2 className="text-2xl font-display font-bold mb-6">Key Benefits</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {tagContent.categoryBenefits.map((benefit, index) => (
-                  <Card key={index} className="p-4">
-                    <p className="text-gray-700">{benefit}</p>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* CMS List */}
-          <div className="space-y-6">
-            {sortedCMSList?.map((cms, index) => (
-              <Link key={cms.id} to={`/cms/${cms.slug}`} className="block">
-                <Card className="p-6 hover:shadow-md transition-shadow">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <h2 className="text-xl font-display font-semibold">
-                          {cms.name}
-                        </h2>
-                        {index === 0 && (
-                          <Badge variant="default" className="bg-yellow-500">
-                            Top Rated
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-gray-600 mb-4">{cms.description}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {cms.tags.slice(0, 5).map((tag) => (
-                          <Badge key={tag} variant="secondary">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <div className="flex items-center mb-2">
-                        <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                        <span className="ml-1 font-medium">
-                          {cms.ratings.overall.toFixed(1)} / 10
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Rank #{index + 1}
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </Link>
-            ))}
-          </div>
-
-          {/* Comparison Section */}
-          {comparisonPairs.length > 0 && (
-            <div className="mt-12">
-              <h2 className="text-2xl font-display font-bold mb-6">Popular Comparisons</h2>
-              <div className="space-y-4">
-                {comparisonPairs.map(({ cms1, cms2 }, index) => (
-                  <Link
-                    key={index}
-                    to={`/compare/${cms1.slug}-vs-${cms2.slug}`}
-                    className="block"
-                  >
-                    <Card className="p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <span className="font-medium">{cms1.name}</span>
-                          <ArrowRight className="h-4 w-4 text-gray-400" />
-                          <span className="font-medium">{cms2.name}</span>
-                        </div>
-                        <Badge variant="secondary">Compare</Badge>
-                      </div>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </>

@@ -57,3 +57,35 @@ export interface CMS {
   meta_twitter_image?: string;
   meta_twitter_card?: string;
 }
+
+export interface TagContent {
+  bannerTitle: string | null;
+  bannerSubtitle: string | null;
+  introductionText: string | null;
+  categoryBenefits: string[];
+  fullContent: string | null;
+  contentSections: ContentSection[];
+  faqs: FAQ[];
+  seo_title: string | null;
+  seo_description: string | null;
+  seo_keywords: string[] | null;
+  meta_robots: string | null;
+  meta_og_title: string | null;
+  meta_og_description: string | null;
+  meta_og_image: string | null;
+  meta_twitter_title: string | null;
+  meta_twitter_description: string | null;
+  meta_twitter_image: string | null;
+}
+
+export interface ContentSection {
+  title: string;
+  content: string;
+}
+
+export interface FAQ {
+  id: string;
+  question: string;
+  answer: string;
+  orderIndex: number;
+}
