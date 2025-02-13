@@ -2,6 +2,8 @@
 import { supabase } from "@/integrations/supabase/client";
 import { CMS } from "@/types/cms";
 import { transformCMSData } from "./transformers";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 const CMS_SELECT_QUERY = `
   *,
@@ -67,4 +69,112 @@ export const getCMSBySlug = async (slug: string) => {
   if (!data) throw new Error("CMS not found");
 
   return transformCMSData(data);
+};
+
+// Hook to subscribe to real-time updates
+export const useRealtimeUpdates = () => {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Subscribe to changes in the cms table
+    const cmsChannel = supabase
+      .channel('cms-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all changes (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'cms'
+        },
+        () => {
+          console.log('CMS data changed, invalidating queries...');
+          // Invalidate all queries that start with 'cms'
+          queryClient.invalidateQueries({ queryKey: ['cms'] });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to changes in related tables
+    const relatedTablesChannel = supabase
+      .channel('related-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'features'
+        },
+        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'performance_metrics'
+        },
+        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'ratings'
+        },
+        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'pricing'
+        },
+        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tech_stack'
+        },
+        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'pros'
+        },
+        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'cons'
+        },
+        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'cms_additional_info'
+        },
+        () => queryClient.invalidateQueries({ queryKey: ['cms'] })
+      )
+      .subscribe();
+
+    // Cleanup subscriptions
+    return () => {
+      cmsChannel.unsubscribe();
+      relatedTablesChannel.unsubscribe();
+    };
+  }, [queryClient]);
 };

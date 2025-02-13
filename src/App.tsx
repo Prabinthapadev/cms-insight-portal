@@ -1,3 +1,4 @@
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
@@ -20,6 +21,7 @@ import SitemapXml from "./pages/SitemapXml";
 import Privacy from "./pages/Privacy";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
+import { useRealtimeUpdates } from "./services/cms/cmsOperations";
 
 // Security headers
 if (typeof document !== 'undefined') {
@@ -55,8 +57,11 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+// Wrapper component to use hooks
+const AppContent = () => {
+  useRealtimeUpdates();
+  
+  return (
     <AuthProvider>
       <TooltipProvider>
         <BrowserRouter>
@@ -85,8 +90,13 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
+  );
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <AppContent />
   </QueryClientProvider>
 );
 
 export default App;
-
