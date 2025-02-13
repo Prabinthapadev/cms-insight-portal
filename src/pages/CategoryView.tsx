@@ -1,86 +1,85 @@
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
-import { getAllTags } from "@/services/cms";
-import { Card } from "@/components/ui/card";
-import { MetaTags } from "@/components/shared/MetaTags";
-import { getPageSEO } from "@/services/seo";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useState } from "react";
-import { Search, ArrowUp, ArrowDown, X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
-const Categories = () => {
-  const { data: tags, isLoading } = useQuery({
-    queryKey: ["cms-tags"],
-    queryFn: getAllTags,
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getCMSByTag, getTagContent } from "@/services/cms";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Star, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { MetaTags } from "@/components/shared/MetaTags";
+import { useToast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { CMS } from "@/types/cms";
+import { getPageSEO } from "@/services/seo";
+import { FAQSection } from "@/components/cms/FAQSection";
+import { ContentSection } from "@/components/cms/ContentSection";
+
+const CategoryView = () => {
+  const { tag } = useParams();
+  const { toast } = useToast();
+  
+  const { data: tagContent, isLoading: contentLoading } = useQuery({
+    queryKey: ["tag-content", tag],
+    queryFn: () => getTagContent(tag as string),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 60,
+    meta: {
+      onError: (error: Error) => {
+        console.error("Error fetching tag content:", error);
+        toast({
+          title: "Error loading category content",
+          description: "There was a problem loading the category content. Please try again later.",
+          variant: "destructive",
+        });
+      },
+    },
   });
 
   const { data: seoData } = useQuery({
-    queryKey: ["page-seo", "/categories"],
-    queryFn: () => getPageSEO("/categories"),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryKey: ["page-seo", `/categories/${tag}`],
+    queryFn: () => getPageSEO(`/categories/${tag}`),
+    staleTime: 1000 * 60 * 5,
   });
 
-  // Default SEO values
-  const defaultTitle = "CMS Categories - Compare Content Management Systems by Type";
-  const defaultDescription = "Browse CMS platforms by category. Find the perfect Content Management System for your needs, whether it's for blogging, ecommerce, enterprise, or other specific use cases.";
-  
-  const metaData = {
-    id: seoData?.id || "categories-page",
-    url_pattern: seoData?.url_pattern || "/categories",
-    meta_title: seoData?.meta_title || defaultTitle,
-    meta_description: seoData?.meta_description || defaultDescription,
-    meta_keywords: seoData?.meta_keywords || ["CMS categories", "content management system types", "CMS comparison", "CMS platforms"],
-    meta_robots: seoData?.meta_robots || "index,follow",
-    meta_canonical: seoData?.meta_canonical || `${window.location.origin}/categories`,
-    meta_og_title: seoData?.meta_og_title || seoData?.meta_title || defaultTitle,
-    meta_og_description: seoData?.meta_og_description || seoData?.meta_description || defaultDescription,
-    meta_og_image: seoData?.meta_og_image,
-    meta_twitter_title: seoData?.meta_twitter_title || seoData?.meta_title || defaultTitle,
-    meta_twitter_description: seoData?.meta_twitter_description || seoData?.meta_description || defaultDescription,
-    meta_twitter_image: seoData?.meta_twitter_image,
-    meta_twitter_card: seoData?.meta_twitter_card || "summary_large_image",
-  };
+  const { data: cmsList, isLoading: cmsLoading } = useQuery({
+    queryKey: ["cms-by-tag", tag],
+    queryFn: () => getCMSByTag(tag as string),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 60,
+    meta: {
+      onError: (error: Error) => {
+        console.error("Error fetching CMS by tag:", error);
+        toast({
+          title: "Error loading CMS data",
+          description: "There was a problem loading the CMS list. Please try again later.",
+          variant: "destructive",
+        });
+      },
+    },
+  });
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<"rating" | "name" | "price">("rating");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const formattedTag = tag?.replace(/-/g, ' ') || '';
+  const sortedCMSList = cmsList?.sort((a, b) => b.ratings.overall - a.ratings.overall);
+  const comparisonPairs = generateComparisonPairs(sortedCMSList);
 
-  // Filter and sort CMS list
-  const filteredAndSortedCMS = React.useMemo(() => {
-    if (!tags) return [];
-    
-    let filtered = tags.filter(tag => 
-      tag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tag.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    
-    return filtered.sort((a, b) => {
-      const multiplier = sortOrder === "asc" ? 1 : -1;
-      
-      switch (sortBy) {
-        case "rating":
-          return (b.ratings.overall - a.ratings.overall) * multiplier;
-        case "name":
-          return a.name.localeCompare(b.name) * multiplier;
-        case "price":
-          const aPrice = Math.min(...a.pricing.map(p => p.price || 0));
-          const bPrice = Math.min(...b.pricing.map(p => p.price || 0));
-          return (aPrice - bPrice) * multiplier;
-        default:
-          return 0;
-      }
-    });
-  }, [tags, searchTerm, sortBy, sortOrder]);
-
-  if (isLoading) {
+  // Loading skeleton UI
+  if (cmsLoading || contentLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <Skeleton className="h-12 w-64 mb-8" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Skeleton key={i} className="h-32" />
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-12">
+            <Skeleton className="h-12 w-3/4 mx-auto mb-4" />
+            <Skeleton className="h-6 w-2/3 mx-auto" />
+          </div>
+          <Skeleton className="h-32 w-full mb-6" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-24 w-full" />
+            ))}
+          </div>
+          <div className="space-y-6">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-48 w-full" />
             ))}
           </div>
         </div>
@@ -88,71 +87,82 @@ const Categories = () => {
     );
   }
 
+  // Set up SEO data with page_seo as primary source and tag_content as fallback
+  const defaultTitle = `Best CMS for ${formattedTag}`;
+  const defaultDescription = `Find the best Content Management System (CMS) for ${formattedTag}. Compare features, pricing, and user ratings to choose the perfect CMS platform.`;
+  
+  const metaData = {
+    id: seoData?.id || `category-${tag}`,
+    url_pattern: seoData?.url_pattern || `/categories/${tag}`,
+    meta_title: seoData?.meta_title || tagContent?.seo_title || defaultTitle,
+    meta_description: seoData?.meta_description || tagContent?.seo_description || defaultDescription,
+    meta_keywords: seoData?.meta_keywords || tagContent?.seo_keywords || [`CMS for ${formattedTag}`, `best CMS ${formattedTag}`, `content management system ${formattedTag}`],
+    meta_robots: seoData?.meta_robots || tagContent?.meta_robots || "index,follow",
+    meta_canonical: seoData?.meta_canonical || `${window.location.origin}/categories/${tag}`,
+    meta_og_title: seoData?.meta_og_title || seoData?.meta_title || tagContent?.meta_og_title || defaultTitle,
+    meta_og_description: seoData?.meta_og_description || seoData?.meta_description || tagContent?.meta_og_description || defaultDescription,
+    meta_og_image: seoData?.meta_og_image || tagContent?.meta_og_image,
+    meta_twitter_title: seoData?.meta_twitter_title || seoData?.meta_title || tagContent?.meta_twitter_title || defaultTitle,
+    meta_twitter_description: seoData?.meta_twitter_description || seoData?.meta_description || tagContent?.meta_twitter_description || defaultDescription,
+    meta_twitter_image: seoData?.meta_twitter_image || tagContent?.meta_twitter_image,
+    meta_twitter_card: seoData?.meta_twitter_card || "summary_large_image",
+  };
+
   return (
     <>
       <MetaTags seo={metaData} />
-      
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-display font-bold mb-8">CMS Categories</h1>
-          <div className="mb-8 space-y-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <input
-                  type="text"
-                  placeholder="Search CMS platforms..."
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <select
-                className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as "rating" | "name" | "price")}
-              >
-                <option value="rating">Sort by Rating</option>
-                <option value="name">Sort by Name</option>
-                <option value="price">Sort by Price</option>
-              </select>
-              <button
-                className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50"
-                onClick={() => setSortOrder(current => current === "asc" ? "desc" : "asc")}
-              >
-                {sortOrder === "asc" ? (
-                  <ArrowUp className="h-4 w-4" />
-                ) : (
-                  <ArrowDown className="h-4 w-4" />
-                )}
-                {sortOrder === "asc" ? "Ascending" : "Descending"}
-              </button>
+
+      <div className="min-h-screen">
+        {/* Hero Section */}
+        <div className="bg-gradient-to-b from-primary/10 to-background pt-20 pb-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto text-center">
+              <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 capitalize">
+                {tagContent?.bannerTitle || `Best CMS for ${formattedTag}`}
+              </h1>
+              {tagContent?.bannerSubtitle && (
+                <p className="text-xl text-muted-foreground mb-8">
+                  {tagContent.bannerSubtitle}
+                </p>
+              )}
             </div>
-            {searchTerm && (
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">
-                  {filteredAndSortedCMS.length} results found
-                </Badge>
-                <button
-                  onClick={() => setSearchTerm("")}
-                  className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
-                >
-                  <X className="h-3 w-3" /> Clear search
-                </button>
+          </div>
+        </div>
+
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-3xl mx-auto">
+            {/* Introduction Text */}
+            {tagContent?.introductionText && (
+              <div className="prose max-w-none mb-12">
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  {tagContent.introductionText}
+                </p>
               </div>
             )}
-          </div>
 
-          <div className="space-y-6 mb-12">
-            <h2 className="text-2xl font-display font-bold mb-6">
-              {searchTerm ? "Search Results" : "Top Rated Solutions"}
-            </h2>
-            {filteredAndSortedCMS.length === 0 ? (
-              <Card className="p-6 text-center text-gray-500">
-                No CMS platforms found matching your search criteria
-              </Card>
-            ) : (
-              filteredAndSortedCMS.map((cms, index) => (
+            {/* Category Benefits */}
+            {tagContent?.categoryBenefits && tagContent.categoryBenefits.length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-2xl font-display font-bold mb-6">Key Benefits</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {tagContent.categoryBenefits.map((benefit, index) => (
+                    <Card key={index} className="p-4">
+                      <p className="text-muted-foreground">{benefit}</p>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Content Sections */}
+            {tagContent?.contentSections && tagContent.contentSections.length > 0 && (
+              <ContentSection sections={tagContent.contentSections} />
+            )}
+
+            {/* CMS List */}
+            <div className="space-y-6 mb-12">
+              <h2 className="text-2xl font-display font-bold mb-6">Top Rated Solutions</h2>
+              {sortedCMSList?.map((cms, index) => (
                 <Link key={cms.id} to={`/cms/${cms.slug}`} className="block">
                   <Card className="p-6 hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start">
@@ -161,7 +171,7 @@ const Categories = () => {
                           <h3 className="text-xl font-display font-semibold">
                             {cms.name}
                           </h3>
-                          {index === 0 && sortBy === "rating" && !searchTerm && (
+                          {index === 0 && (
                             <Badge variant="default" className="bg-yellow-500">
                               Top Rated
                             </Badge>
@@ -180,19 +190,49 @@ const Categories = () => {
                         <div className="flex items-center mb-2">
                           <Star className="h-5 w-5 text-yellow-400 fill-current" />
                           <span className="ml-1 font-medium">
-                            {(cms.ratings.overall * 2).toFixed(1)} / 10
+                            {cms.ratings.overall.toFixed(1)} / 10
                           </span>
                         </div>
-                        {!searchTerm && (
-                          <div className="text-sm text-muted-foreground">
-                            Rank #{index + 1}
-                          </div>
-                        )}
+                        <div className="text-sm text-muted-foreground">
+                          Rank #{index + 1}
+                        </div>
                       </div>
                     </div>
                   </Card>
                 </Link>
-              ))
+              ))}
+            </div>
+
+            {/* FAQ Section */}
+            {tagContent?.faqs && tagContent.faqs.length > 0 && (
+              <FAQSection faqs={tagContent.faqs} />
+            )}
+
+            {/* Comparison Section */}
+            {comparisonPairs.length > 0 && (
+              <div className="mt-12">
+                <h2 className="text-2xl font-display font-bold mb-6">Popular Comparisons</h2>
+                <div className="space-y-4">
+                  {comparisonPairs.map(({ cms1, cms2 }, index) => (
+                    <Link
+                      key={index}
+                      to={`/compare/${cms1.slug}-vs-${cms2.slug}`}
+                      className="block"
+                    >
+                      <Card className="p-4 hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <span className="font-medium">{cms1.name}</span>
+                            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-medium">{cms2.name}</span>
+                          </div>
+                          <Badge variant="secondary">Compare</Badge>
+                        </div>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -201,4 +241,23 @@ const Categories = () => {
   );
 };
 
-export default Categories;
+// Helper function to generate comparison pairs
+const generateComparisonPairs = (cmsList?: CMS[]) => {
+  if (!cmsList || cmsList.length < 2) return [];
+  
+  const pairs = [];
+  const cmsToCompare = cmsList.slice(0, 4);
+  
+  for (let i = 0; i < cmsToCompare.length - 1; i++) {
+    for (let j = i + 1; j < cmsToCompare.length; j++) {
+      pairs.push({
+        cms1: cmsToCompare[i],
+        cms2: cmsToCompare[j],
+      });
+    }
+  }
+  
+  return pairs.slice(0, 3);
+};
+
+export default CategoryView;

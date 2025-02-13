@@ -1,3 +1,4 @@
+
 import { CMS } from "@/types/cms";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +40,7 @@ export const CMSComparisonTable = ({ cmsList }: CMSComparisonTableProps) => {
             <TableCell>
               <div className="flex items-center">
                 <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-                {(cms.ratings.overall * 2).toFixed(1)}
+                {cms.ratings.overall.toFixed(1)}
               </div>
             </TableCell>
             <TableCell>{cms.marketShare}%</TableCell>

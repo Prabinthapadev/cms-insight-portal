@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { ArrowRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,7 @@ export const CMSCard = ({ cms }: CMSCardProps) => {
                 dangerouslySetInnerHTML={{ __html: sanitizedName }} />
             <div className="flex items-center shrink-0 ml-2">
               <Star className="h-4 w-4 text-yellow-400 fill-current" />
-              <span className="ml-1 text-sm">{(cms.ratings.overall * 2).toFixed(1)}</span>
+              <span className="ml-1 text-sm">{cms.ratings.overall.toFixed(1)}</span>
             </div>
           </div>
           
