@@ -1,7 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { transformCMSData } from "./transformers";
-import { TagContent, FAQ } from "@/types/cms";
+import { TagContent, FAQ, ContentSection } from "@/types/cms";
 
 export const getCMSByTag = async (tag: string) => {
   if (!tag) {
@@ -135,7 +135,7 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
     throw contentError;
   }
 
-  // Fetch FAQs and transform them to match the FAQ interface
+  // Fetch FAQs
   const { data: faqsData, error: faqsError } = await supabase
     .from('faqs')
     .select('*')
@@ -152,7 +152,13 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
     id: faq.id,
     question: faq.question,
     answer: faq.answer,
-    orderIndex: faq.order_index // Transform order_index to orderIndex
+    orderIndex: faq.order_index
+  })) || [];
+
+  // Transform content sections to match the interface
+  const transformedContentSections: ContentSection[] = contentData?.content_sections?.map((section: any) => ({
+    title: section.title,
+    content: section.content
   })) || [];
 
   return {
@@ -161,7 +167,7 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
     introduction_text: contentData?.introduction_text || `Discover the top Content Management Systems for ${tagData.name} projects.`,
     category_benefits: contentData?.category_benefits || [],
     full_content: contentData?.full_content || null,
-    content_sections: contentData?.content_sections || [],
+    content_sections: transformedContentSections,
     faqs: transformedFaqs,
     seo_title: contentData?.seo_title || null,
     seo_description: contentData?.seo_description || null,
