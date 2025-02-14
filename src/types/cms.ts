@@ -59,12 +59,12 @@ export interface CMS {
 }
 
 export interface TagContent {
-  bannerTitle: string | null;
-  bannerSubtitle: string | null;
-  introductionText: string | null;
-  categoryBenefits: string[];
-  fullContent: string | null;
-  contentSections: ContentSection[];
+  banner_title: string | null;
+  banner_subtitle: string | null;
+  introduction_text: string | null;
+  category_benefits: string[];
+  full_content: string | null;
+  content_sections: ContentSection[];
   faqs: FAQ[];
   seo_title: string | null;
   seo_description: string | null;

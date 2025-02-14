@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCMSByTag, getTagContent } from "@/services/cms";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, ArrowRight } from "lucide-react";
+import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MetaTags } from "@/components/shared/MetaTags";
 import { useToast } from "@/components/ui/use-toast";
@@ -118,11 +118,11 @@ const CategoryView = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 capitalize">
-                {tagContent?.bannerTitle || `Best CMS for ${formattedTag}`}
+                {tagContent?.banner_title || `Best CMS for ${formattedTag}`}
               </h1>
-              {tagContent?.bannerSubtitle && (
+              {tagContent?.banner_subtitle && (
                 <p className="text-xl text-muted-foreground mb-8">
-                  {tagContent.bannerSubtitle}
+                  {tagContent.banner_subtitle}
                 </p>
               )}
             </div>
@@ -132,20 +132,20 @@ const CategoryView = () => {
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-3xl mx-auto">
             {/* Introduction Text */}
-            {tagContent?.introductionText && (
+            {tagContent?.introduction_text && (
               <div className="prose max-w-none mb-12">
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  {tagContent.introductionText}
+                  {tagContent.introduction_text}
                 </p>
               </div>
             )}
 
             {/* Category Benefits */}
-            {tagContent?.categoryBenefits && tagContent.categoryBenefits.length > 0 && (
+            {tagContent?.category_benefits && tagContent.category_benefits.length > 0 && (
               <div className="mb-12">
                 <h2 className="text-2xl font-display font-bold mb-6">Key Benefits</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {tagContent.categoryBenefits.map((benefit, index) => (
+                  {tagContent.category_benefits.map((benefit, index) => (
                     <Card key={index} className="p-4">
                       <p className="text-muted-foreground">{benefit}</p>
                     </Card>
@@ -155,8 +155,23 @@ const CategoryView = () => {
             )}
 
             {/* Content Sections */}
-            {tagContent?.contentSections && tagContent.contentSections.length > 0 && (
-              <ContentSection sections={tagContent.contentSections} />
+            {tagContent?.content_sections && tagContent.content_sections.length > 0 && (
+              <div className="mb-12">
+                <div className="space-y-8">
+                  {tagContent.content_sections.map((section, index) => (
+                    <div key={index}>
+                      <h2 className="text-2xl font-display font-bold mb-4">
+                        {section.title}
+                      </h2>
+                      <div className="prose max-w-none">
+                        <p className="text-muted-foreground leading-relaxed">
+                          {section.content}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* CMS List */}
