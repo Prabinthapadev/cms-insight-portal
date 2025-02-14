@@ -6,7 +6,12 @@ interface ContentSectionProps {
 }
 
 export const ContentSection = ({ sections }: ContentSectionProps) => {
-  if (!sections || sections.length === 0) return null;
+  if (!sections || sections.length === 0) {
+    console.log("No content sections to display");
+    return null;
+  }
+
+  console.log("Rendering content sections:", sections);
 
   return (
     <section className="py-12">

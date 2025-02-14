@@ -84,6 +84,7 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
   }
 
   if (!tagData) {
+    console.log("No tag data found for:", tag);
     return {
       banner_title: `Best CMS for ${tag.replace(/-/g, ' ')}`,
       banner_subtitle: null,
@@ -147,6 +148,8 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
     throw faqsError;
   }
 
+  console.log("Raw content sections:", contentData?.content_sections);
+
   // Transform FAQs to match the interface
   const transformedFaqs: FAQ[] = faqsData?.map(faq => ({
     id: faq.id,
@@ -156,10 +159,14 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
   })) || [];
 
   // Transform content sections to match the interface
-  const transformedContentSections: ContentSection[] = contentData?.content_sections?.map((section: any) => ({
-    title: section.title,
-    content: section.content
-  })) || [];
+  const transformedContentSections: ContentSection[] = Array.isArray(contentData?.content_sections) 
+    ? contentData.content_sections.map((section: any) => ({
+        title: section.title,
+        content: section.content
+      }))
+    : [];
+
+  console.log("Transformed content sections:", transformedContentSections);
 
   return {
     banner_title: contentData?.banner_title || `Best CMS for ${tagData.name}`,
