@@ -85,12 +85,12 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
 
   if (!tagData) {
     return {
-      bannerTitle: `Best CMS for ${tag.replace(/-/g, ' ')}`,
-      bannerSubtitle: null,
-      introductionText: `Discover the top Content Management Systems for ${tag.replace(/-/g, ' ')} projects.`,
-      categoryBenefits: [],
-      fullContent: null,
-      contentSections: [],
+      banner_title: `Best CMS for ${tag.replace(/-/g, ' ')}`,
+      banner_subtitle: null,
+      introduction_text: `Discover the top Content Management Systems for ${tag.replace(/-/g, ' ')} projects.`,
+      category_benefits: [],
+      full_content: null,
+      content_sections: [],
       faqs: [],
       seo_title: null,
       seo_description: null,
@@ -135,7 +135,7 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
     throw contentError;
   }
 
-  // Fetch FAQs
+  // Fetch FAQs and transform them to match the FAQ interface
   const { data: faqsData, error: faqsError } = await supabase
     .from('faqs')
     .select('*')
@@ -147,14 +147,22 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
     throw faqsError;
   }
 
+  // Transform FAQs to match the interface
+  const transformedFaqs: FAQ[] = faqsData?.map(faq => ({
+    id: faq.id,
+    question: faq.question,
+    answer: faq.answer,
+    orderIndex: faq.order_index // Transform order_index to orderIndex
+  })) || [];
+
   return {
-    bannerTitle: contentData?.banner_title || `Best CMS for ${tagData.name}`,
-    bannerSubtitle: contentData?.banner_subtitle || null,
-    introductionText: contentData?.introduction_text || `Discover the top Content Management Systems for ${tagData.name} projects.`,
-    categoryBenefits: contentData?.category_benefits || [],
-    fullContent: contentData?.full_content || null,
-    contentSections: contentData?.content_sections || [],
-    faqs: faqsData || [],
+    banner_title: contentData?.banner_title || `Best CMS for ${tagData.name}`,
+    banner_subtitle: contentData?.banner_subtitle || null,
+    introduction_text: contentData?.introduction_text || `Discover the top Content Management Systems for ${tagData.name} projects.`,
+    category_benefits: contentData?.category_benefits || [],
+    full_content: contentData?.full_content || null,
+    content_sections: contentData?.content_sections || [],
+    faqs: transformedFaqs,
     seo_title: contentData?.seo_title || null,
     seo_description: contentData?.seo_description || null,
     seo_keywords: contentData?.seo_keywords || null,

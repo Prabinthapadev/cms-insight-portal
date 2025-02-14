@@ -1,10 +1,9 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCMSByTag, getTagContent } from "@/services/cms";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star } from "lucide-react";
+import { Star, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MetaTags } from "@/components/shared/MetaTags";
 import { useToast } from "@/components/ui/use-toast";
