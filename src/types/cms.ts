@@ -1,4 +1,3 @@
-
 export interface CMS {
   id: string;
   name: string;
@@ -58,6 +57,11 @@ export interface CMS {
   meta_twitter_card?: string;
 }
 
+export interface ContentSection {
+  title: string;
+  content: string;
+}
+
 export interface TagContent {
   banner_title: string | null;
   banner_subtitle: string | null;
@@ -76,11 +80,6 @@ export interface TagContent {
   meta_twitter_title: string | null;
   meta_twitter_description: string | null;
   meta_twitter_image: string | null;
-}
-
-export interface ContentSection {
-  title: string;
-  content: string;
 }
 
 export interface FAQ {

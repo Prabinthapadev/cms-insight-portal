@@ -21,28 +21,6 @@ import SitemapXml from "./pages/SitemapXml";
 import Privacy from "./pages/Privacy";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
-import { useRealtimeUpdates } from "./services/cms/cmsOperations";
-
-// Security headers
-if (typeof document !== 'undefined') {
-  // Set CSP header
-  const meta = document.createElement('meta');
-  meta.httpEquiv = 'Content-Security-Policy';
-  meta.content = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co";
-  document.head.appendChild(meta);
-
-  // Set XSS Protection header
-  const xssProtection = document.createElement('meta');
-  xssProtection.httpEquiv = 'X-XSS-Protection';
-  xssProtection.content = '1; mode=block';
-  document.head.appendChild(xssProtection);
-
-  // Set X-Frame-Options header
-  const xFrameOptions = document.createElement('meta');
-  xFrameOptions.httpEquiv = 'X-Frame-Options';
-  xFrameOptions.content = 'DENY';
-  document.head.appendChild(xFrameOptions);
-}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -57,14 +35,11 @@ const queryClient = new QueryClient({
   },
 });
 
-// Wrapper component to use hooks
-const AppContent = () => {
-  useRealtimeUpdates();
-  
-  return (
-    <AuthProvider>
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
       <TooltipProvider>
-        <BrowserRouter>
+        <AuthProvider>
           <Navigation />
           <main className="min-h-screen pt-16 w-full overflow-x-hidden">
             <Routes>
@@ -87,15 +62,9 @@ const AppContent = () => {
           </main>
           <Toaster />
           <Sonner />
-        </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
-    </AuthProvider>
-  );
-};
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AppContent />
+    </BrowserRouter>
   </QueryClientProvider>
 );
 
