@@ -609,7 +609,6 @@ export type Database = {
           banner_subtitle: string | null
           banner_title: string | null
           category_benefits: string[] | null
-          content: string | null
           content_sections: Json[] | null
           content_type: string
           created_at: string | null
@@ -617,6 +616,7 @@ export type Database = {
           id: string
           introduction_text: string | null
           meta_description: string | null
+          meta_keywords: string[] | null
           meta_og_description: string | null
           meta_og_image: string | null
           meta_og_title: string | null
@@ -625,18 +625,13 @@ export type Database = {
           meta_twitter_description: string | null
           meta_twitter_image: string | null
           meta_twitter_title: string | null
-          seo_description: string | null
-          seo_keywords: string[] | null
-          seo_title: string | null
           tag_id: string | null
-          title: string | null
           updated_at: string | null
         }
         Insert: {
           banner_subtitle?: string | null
           banner_title?: string | null
           category_benefits?: string[] | null
-          content?: string | null
           content_sections?: Json[] | null
           content_type: string
           created_at?: string | null
@@ -644,6 +639,7 @@ export type Database = {
           id?: string
           introduction_text?: string | null
           meta_description?: string | null
+          meta_keywords?: string[] | null
           meta_og_description?: string | null
           meta_og_image?: string | null
           meta_og_title?: string | null
@@ -652,18 +648,13 @@ export type Database = {
           meta_twitter_description?: string | null
           meta_twitter_image?: string | null
           meta_twitter_title?: string | null
-          seo_description?: string | null
-          seo_keywords?: string[] | null
-          seo_title?: string | null
           tag_id?: string | null
-          title?: string | null
           updated_at?: string | null
         }
         Update: {
           banner_subtitle?: string | null
           banner_title?: string | null
           category_benefits?: string[] | null
-          content?: string | null
           content_sections?: Json[] | null
           content_type?: string
           created_at?: string | null
@@ -671,6 +662,7 @@ export type Database = {
           id?: string
           introduction_text?: string | null
           meta_description?: string | null
+          meta_keywords?: string[] | null
           meta_og_description?: string | null
           meta_og_image?: string | null
           meta_og_title?: string | null
@@ -679,11 +671,7 @@ export type Database = {
           meta_twitter_description?: string | null
           meta_twitter_image?: string | null
           meta_twitter_title?: string | null
-          seo_description?: string | null
-          seo_keywords?: string[] | null
-          seo_title?: string | null
           tag_id?: string | null
-          title?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -700,6 +688,7 @@ export type Database = {
         Row: {
           banner_subtitle: string | null
           banner_title: string | null
+          created_at: string | null
           description: string | null
           header_image: string | null
           id: string
@@ -707,10 +696,12 @@ export type Database = {
           seo_description: string | null
           seo_title: string | null
           slug: string
+          updated_at: string | null
         }
         Insert: {
           banner_subtitle?: string | null
           banner_title?: string | null
+          created_at?: string | null
           description?: string | null
           header_image?: string | null
           id?: string
@@ -718,10 +709,12 @@ export type Database = {
           seo_description?: string | null
           seo_title?: string | null
           slug: string
+          updated_at?: string | null
         }
         Update: {
           banner_subtitle?: string | null
           banner_title?: string | null
+          created_at?: string | null
           description?: string | null
           header_image?: string | null
           id?: string
@@ -729,6 +722,7 @@ export type Database = {
           seo_description?: string | null
           seo_title?: string | null
           slug?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
