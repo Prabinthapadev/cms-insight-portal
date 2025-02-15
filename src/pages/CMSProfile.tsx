@@ -183,7 +183,7 @@ const CMSProfile = () => {
                 <div className="flex items-center">
                   <Star className="h-5 w-5 text-yellow-400 fill-current" />
                   <span className="ml-1 font-medium">
-                    {cms.ratings.overall.toFixed(1)} / 10
+                    {cms.ratings.overall.toFixed(1)} / 5
                   </span>
                 </div>
                 <Badge variant="secondary">Market Share: {cms.marketShare}%</Badge>
