@@ -27,7 +27,25 @@ export const getPageSEO = async (urlPattern: string): Promise<PageSEO | null> =>
   // First try to get from page_seo table
   const { data: pageSeoData, error: pageSeoError } = await supabase
     .from('page_seo')
-    .select('*')
+    .select(`
+      id,
+      url_pattern,
+      meta_title,
+      meta_description,
+      meta_keywords,
+      meta_robots,
+      meta_canonical,
+      meta_og_title,
+      meta_og_description,
+      meta_og_image,
+      meta_twitter_card,
+      meta_twitter_title,
+      meta_twitter_description,
+      meta_twitter_image,
+      priority,
+      changefreq,
+      updated_at
+    `)
     .eq('url_pattern', urlPattern)
     .single();
 
@@ -40,17 +58,28 @@ export const getPageSEO = async (urlPattern: string): Promise<PageSEO | null> =>
     const tagSlug = urlPattern.split('/').pop();
     console.log('Fetching tag content SEO for:', tagSlug);
     
-    const { data: tagContent, error: tagError } = await supabase
-      .from('tag_content')
+    // Optimized query to fetch only needed fields
+    const { data: tagData, error: tagError } = await supabase
+      .from('tags')
       .select(`
-        *,
-        tags!inner(
-          name,
-          slug
+        id,
+        name,
+        tag_content!inner (
+          banner_title,
+          introduction_text,
+          meta_title,
+          meta_description,
+          meta_keywords,
+          meta_robots,
+          meta_og_title,
+          meta_og_description,
+          meta_og_image,
+          meta_twitter_title,
+          meta_twitter_description,
+          meta_twitter_image
         )
       `)
-      .eq('tags.slug', tagSlug)
-      .eq('content_type', 'category')
+      .eq('slug', tagSlug)
       .single();
 
     if (tagError) {
@@ -58,9 +87,10 @@ export const getPageSEO = async (urlPattern: string): Promise<PageSEO | null> =>
       return null;
     }
 
-    if (tagContent) {
+    if (tagData && tagData.tag_content?.[0]) {
+      const tagContent = tagData.tag_content[0];
       return {
-        id: tagContent.id,
+        id: tagData.id,
         url_pattern: urlPattern,
         meta_title: tagContent.meta_title || tagContent.banner_title,
         meta_description: tagContent.meta_description || tagContent.introduction_text,

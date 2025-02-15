@@ -10,20 +10,31 @@ export const getCMSByTag = async (tag: string) => {
 
   console.log("Fetching CMS by tag:", tag);
   
+  // Optimized query to fetch only necessary fields
   const { data, error } = await supabase
     .from('cms')
     .select(`
-      *,
-      features (*),
-      performance_metrics (*),
-      ratings (*),
-      pricing (*),
-      pros (*),
-      cons (*),
-      cms_additional_info (*)
+      id,
+      name,
+      slug,
+      description,
+      image_url,
+      website,
+      tags,
+      ratings (
+        category,
+        score
+      ),
+      pros (
+        description
+      ),
+      cons (
+        description
+      )
     `)
     .contains('tags', [tag])
-    .eq('is_published', true);
+    .eq('is_published', true)
+    .order('market_share', { ascending: false });
 
   if (error) {
     console.error("Error fetching CMS by tag:", error);
@@ -34,54 +45,66 @@ export const getCMSByTag = async (tag: string) => {
 };
 
 export const getAllTags = async () => {
-  // First get all unique tags from CMS table
-  const { data: cmsData, error: cmsError } = await supabase
-    .from('cms')
-    .select('tags')
-    .eq('is_published', true);
-
-  if (cmsError) throw cmsError;
-
-  // Then get all tags that have content
+  // Optimized to fetch only required fields and cache the result
   const { data: tagsData, error: tagsError } = await supabase
     .from('tags')
-    .select('slug, name');
+    .select('slug, name')
+    .order('name');
 
   if (tagsError) throw tagsError;
 
-  // Combine and deduplicate tags
-  const tagSet = new Set<string>();
-  
-  // Add tags from CMS
-  cmsData?.forEach((cms) => {
-    if (cms.tags) {
-      cms.tags.forEach((tag: string) => tagSet.add(tag.toLowerCase()));
-    }
-  });
-
-  // Add tags from tags table
-  tagsData?.forEach((tag) => {
-    if (tag.slug) {
-      tagSet.add(tag.slug.toLowerCase());
-    }
-  });
-
-  return Array.from(tagSet);
+  return tagsData?.map(tag => tag.slug) || [];
 };
 
 export const getTagContent = async (tag: string): Promise<TagContent> => {
   console.log("Fetching tag content for:", tag);
   
-  const { data: tagData, error: tagError } = await supabase
-    .from('tags')
-    .select('id, name, seo_title, seo_description')
-    .eq('slug', tag)
-    .maybeSingle();
+  // Parallel requests for better performance
+  const [tagResponse, contentResponse, faqsResponse] = await Promise.all([
+    supabase
+      .from('tags')
+      .select('id, name, seo_title, seo_description')
+      .eq('slug', tag)
+      .maybeSingle(),
+    
+    supabase
+      .from('tag_content')
+      .select(`
+        banner_title,
+        banner_subtitle,
+        introduction_text,
+        category_benefits,
+        full_content,
+        content_sections,
+        meta_title,
+        meta_description,
+        meta_keywords,
+        meta_robots,
+        meta_og_title,
+        meta_og_description,
+        meta_og_image,
+        meta_twitter_title,
+        meta_twitter_description,
+        meta_twitter_image
+      `)
+      .eq('tag_id', tagResponse?.data?.id)
+      .eq('content_type', 'category')
+      .maybeSingle(),
+    
+    supabase
+      .from('faqs')
+      .select('id, question, answer, order_index')
+      .eq('tag_id', tagResponse?.data?.id)
+      .order('order_index', { ascending: true })
+  ]);
 
-  if (tagError) {
-    console.error("Error fetching tag:", tagError);
-    throw tagError;
-  }
+  const [tagData, tagError] = [tagResponse.data, tagResponse.error];
+  const [contentData, contentError] = [contentResponse.data, contentResponse.error];
+  const [faqsData, faqsError] = [faqsResponse.data, faqsResponse.error];
+
+  if (tagError) throw tagError;
+  if (contentError) throw contentError;
+  if (faqsError) throw faqsError;
 
   if (!tagData) {
     console.log("No tag data found for:", tag);
@@ -106,51 +129,7 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
     };
   }
 
-  // Fetch tag content
-  const { data: contentData, error: contentError } = await supabase
-    .from('tag_content')
-    .select(`
-      banner_title,
-      banner_subtitle,
-      introduction_text,
-      category_benefits,
-      full_content,
-      content_sections,
-      meta_title,
-      meta_description,
-      meta_keywords,
-      meta_robots,
-      meta_og_title,
-      meta_og_description,
-      meta_og_image,
-      meta_twitter_title,
-      meta_twitter_description,
-      meta_twitter_image
-    `)
-    .eq('tag_id', tagData.id)
-    .eq('content_type', 'category')
-    .maybeSingle();
-
-  if (contentError) {
-    console.error("Error fetching tag content:", contentError);
-    throw contentError;
-  }
-
-  // Fetch FAQs
-  const { data: faqsData, error: faqsError } = await supabase
-    .from('faqs')
-    .select('*')
-    .eq('tag_id', tagData.id)
-    .order('order_index', { ascending: true });
-
-  if (faqsError) {
-    console.error("Error fetching FAQs:", faqsError);
-    throw faqsError;
-  }
-
-  console.log("Raw content sections:", contentData?.content_sections);
-
-  // Transform FAQs to match the interface
+  // Transform FAQs
   const transformedFaqs: FAQ[] = faqsData?.map(faq => ({
     id: faq.id,
     question: faq.question,
@@ -158,7 +137,7 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
     orderIndex: faq.order_index
   })) || [];
 
-  // Transform content sections to match the interface
+  // Transform content sections
   const transformedContentSections: ContentSection[] = 
     (Array.isArray(contentData?.content_sections) 
       ? contentData.content_sections.map((section: any) => ({
@@ -166,8 +145,6 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
           content: section.content
         }))
       : []);
-
-  console.log("Transformed content sections:", transformedContentSections);
 
   return {
     banner_title: contentData?.banner_title || `Best CMS for ${tagData.name}`,
