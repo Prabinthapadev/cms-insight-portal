@@ -74,7 +74,7 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
   
   const { data: tagData, error: tagError } = await supabase
     .from('tags')
-    .select('id, name')
+    .select('id, name, seo_title, seo_description')
     .eq('slug', tag)
     .maybeSingle();
 
@@ -116,9 +116,9 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
       category_benefits,
       full_content,
       content_sections,
-      seo_title,
-      seo_description,
-      seo_keywords,
+      meta_title,
+      meta_description,
+      meta_keywords,
       meta_robots,
       meta_og_title,
       meta_og_description,
@@ -159,12 +159,13 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
   })) || [];
 
   // Transform content sections to match the interface
-  const transformedContentSections: ContentSection[] = Array.isArray(contentData?.content_sections) 
-    ? contentData.content_sections.map((section: any) => ({
-        title: section.title,
-        content: section.content
-      }))
-    : [];
+  const transformedContentSections: ContentSection[] = 
+    (Array.isArray(contentData?.content_sections) 
+      ? contentData.content_sections.map((section: any) => ({
+          title: section.title,
+          content: section.content
+        }))
+      : []);
 
   console.log("Transformed content sections:", transformedContentSections);
 
@@ -176,9 +177,9 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
     full_content: contentData?.full_content || null,
     content_sections: transformedContentSections,
     faqs: transformedFaqs,
-    seo_title: contentData?.seo_title || null,
-    seo_description: contentData?.seo_description || null,
-    seo_keywords: contentData?.seo_keywords || null,
+    seo_title: tagData.seo_title || contentData?.meta_title || null,
+    seo_description: tagData.seo_description || contentData?.meta_description || null,
+    seo_keywords: contentData?.meta_keywords || null,
     meta_robots: contentData?.meta_robots || null,
     meta_og_title: contentData?.meta_og_title || null,
     meta_og_description: contentData?.meta_og_description || null,
