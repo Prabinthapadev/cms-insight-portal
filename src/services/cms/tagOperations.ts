@@ -59,52 +59,14 @@ export const getAllTags = async () => {
 export const getTagContent = async (tag: string): Promise<TagContent> => {
   console.log("Fetching tag content for:", tag);
   
-  // Parallel requests for better performance
-  const [tagResponse, contentResponse, faqsResponse] = await Promise.all([
-    supabase
-      .from('tags')
-      .select('id, name, seo_title, seo_description')
-      .eq('slug', tag)
-      .maybeSingle(),
-    
-    supabase
-      .from('tag_content')
-      .select(`
-        banner_title,
-        banner_subtitle,
-        introduction_text,
-        category_benefits,
-        full_content,
-        content_sections,
-        meta_title,
-        meta_description,
-        meta_keywords,
-        meta_robots,
-        meta_og_title,
-        meta_og_description,
-        meta_og_image,
-        meta_twitter_title,
-        meta_twitter_description,
-        meta_twitter_image
-      `)
-      .eq('tag_id', tagResponse?.data?.id)
-      .eq('content_type', 'category')
-      .maybeSingle(),
-    
-    supabase
-      .from('faqs')
-      .select('id, question, answer, order_index')
-      .eq('tag_id', tagResponse?.data?.id)
-      .order('order_index', { ascending: true })
-  ]);
-
-  const [tagData, tagError] = [tagResponse.data, tagResponse.error];
-  const [contentData, contentError] = [contentResponse.data, contentResponse.error];
-  const [faqsData, faqsError] = [faqsResponse.data, faqsResponse.error];
+  // First get the tag data
+  const { data: tagData, error: tagError } = await supabase
+    .from('tags')
+    .select('id, name, seo_title, seo_description')
+    .eq('slug', tag)
+    .maybeSingle();
 
   if (tagError) throw tagError;
-  if (contentError) throw contentError;
-  if (faqsError) throw faqsError;
 
   if (!tagData) {
     console.log("No tag data found for:", tag);
@@ -128,6 +90,45 @@ export const getTagContent = async (tag: string): Promise<TagContent> => {
       meta_twitter_image: null
     };
   }
+
+  // Then fetch content and FAQs in parallel
+  const [contentResponse, faqsResponse] = await Promise.all([
+    supabase
+      .from('tag_content')
+      .select(`
+        banner_title,
+        banner_subtitle,
+        introduction_text,
+        category_benefits,
+        full_content,
+        content_sections,
+        meta_title,
+        meta_description,
+        meta_keywords,
+        meta_robots,
+        meta_og_title,
+        meta_og_description,
+        meta_og_image,
+        meta_twitter_title,
+        meta_twitter_description,
+        meta_twitter_image
+      `)
+      .eq('tag_id', tagData.id)
+      .eq('content_type', 'category')
+      .maybeSingle(),
+    
+    supabase
+      .from('faqs')
+      .select('id, question, answer, order_index')
+      .eq('tag_id', tagData.id)
+      .order('order_index', { ascending: true })
+  ]);
+
+  const [contentData, contentError] = [contentResponse.data, contentResponse.error];
+  const [faqsData, faqsError] = [faqsResponse.data, faqsResponse.error];
+
+  if (contentError) throw contentError;
+  if (faqsError) throw faqsError;
 
   // Transform FAQs
   const transformedFaqs: FAQ[] = faqsData?.map(faq => ({
