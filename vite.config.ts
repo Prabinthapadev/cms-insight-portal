@@ -34,8 +34,5 @@ export default defineConfig(({ mode }) => ({
   },
   ssr: {
     noExternal: ['react-helmet']
-  },
-  esbuild: {
-    jsxInject: `import React from 'react'`
   }
 }));
