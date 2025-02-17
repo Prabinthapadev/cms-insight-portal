@@ -4,13 +4,11 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   base: '/',
   server: {
     host: "::",
     port: 8080,
-    // Add history fallback for client-side routing
     historyApiFallback: true,
   },
   build: {
@@ -21,9 +19,13 @@ export default defineConfig(({ mode }) => ({
     },
     outDir: 'dist',
     assetsDir: 'assets',
+    ssr: true, // Enable SSR build
+    manifest: true, // Generate manifest for better caching
   },
   plugins: [
-    react(),
+    react({
+      fastRefresh: true,
+    }),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
@@ -31,5 +33,8 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  ssr: {
+    noExternal: ['react-helmet'], // Ensure react-helmet works with SSR
   },
 }));

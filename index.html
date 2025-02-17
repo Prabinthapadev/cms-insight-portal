@@ -7,16 +7,50 @@
     <title>cms-insight-portal</title>
     <meta name="author" content="Cody-cms" />
     <meta property="og:image" content="/og-image.png" />
+    <meta name="description" content="Compare and find the perfect Content Management System (CMS) for your needs" />
+    <meta name="keywords" content="CMS, Content Management System, CMS Comparison, Website Platform" />
     
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+    
+    <!-- Preconnect to Supabase -->
+    <link rel="preconnect" href="https://supabase.co" crossorigin />
+    
+    <!-- Enable Progressive Web App -->
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Enable instant navigation -->
+    <script type="module">
+      document.addEventListener('DOMContentLoaded', () => {
+        if ('IntersectionObserver' in window) {
+          const prefetchLink = document.createElement('link')
+          prefetchLink.rel = 'prefetch'
+          prefetchLink.as = 'document'
+          
+          const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                const link = entry.target
+                if (link.href && !link.prefetched) {
+                  prefetchLink.href = link.href
+                  document.head.appendChild(prefetchLink.cloneNode())
+                  link.prefetched = true
+                }
+              }
+            })
+          })
+          
+          document.querySelectorAll('a[href^="/"]').forEach(link => observer.observe(link))
+        }
+      })
+    </script>
   </head>
 
   <body>
     <div id="root"></div>
-    <!-- GPT Engineer script must be before main.tsx -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>

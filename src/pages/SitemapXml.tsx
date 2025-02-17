@@ -1,26 +1,42 @@
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { generateSitemapXml } from "@/utils/sitemap";
+import { Helmet } from "react-helmet";
 
 const SitemapXml = () => {
-  const [xml, setXml] = useState<string>("");
-
   useEffect(() => {
-    const generateXml = async () => {
+    const generateAndServeSitemap = async () => {
       const baseUrl = window.location.origin;
       const xmlContent = await generateSitemapXml(baseUrl);
-      setXml(xmlContent);
+      
+      // Create a Blob with the XML content
+      const blob = new Blob([xmlContent], { type: 'application/xml' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create a link and trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('type', 'application/xml');
+      link.setAttribute('rel', 'alternate');
+      document.head.appendChild(link);
+      
+      // Clean up
+      return () => {
+        URL.revokeObjectURL(url);
+        document.head.removeChild(link);
+      };
     };
 
-    generateXml();
+    generateAndServeSitemap();
   }, []);
 
-  if (!xml) return null;
-
   return (
-    <pre style={{ display: 'none' }}>
-      {xml}
-    </pre>
+    <>
+      <Helmet>
+        <meta httpEquiv="Content-Type" content="application/xml; charset=utf-8" />
+        <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+      </Helmet>
+    </>
   );
 };
 
