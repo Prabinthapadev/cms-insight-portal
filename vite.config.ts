@@ -23,9 +23,7 @@ export default defineConfig(({ mode }) => ({
     manifest: true,
   },
   plugins: [
-    react({
-      jsxRuntime: 'automatic'
-    }),
+    react(),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
@@ -36,5 +34,9 @@ export default defineConfig(({ mode }) => ({
   },
   ssr: {
     noExternal: ['react-helmet']
+  },
+  esbuild: {
+    jsxFactory: 'React.createElement',
+    jsxFragment: 'React.Fragment'
   }
 }));
