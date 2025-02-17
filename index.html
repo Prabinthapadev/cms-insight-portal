@@ -21,37 +21,10 @@
     <!-- Enable Progressive Web App -->
     <meta name="theme-color" content="#ffffff" />
     <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Enable instant navigation -->
-    <script type="module">
-      document.addEventListener('DOMContentLoaded', () => {
-        if ('IntersectionObserver' in window) {
-          const prefetchLink = document.createElement('link')
-          prefetchLink.rel = 'prefetch'
-          prefetchLink.as = 'document'
-          
-          const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-              if (entry.isIntersecting) {
-                const link = entry.target
-                if (link.href && !link.prefetched) {
-                  prefetchLink.href = link.href
-                  document.head.appendChild(prefetchLink.cloneNode())
-                  link.prefetched = true
-                }
-              }
-            })
-          })
-          
-          document.querySelectorAll('a[href^="/"]').forEach(link => observer.observe(link))
-        }
-      })
-    </script>
   </head>
 
   <body>
     <div id="root"></div>
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -34,9 +34,5 @@ export default defineConfig(({ mode }) => ({
   },
   ssr: {
     noExternal: ['react-helmet']
-  },
-  esbuild: {
-    jsxFactory: 'React.createElement',
-    jsxFragment: 'React.Fragment'
   }
 }));
