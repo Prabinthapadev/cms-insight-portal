@@ -23,9 +23,7 @@ export default defineConfig(({ mode }) => ({
     manifest: true, // Generate manifest for better caching
   },
   plugins: [
-    react({
-      fastRefresh: true,
-    }),
+    react(), // Removed fastRefresh option as it's not needed
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
