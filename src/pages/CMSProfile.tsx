@@ -106,11 +106,11 @@ const CMSProfile = () => {
     .slice(0, 4) || [];
 
   const getRankDescription = (value: number): string => {
-    if (value >= 9) return "Exceptional (4.5-5)";
-    if (value >= 7) return "Great (3-4)";
-    if (value >= 5) return "Good (2-3)";
-    if (value >= 3) return "Fair (1-2.5)";
-    return "Poor (0-0.5)";
+    if (value >= 9) return "Exceptional (9-10)";
+    if (value >= 7) return "Great (7-8)";
+    if (value >= 5) return "Good (5-6)";
+    if (value >= 3) return "Fair (3-4)";
+    return "Poor (1-2)";
   };
 
   const radarData = [
@@ -118,31 +118,31 @@ const CMSProfile = () => {
       subject: "Ease of Use",
       value: cms.ratings.easeOfUse,
       description: getRankDescription(cms.ratings.easeOfUse),
-      fullMark: 5
+      fullMark: 10
     },
     { 
       subject: "Features",
       value: cms.ratings.features,
       description: getRankDescription(cms.ratings.features),
-      fullMark: 5
+      fullMark: 10
     },
     { 
       subject: "Support",
       value: cms.ratings.support,
       description: getRankDescription(cms.ratings.support),
-      fullMark: 5
+      fullMark: 10
     },
     { 
       subject: "Value",
       value: cms.ratings.value,
       description: getRankDescription(cms.ratings.value),
-      fullMark: 5
+      fullMark: 10
     },
     { 
       subject: "Overall",
       value: cms.ratings.overall,
       description: getRankDescription(cms.ratings.overall),
-      fullMark: 5
+      fullMark: 10
     },
   ];
 
@@ -183,7 +183,7 @@ const CMSProfile = () => {
                 <div className="flex items-center">
                   <Star className="h-5 w-5 text-yellow-400 fill-current" />
                   <span className="ml-1 font-medium">
-                    {cms.ratings.overall.toFixed(1)} / 5
+                    {cms.ratings.overall.toFixed(1)} / 10
                   </span>
                 </div>
                 <Badge variant="secondary">Market Share: {cms.marketShare}%</Badge>
