@@ -19,20 +19,26 @@ export default defineConfig(({ mode }) => ({
     },
     outDir: 'dist',
     assetsDir: 'assets',
-    ssr: true, // Enable SSR build
-    manifest: true, // Generate manifest for better caching
+    ssr: true,
+    manifest: true,
   },
   plugins: [
-    react(), // Removed fastRefresh option as it's not needed
+    react({
+      jsxRuntime: 'automatic',
+      jsxImportSource: 'react'
+    }),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-    },
+    }
   },
   ssr: {
-    noExternal: ['react-helmet'], // Ensure react-helmet works with SSR
+    noExternal: ['react-helmet']
   },
+  esbuild: {
+    jsxInject: `import React from 'react'`
+  }
 }));
